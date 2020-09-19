@@ -181,7 +181,7 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
   [params.social]                                         # 社交链接
     a-email = "mailto:hang.yan@hotmail.com"
     g-github = "http://github.com/hangyan"
-    j-douban = "http://localhost:1313"
+    j-douban = "https://www.douban.com/people/yanhangyhy/"
 
 # See https://gohugo.io/about/hugo-and-gdpr/
 [privacy]

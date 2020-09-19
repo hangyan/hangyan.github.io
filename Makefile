@@ -1,3 +1,5 @@
+s:
+	hugo server
 deploy:
 	bash deploy.sh
 commit:
