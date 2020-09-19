@@ -1,7 +1,7 @@
 ---
 categories: [技术]
 title: 一点 python 的经验
-modified: 2015-11-10T00:00:00.000Z
+date: 2015-11-10 21:37:39 +0800
 tags:
   - language
 image:

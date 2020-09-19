@@ -8,6 +8,7 @@ excerpt: '比特币,区块链'
 comments: true
 redirect_from:
   - /2017/08/12/blockchain.html
+date: 2017-08-12 21:37:39 +0800
 ---
 
 

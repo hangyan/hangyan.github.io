@@ -2,6 +2,7 @@
 categories: [技术]
 title: bash 各配置文件浅析
 tags: [技术]
+date: 2015-01-23 21:37:39 +0800
 imagefeature:
 comments: true
 share: true

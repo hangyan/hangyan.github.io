@@ -4,6 +4,7 @@ title: CoreOS 安装及配置
 share: true
 comments: true
 imagefeature:
+date: 2015-01-22 21:37:39 +0800
 tags: [技术]
 excerpt: ""
 categories: [技术]

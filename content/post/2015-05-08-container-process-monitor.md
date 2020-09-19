@@ -1,7 +1,7 @@
 ---
 
 title: docker 容器内多进程的管理方案
-
+date: 2015-05-08 21:37:39 +0800
 tags: [docker]
 imagefeature:
 comments: true

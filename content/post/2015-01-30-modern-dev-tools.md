@@ -7,6 +7,7 @@ comments: true
 share: true
 excerpt: "httpi/icdiff/slap..."
 thumb: /images/thumbs/gource.jpg
+date: 2015-01-30 21:37:39 +0800
 ---
 
 常年混迹于 linux，对命令行程序情有独钟，平时也喜欢搜集各种实用的小工具。`github`流行以来，越来越多的新的实用的开
