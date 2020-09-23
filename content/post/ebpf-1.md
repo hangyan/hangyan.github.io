@@ -8,12 +8,17 @@ draft: true
 
 
 ## eBPF 是什么
-先介绍下 eBPF 的前身: BPF -> `Berkeley Packet Filter`. 看名字就知道，主要是用于网络 packat 的过滤用的。 eBPF extend 了 BPF, 将其机制大大地泛化，不止用于网络数据包的处理，而是可以 hook 在任意的系统调用上, 这样它就变成了一个几乎具有无限功能的系统。
+先介绍下 eBPF 的前身: BPF -> `Berkeley Packet Filter`. 看名字就知道，主要是用于网络 packet 的过滤用的。 过滤程序是运行于基于寄存器的虚拟机之上．　BPF 展示了在内核中运行用户程序的良好开端．但它的缺点也很明显，虚拟机的设计以及指令集都比较落后，跟不上现代处理器的发展(尤其是多核方面)，也无法利用现在的 64bit 寄存器．
+ 
+ eBPF extend 了 BPF, 将其机制大大地泛化，不止用于网络数据包的处理，而是可以 hook 在任意的系统调用上, 这样它就变成了一个几乎具有无限功能的系统。 在硬件上，它跟现代的处理器的指令集更为贴近,并且能充分利用现在数量众多的 64bit 寄存器．这样就使 JIT 编译器的产生变为了可能，大大提升了性能.
 
 ![](https://ebpf.io/static/syscall_hook-b4f7d64d4d04806a1de60126926d5f3a.png)
 
 ![](https://ebpf.io/static/hook_overview-99c69bbff092c35b9c83f00a80fed240.png)
 
+在没有　eBPF 只之前，如果我们想对内核行为进行修改，基本上就是往内核里添加代码或者通过 kernel modules 进行．这二者的门槛都不低，所以影响有限．eBPF 提供了一种新的可能性，通过普通的编程方式，去控制内核的行为，同时保证了高性能．这就是它之所以独特和具有极大潜力的主要原因．
+
+![](https://img2020.cnblogs.com/blog/1334952/202008/1334952-20200806131434176-1093013946.png)
 
 ## 如何开发 eBPF 程序
 通过 llvm 等工具，可以使用各种高级语言的 package 或者 binding 来开发 eBPF 程序.
@@ -26,22 +31,44 @@ draft: true
 
 ### 校验
 当 eBPF 程序被加载进内核之后，要先做一些程序校验工作, 比如:
-* 权限是否具备。 加载 eBPF 的程序是否有权限加载.一般来讲，程序必须得是 root 用户运行的或者有 `CAP_BPF` 权限才能加载。 如果开启了 `unprivileged eBPF`, 那么普通程序也可以加载一些功能受限的 eBPF 程序。 
+* 权限是否具备。 加载 eBPF 的程序是否有权限加载.一般来讲，程序必须得是 root 用户运行的或者有 `CAP_BPF` 权限才能加载。 如果开启了 `unprivileged eBPF`, 那么普通程序也可以加载一些功能受限的 eBPF 程序(比如不允许指针操作)。 
 * eBPF 程序是否有可能 crash
-* 不能有为未初始化的变量或者越界访问
+* 不能访问未初始化的变量或者越界访问
 * 程序大小有 limit.
 * 复杂程度有 limit. 检查程序会估算所有的执行路径以评估其复杂程度。
 * eBPF 是否会无法终止运行(比如 loop forever)
-* ...
+* 不同类型的 eBPF 程序只能访问特定类型的系统调用
 
 之所以有这么多检查，就是因为它能做的事情太多了，也太有可能造成破坏了，所以在校验阶段就尽量多做一些。
 
-### 加固
-
-### JIT编译
-将 eBPF 程序编译为机器码。 这也是 eBPF 程序的巨大优势之一，性能很高，不会给各种上层系统带来太多的性能上的 overhead.
-
 ## 数据结构
+
+### bpf()
+
+```c
+int bpf(int cmd, union bpf_attr *attr, unsigned int size);
+```
+最终 eBPF 程序都是通过这个系统调用来加载的．其中 attr 用于在 user space 和 kernel 之间传递数据
+, size 是 `bpf_attr` 的大小.
+
+### eBPF 程序类型
+目前内核支持的程序类型有:
+
+    BPF_PROG_TYPE_SOCKET_FILTER: a network packet filter
+    BPF_PROG_TYPE_KPROBE: determine whether a kprobe should fire or not
+    BPF_PROG_TYPE_SCHED_CLS: a network traffic-control classifier
+    BPF_PROG_TYPE_SCHED_ACT: a network traffic-control action
+    BPF_PROG_TYPE_TRACEPOINT: determine whether a tracepoint should fire or not
+    BPF_PROG_TYPE_XDP: a network packet filter run from the device-driver receive path
+    BPF_PROG_TYPE_PERF_EVENT: determine whether a perf event handler should fire or not
+    BPF_PROG_TYPE_CGROUP_SKB: a network packet filter for control groups
+    BPF_PROG_TYPE_CGROUP_SOCK: a network packet filter for control groups that is allowed to modify socket options
+    BPF_PROG_TYPE_LWT_*: a network packet filter for lightweight tunnels
+    BPF_PROG_TYPE_SOCK_OPS: a program for setting socket parameters
+    BPF_PROG_TYPE_SK_SKB: a network packet filter for forwarding packets between sockets
+    BPF_PROG_CGROUP_DEVICE: determine if a device operation should be permitted or not 
+
+### eBPF MAP
 
 MAP 是 eBPF 程序中最为重要的数据结构，依赖于它来存取状态。
 
@@ -49,10 +76,39 @@ MAP 是 eBPF 程序中最为重要的数据结构，依赖于它来存取状态�
 
 这个 MAP 跟我们通常理解的 map 不太一样，它分很多类型:
 
-TODO
 
+    BPF_MAP_TYPE_HASH: a hash table
+    BPF_MAP_TYPE_ARRAY: an array map, optimized for fast lookup speeds, often used for counters
+    BPF_MAP_TYPE_PROG_ARRAY: an array of file descriptors corresponding to eBPF programs; used to implement jump tables and sub-programs to handle specific packet protocols
+    BPF_MAP_TYPE_PERCPU_ARRAY: a per-CPU array, used to implement histograms of latency
+    BPF_MAP_TYPE_PERF_EVENT_ARRAY: stores pointers to struct perf_event, used to read and store perf event counters
+    BPF_MAP_TYPE_CGROUP_ARRAY: stores pointers to control groups
+    BPF_MAP_TYPE_PERCPU_HASH: a per-CPU hash table
+    BPF_MAP_TYPE_LRU_HASH: a hash table that only retains the most recently used items
+    BPF_MAP_TYPE_LRU_PERCPU_HASH: a per-CPU hash table that only retains the most recently used items
+    BPF_MAP_TYPE_LPM_TRIE: a longest-prefix match trie, good for matching IP addresses to a range
+    BPF_MAP_TYPE_STACK_TRACE: stores stack traces
+    BPF_MAP_TYPE_ARRAY_OF_MAPS: a map-in-map data structure
+    BPF_MAP_TYPE_HASH_OF_MAPS: a map-in-map data structure
+    BPF_MAP_TYPE_DEVICE_MAP: for storing and looking up network device references
+    BPF_MAP_TYPE_SOCKET_MAP: stores and looks up sockets and allows socket redirection with BPF helper functions 
 
+## 开发工具
+
+### bcc
+
+![](https://ebpf.io/static/bcc-def942c66b8c7565f0cfeab1c1017a80.png)
+
+### bpftrace
+
+![](https://ebpf.io/static/bpftrace-c53dfcbff6ea67a8f00896bd76e4c07c.png)
+
+## language library
+![](https://ebpf.io/static/go-1a1bb6f1e64b1ad5597f57dc17cf1350.png)
+![](https://ebpf.io/static/libbpf-f4991ee40f74df260dbb3e0541855044.png)
 
 ## Links
-1. 
+1. [eBPF Documentation](https://ebpf.io/what-is-ebpf#what-is-ebpf)
+2. [A thorough introduction to eBPF](https://lwn.net/Articles/740157/)
+3. [全面介绍eBPF-概念](https://www.cnblogs.com/charlieroro/p/13403672.html)
 
