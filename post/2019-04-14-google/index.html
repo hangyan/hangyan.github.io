@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Google 的经验 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="看了一篇讲谷歌公司内部的软件管理的论文，虽然对很多东西已经很熟悉了，但还是觉得有了一些新的启发。 业内对 Google 其实大多数都是一种追随者的态度。单说" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2019-04-14-google/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Google 的经验" />
+<meta property="og:description" content="看了一篇讲谷歌公司内部的软件管理的论文，虽然对很多东西已经很熟悉了，但还是觉得有了一些新的启发。 业内对 Google 其实大多数都是一种追随者的态度。单说" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2019-04-14-google/" />
+<meta property="article:published_time" content="2019-04-14T11:30:07+08:00" />
+<meta property="article:modified_time" content="2019-04-14T11:30:07+08:00" />
+<meta itemprop="name" content="Google 的经验">
+<meta itemprop="description" content="看了一篇讲谷歌公司内部的软件管理的论文，虽然对很多东西已经很熟悉了，但还是觉得有了一些新的启发。 业内对 Google 其实大多数都是一种追随者的态度。单说">
+<meta itemprop="datePublished" content="2019-04-14T11:30:07+08:00" />
+<meta itemprop="dateModified" content="2019-04-14T11:30:07+08:00" />
+<meta itemprop="wordCount" content="1188">
+
+
+
+<meta itemprop="keywords" content="技术随笔," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Google 的经验"/>
+<meta name="twitter:description" content="看了一篇讲谷歌公司内部的软件管理的论文，虽然对很多东西已经很熟悉了，但还是觉得有了一些新的启发。 业内对 Google 其实大多数都是一种追随者的态度。单说"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Google 的经验</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-04-14 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 1188 字 </span>
+          <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#single-repo">Single Repo</a></li>
+        <li><a href="#personal-time">Personal Time</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>看了一篇讲谷歌公司内部的软件管理的<a href="Https://Arxiv.Org/Abs/1702.01715">论文</a>，虽然对很多东西已经很熟悉了，但还是觉得有了一些新的启发。</p>
+<p>业内对 Google 其实大多数都是一种追随者的态度。单说最近这些年的几大热门产业，大数据由 Google 的三篇论文起始，云计算由 Kubernetes 引领热潮，
+Alphago 在 AI 领域让人震撼。Google 比其他公司更早面临了很多技术发展的瓶颈之处，解决之后在某个时机将部分成果开源出来共享给业内。技术问题大家很容易采纳学习，但能解决这些问题的软件工程模式，
+则不是那么容易学习的。</p>
+<h2 id="single-repo">Single Repo</h2>
+<p>Google 在公开这种模式之后，大部分人的态度是震惊的。因为这跟大部分人的使用模式差别很大。不管是大公司小公司，不同功能的 Repo 对应不同的功能，非常便于维护，便于划清职责。Google 的单一 Repo 模式，尤其在其规模之上，初看起来是非常难以理解的。上 Tb 的仓库数据，每天上万次的 Commit,它是如何管理的呢?</p>
+<p>问题的答案自然是一套更为复杂的 CI/CD 系统，每一次的提交，自动化的构建、自动化的测试、自动化的 Review Check 等等，有了这些之后，代码的基本质量就有了保证，其他的就靠更为严格，精确的 Code Review 流程了。之所以大部分公司无法这样做，因为基础的 CI/CD 系统从来都不是一个公司在成长过程中优先考虑的问题，功能 -&gt; 性能 -&gt; Bug, 这些问题解决的差不多了，才有考虑其他的空闲。而往往此时，开发模式已经固定下来，没有了往 Single Repo 迁移的动力。</p>
+<p>另一方面，Single Repo 带来的优势初看起来也是比较模糊的。它更多的不是一个技术上的问题，而是一个管理模式,或者企业文化上的问题。</p>
+<ol>
+<li>是否能允许员工查看几乎所有的源码 Repo</li>
+<li>如何在 Single Repo 中划分各个项目的职责边界</li>
+</ol>
+<p>对 Google 来讲，去掉这个边界是必须的。他希望员工能够熟悉整个系统，不受限于自己所主要维护的<code>组件</code>的束缚，保持一个开放的心态。每个人都有创造的天性，当他发现有一个<code>其他项目</code>的问题或者优化他很想修复，或者有更好的解决方式，没有了项目的边界，他很自然地认为可以这样做也应该这样做。这种开放的模式保证了 Google 的所有项目能受惠于公司所有人的才智,也造就了 Google 在技术和商业上的成功。</p>
+<h2 id="personal-time">Personal Time</h2>
+<p>这也是人人熟知，但几乎没有任何经常自称有 Google 背景的管理人员愿意尝试的模式。给员工留一些时间，让他做自己想做他任何想做的事。对于 Google 来说，有很多项目和改善都是来自于员工在这个时间的 Side Project。</p>
+<p>联想起最近比较火的<a href="Https://Github.Com/996icu/996.Icu">996</a>,更是一种莫大的讽刺。在资本家眼里，开发人员不是一个个有创造性地个体，而是一个个贡献时间的螺丝钉。</p>
+<p>软件行业的特殊性在于，技术本身迭代的速度太快，开发人员必须每天有专门的时间来 Catch Up。但这个 Catch Up 的效率和稳定性，每个开发人员都不一样。对于国内的资本家来说，他选择放弃信任自己的开发人员，让他们把这块时间共享给公司，虽然效率极低，但是对老板有<code>安慰剂</code>效应。而经历了资本主义黑暗时代的资本家和工人，达成了一种更为合理的制衡模式:互相有一定的信任基础,让人能均衡工作和生活的时间。</p>
+<p>人性自有其很暗之处，心存侥幸，只会反噬于自身。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-04-14
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E6%8A%80%E6%9C%AF%E9%9A%8F%E7%AC%94/">技术随笔</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2019-04-15-video-test/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">视频测试</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2019-04-12-github-language/">
+            <span class="next-text nav-default">Github 与编程语言</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

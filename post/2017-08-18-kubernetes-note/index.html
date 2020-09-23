@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Kubernetes 笔记 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="API 声明式的 API API Response 错误处理 Resource Version Version API Group Runtime config REGEX 字段格式 PATCH 与 PUT Events 交互 输出 输入 API 声明式的 API 声明式： 结果是什么 命令式: 做什么 声明式的操作，相对于命令式操" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2017-08-18-kubernetes-note/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Kubernetes 笔记" />
+<meta property="og:description" content="API 声明式的 API API Response 错误处理 Resource Version Version API Group Runtime config REGEX 字段格式 PATCH 与 PUT Events 交互 输出 输入 API 声明式的 API 声明式： 结果是什么 命令式: 做什么 声明式的操作，相对于命令式操" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2017-08-18-kubernetes-note/" />
+<meta property="article:published_time" content="2017-08-18T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-08-18T00:00:00+00:00" />
+<meta itemprop="name" content="Kubernetes 笔记">
+<meta itemprop="description" content="API 声明式的 API API Response 错误处理 Resource Version Version API Group Runtime config REGEX 字段格式 PATCH 与 PUT Events 交互 输出 输入 API 声明式的 API 声明式： 结果是什么 命令式: 做什么 声明式的操作，相对于命令式操">
+<meta itemprop="datePublished" content="2017-08-18T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2017-08-18T00:00:00+00:00" />
+<meta itemprop="wordCount" content="2208">
+
+
+
+<meta itemprop="keywords" content="架构,Kubernetes," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Kubernetes 笔记"/>
+<meta name="twitter:description" content="API 声明式的 API API Response 错误处理 Resource Version Version API Group Runtime config REGEX 字段格式 PATCH 与 PUT Events 交互 输出 输入 API 声明式的 API 声明式： 结果是什么 命令式: 做什么 声明式的操作，相对于命令式操"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Kubernetes 笔记</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-08-18 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 2208 字 </span>
+          <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#api">API</a>
+      <ul>
+        <li><a href="#声明式的-api">声明式的 API</a></li>
+        <li><a href="#api-response">API Response</a></li>
+        <li><a href="#错误处理">错误处理</a></li>
+        <li><a href="#resource-version">Resource Version</a></li>
+        <li><a href="#version">Version</a></li>
+        <li><a href="#api-group">API Group</a></li>
+        <li><a href="#runtime-config">Runtime config</a></li>
+        <li><a href="#regex">REGEX</a></li>
+        <li><a href="#字段格式">字段格式</a></li>
+        <li><a href="#patch-与-put">PATCH 与 PUT</a></li>
+      </ul>
+    </li>
+    <li><a href="#events">Events</a></li>
+    <li><a href="#交互">交互</a>
+      <ul>
+        <li><a href="#输出">输出</a></li>
+        <li><a href="#输入">输入</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <!-- toc -->
+<ul>
+<li><a href="#api">API</a>
+<ul>
+<li><a href="#%E5%A3%B0%E6%98%8E%E5%BC%8F%E7%9A%84-api">声明式的 API</a></li>
+<li><a href="#api-response">API Response</a></li>
+<li><a href="#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86">错误处理</a></li>
+<li><a href="#resource-version">Resource Version</a></li>
+<li><a href="#version">Version</a></li>
+<li><a href="#api-group">API Group</a></li>
+<li><a href="#runtime-config">Runtime config</a></li>
+<li><a href="#regex">REGEX</a></li>
+<li><a href="#%E5%AD%97%E6%AE%B5%E6%A0%BC%E5%BC%8F">字段格式</a></li>
+<li><a href="#patch-%E4%B8%8E-put">PATCH 与 PUT</a></li>
+</ul>
+</li>
+<li><a href="#events">Events</a></li>
+<li><a href="#%E4%BA%A4%E4%BA%92">交互</a>
+<ul>
+<li><a href="#%E8%BE%93%E5%87%BA">输出</a></li>
+<li><a href="#%E8%BE%93%E5%85%A5">输入</a></li>
+</ul>
+</li>
+</ul>
+<!-- tocstop -->
+<h1 id="api">API</h1>
+<h2 id="声明式的-api">声明式的 API</h2>
+<p>声明式： 结果是什么
+命令式: 做什么</p>
+<p>声明式的操作，相对于命令式操作，对于重复操作的效果是稳定的，这对于容易出现数据丢失或重复的分布式环境来说是很重要的。另外，声明式操作更容易被用户使用，可以使系统向用户隐藏实现的细节，隐藏实现的细节的同时，也就保留了系统未来持续优化的可能性</p>
+<p>kubernetes 里的 API 都是声明式,我们描述好自己想要的 resource object,kubernetes 就会不断尝试去保证这个 resource object 按我们期望的方式存在.</p>
+<h2 id="api-response">API Response</h2>
+<p>一般包含三部分</p>
+<ul>
+<li>metadata: 元数据
+<ul>
+<li>annotations: 一些元信息.给第工具用来存储和解析原信息用的.</li>
+<li>labels: act as filter</li>
+<li>namespace: resource 所处的 namespace</li>
+<li>name: resource 名字</li>
+<li>uuid: 唯一标识</li>
+<li>creationTimestamp: 创建时间</li>
+<li>deletionTimestamp: 计划删除的时间(graceful deletion)</li>
+<li>resourceVersion: 每个 resource 的内部版本,可以用来确定是否发生了变化.也用于做并发控制</li>
+<li>generation</li>
+</ul>
+</li>
+<li>spec: 具体描述,不同 resource 的属性不同。spec 里通过声明式的方式表明了期望的目标状态</li>
+<li>status: resource 的当前状态</li>
+</ul>
+<p>下面以展示一下 kubernetes node api 的 metadata 作为样例:</p>
+<p><strong>metadata</strong>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">flannel.alpha.coreos.com/backend-data</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;{&#34;VtepMAC&#34;:&#34;9a:98:da:a1:b9:5d&#34;}&#39;</span><span class="w">
+</span><span class="w">    </span><span class="nt">flannel.alpha.coreos.com/backend-type</span><span class="p">:</span><span class="w"> </span><span class="l">vxlan</span><span class="w">
+</span><span class="w">    </span><span class="nt">flannel.alpha.coreos.com/kube-subnet-manager</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;true&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">flannel.alpha.coreos.com/public-ip</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
+</span><span class="w">    </span><span class="nt">scheduler.alpha.kubernetes.io/taints</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;[]&#39;</span><span class="w">
+</span><span class="w">    </span><span class="nt">volumes.kubernetes.io/controller-managed-attach-detach</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;true&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">creationTimestamp</span><span class="p">:</span><span class="w"> </span><span class="ld">2017-07-13T09:45:11Z</span><span class="w">
+</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">beta.kubernetes.io/arch</span><span class="p">:</span><span class="w"> </span><span class="l">amd64</span><span class="w">
+</span><span class="w">    </span><span class="nt">beta.kubernetes.io/os</span><span class="p">:</span><span class="w"> </span><span class="l">linux</span><span class="w">
+</span><span class="w">    </span><span class="nt">ip</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
+</span><span class="w">    </span><span class="nt">kubeadm.alpha.kubernetes.io/role</span><span class="p">:</span><span class="w"> </span><span class="l">master</span><span class="w">
+</span><span class="w">    </span><span class="nt">kubernetes.io/hostname</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
+</span><span class="w">  </span><span class="nt">resourceVersion</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;3785002&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">selfLink</span><span class="p">:</span><span class="w"> </span><span class="l">/api/v1/nodes172.18.0.4</span><span class="w">
+</span><span class="w">  </span><span class="nt">uid</span><span class="p">:</span><span class="w"> </span><span class="l">f6fc3022-67af-11e7-b171-0017fa013946</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到 flannel 用它来存储了一些自己需要的信息.</p>
+<p>这种区分几乎适用于 REST 架构中的大多数 resource.好处:</p>
+<ul>
+<li>比一整个大的 body 结构清晰</li>
+<li>模块化,每个部分的更新迭代不会影响整个 body 的结构</li>
+<li>展示及处理方便</li>
+</ul>
+<h2 id="错误处理">错误处理</h2>
+<p>kubernetes 的错误情况下的 response 也遵循上面相同的结构.示例如下:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;Status&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;v1&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;metadata&#34;</span><span class="p">:</span> <span class="p">{},</span>
+  <span class="nt">&#34;status&#34;</span><span class="p">:</span> <span class="s2">&#34;Failure&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;message&#34;</span><span class="p">:</span> <span class="s2">&#34;pods \&#34;grafana\&#34; not found&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;reason&#34;</span><span class="p">:</span> <span class="s2">&#34;NotFound&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;details&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;grafana&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;pods&#34;</span>
+  <span class="p">},</span>
+  <span class="nt">&#34;code&#34;</span><span class="p">:</span> <span class="mi">404</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其特点是同时提供了机器可读(<code>reason</code>)以及人类可读(<code>message</code>)的消息. <code>reason</code>是对 http status code 的一种细化.</p>
+<h2 id="resource-version">Resource Version</h2>
+<p>上面所说 metadata 中的<code>resourceVersion</code>字段被 Kubernets 用来做并发控制,在更新一个 object 前,会去检查它的 resourceVersion 的值与之前存的值是否匹配,如果不匹配,则会抛出一个<code>StatusConflict</code>(http 409).</p>
+<h2 id="version">Version</h2>
+<p>一般来说 REST API 都会要求有一个版本的概念,这样在架构迭代以及功能升级时可以用不同的版本来区分,保证语义及结构清晰.Kubernetes 做的更多,它也会用 version 来区分功能的成熟度(alpha,beta&hellip;)</p>
+<ul>
+<li>alpha
+<ul>
+<li>可能包含 bug,默认关闭,不保证兼容性,适合测试使用</li>
+</ul>
+</li>
+<li>beta
+<ul>
+<li>大方向不会变,细节上可能会有修改.如果有不兼容的改动发生,会提供升级方式</li>
+</ul>
+</li>
+<li>stable
+<ul>
+<li>可稳定使用</li>
+</ul>
+</li>
+</ul>
+<h2 id="api-group">API Group</h2>
+<p>API 分组,一般 API 都会分为核心的对 Resource 进行操作的 API 以及其他零碎的 API.</p>
+<p>一般 URL 格式为: <code>GROUP/VERSION</code>.GROUP 的名字建议的格式为 domin name 的格式,比如:
+<code>widget.mycompany.com</code></p>
+<h2 id="runtime-config">Runtime config</h2>
+<p>kubernets 支持非常多的参数(已经有很多人在网上吐槽了..),结合上面的版本以及分组,kube-api 有很多参数可以用来调控这些.比如禁掉一些 Group,禁掉一些 Version 的 API.一个完全可插拔的 API Server.</p>
+<h2 id="regex">REGEX</h2>
+<p>详细定义好各个 resource name 的<code>REGEX</code>要求,比如<code>namespace</code>,<code>service</code>中不能有点(<code>.</code>),只能小写(DNS 兼容).</p>
+<h2 id="字段格式">字段格式</h2>
+<p>像 date,timestamp 等这种字段要保证在所有 API 中使用用一种格式</p>
+<h2 id="patch-与-put">PATCH 与 PUT</h2>
+<p>一般来说 PUT 应该发送 resource 的整个描述去 replace.PATCH 只发送需要更新的部分.但一般的场景中遵循此规则的应该不多,大多是只用一个 PUT,即用于整个更新也用于部分更新.</p>
+<p>kubernetes 做的更多,在 PATCH 操作,它支持几种不同的操作语义</p>
+<ul>
+<li>
+<p>Json Patch: Content-Type: application/json-patch+json</p>
+<ul>
+<li>定义了需要做的操作,示例如下:
+<ul>
+<li><code>{&quot;op&quot;: &quot;add&quot;, &quot;path&quot;: &quot;/a/b/c&quot;, &quot;value&quot;: [ &quot;foo&quot;, &quot;bar&quot; ]}</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Merge Patch: Content-Type: application/merge-patch+jso</p>
+<ul>
+<li>objects 类的是合并,lists 类的是 replace</li>
+</ul>
+</li>
+<li>
+<p>Strategic Merge Patch: Content-Type: application/strategic-merge-patch+json</p>
+<ul>
+<li>支持各种自定义操作的 patch</li>
+</ul>
+</li>
+</ul>
+<h1 id="events">Events</h1>
+<p>时间也是系统设计里非常重要的一环.发生了上面,什么时间,谁操作的,结果是什么,不仅可以用系统内部问题的排查,也可以作为产品提供给其他用户.</p>
+<p>Kubernetes 对一些重复性的时间做了累积,原本需要重复显示 N 次的事件现在用一个计数器来代替.这样可以减少数据存储和系统负载.</p>
+<h1 id="交互">交互</h1>
+<h2 id="输出">输出</h2>
+<p>Unix 有一个非常出名的设计哲学:&ldquo;一切皆文件&rdquo;,其优势在于，利用管道及其他工具，无数的小工具(<code>find</code>,<code>grep</code>,<code>awk</code>)等可以方便地协作以完成非常复杂的任务。各个工具均支持<code>plain text</code>作为输入以及输出。当然一切皆文件也有一个坏处，开源软件由不同的人写就，没有文本格式的约束，不同的工具均需要一定的文本格式的要求。工具越多，格式也越杂乱，需要人为记忆的东西也越多。例如很多 service 类工具的配置文件格式的差异，不同命令输出的差异等等</p>
+<p>kubernetes 由很多组件构成，提供 API 的服务，命令行的访问工具(<code>kubetctl</code>)等等。类似于<code>docker cli</code>及<code>docker daemon</code>，<code>kubectl</code>也是从<code>kube-api-server</code>来读取信息展示给用户。我觉得 kubetcl 做的比较好的一点就是，它将数据的内部结构和展示二者分开了。示例如下:</p>
+<p>获取节点的简单信息，不加任何参数:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">[</span>root@172 alauda<span class="o">]</span><span class="c1"># kubectl get no</span>
+NAME         STATUS         AGE
+172.18.0.4   Ready,master   38d
+<span class="o">[</span>root@172 alauda<span class="o">]</span><span class="c1">#</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>指定输出 yaml 格式的详情</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nn">...</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">externalID</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
+</span><span class="w">  </span><span class="nt">podCIDR</span><span class="p">:</span><span class="w"> </span><span class="m">10.1.0.0</span><span class="l">/24</span><span class="w">
+</span><span class="w">  </span><span class="nt">providerID</span><span class="p">:</span><span class="w"> </span><span class="l">azure:////2882C846-5C01-BE47-B19A-4C5DB5F26348</span><span class="w">
+</span><span class="w"></span><span class="nt">status</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">addresses</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">LegacyHostIP</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">InternalIP</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">Hostname</span><span class="w">
+</span><span class="w">  </span><span class="nt">allocatable</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">alpha.kubernetes.io/nvidia-gpu</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;0&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;16&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l">57710432Ki</span><span class="w">
+</span><span class="w">    </span><span class="nt">pods</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;110&#34;</span><span class="w">
+</span><span class="w"></span><span class="nn">...</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>指定输出 json 格式的详情</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+    <span class="nt">&#34;apiVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;v1&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;Node&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;metadata&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;annotations&#34;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;flannel.alpha.coreos.com/backend-data&#34;</span><span class="p">:</span> <span class="s2">&#34;{\&#34;VtepMAC\&#34;:\&#34;9a:98:da:a1:b9:5d\&#34;}&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;flannel.alpha.coreos.com/backend-type&#34;</span><span class="p">:</span> <span class="s2">&#34;vxlan&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;flannel.alpha.coreos.com/kube-subnet-manager&#34;</span><span class="p">:</span> <span class="s2">&#34;true&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;flannel.alpha.coreos.com/public-ip&#34;</span><span class="p">:</span> <span class="s2">&#34;172.18.0.4&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;scheduler.alpha.kubernetes.io/taints&#34;</span><span class="p">:</span> <span class="s2">&#34;[]&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;volumes.kubernetes.io/controller-managed-attach-detach&#34;</span><span class="p">:</span> <span class="s2">&#34;true&#34;</span>
+        <span class="p">},</span>
+        <span class="nt">&#34;creationTimestamp&#34;</span><span class="p">:</span> <span class="s2">&#34;2017-07-13T09:45:11Z&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;labels&#34;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;beta.kubernetes.io/arch&#34;</span><span class="p">:</span> <span class="s2">&#34;amd64&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;beta.kubernetes.io/os&#34;</span><span class="p">:</span> <span class="s2">&#34;linux&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;ip&#34;</span><span class="p">:</span> <span class="s2">&#34;172.18.0.4&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;kubeadm.alpha.kubernetes.io/role&#34;</span><span class="p">:</span> <span class="s2">&#34;master&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;kubernetes.io/hostname&#34;</span><span class="p">:</span> <span class="s2">&#34;172.18.0.4&#34;</span>
+        <span class="p">},</span>
+        <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;172.18.0.4&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;resourceVersion&#34;</span><span class="p">:</span> <span class="s2">&#34;3785243&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;selfLink&#34;</span><span class="p">:</span> <span class="s2">&#34;/api/v1/nodes172.18.0.4&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;uid&#34;</span><span class="p">:</span> <span class="s2">&#34;f6fc3022-67af-11e7-b171-0017fa013946&#34;</span>
+    <span class="p">},</span>
+    <span class="nt">&#34;spec&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;externalID&#34;</span><span class="p">:</span> <span class="s2">&#34;172.18.0.4&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;podCIDR&#34;</span><span class="p">:</span> <span class="s2">&#34;10.1.0.0/24&#34;</span><span class="p">,</span>
+        <span class="nt">&#34;providerID&#34;</span><span class="p">:</span> <span class="s2">&#34;azure:////2882C846-5C01-BE47-B19A-4C5DB5F26348&#34;</span>
+    <span class="p">},</span>
+    <span class="nt">&#34;....&#34;</span><span class="p">:</span> <span class="s2">&#34;....&#34;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>默认的输出格式比较类似于 linux 上<code>ls</code>的默认输出。但也可以通过指定参数获取 json 或 yaml 格式的信息。前者适用于展示，后者适用于处理(管道).<code>ls</code>的输出目前既用于展示，也会用于输出。鉴于 json 目前的流行程度及简洁性，设想 plan9 上这些小工具均内置于对 json 或者 yaml 的支持，那么在利用管道及其他工具做数据处理的时候会大为简便，并且不易出错。</p>
+<h2 id="输入">输入</h2>
+<p>kubectl 支持从一个描述文件里创建一个 resource(yaml 或 json 格式).因为 API 结构的一致,kubernetes 里面几乎所有的资源都可以通过一个<code>kubectl create -f</code>来创建出来. 因为每种 resource 都有大体相同的结构:
+Kind,Version,Spec 等等</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2017-08-18
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E6%9E%B6%E6%9E%84/">架构</a>
+          <a href="/tags/kubernetes/">Kubernetes</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2017-08-22-namecoin/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Namecoin</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2017-08-12-blockchain/">
+            <span class="next-text nav-default">Blockchain</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

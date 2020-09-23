@@ -1,0 +1,760 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>技术 on 工业革命</title>
+    <link>http://yanhang.me/categories/%E6%8A%80%E6%9C%AF/</link>
+    <description>Recent content in 技术 on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 10 Sep 2020 16:01:54 +0000</lastBuildDate><atom:link href="http://yanhang.me/categories/%E6%8A%80%E6%9C%AF/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>统信 UOS 究竟咋样</title>
+      <link>http://yanhang.me/post/2020-09-10-uos/</link>
+      <pubDate>Thu, 10 Sep 2020 16:01:54 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-09-10-uos/</guid>
+      <description>统信 UOS 是今年国产化浪潮中比较出风头的一个做国产操作系统的公司。这几天换掉了我的 Manjaro 装上了 UOS 体验了一下。总体来说，可以打七八十分吧。 单说这个分数</description>
+    </item>
+    
+    <item>
+      <title>Docker 私有 Registry 的镜像 GC 问题</title>
+      <link>http://yanhang.me/post/2020-09-07-docker-registry-gc/</link>
+      <pubDate>Mon, 07 Sep 2020 18:13:47 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-09-07-docker-registry-gc/</guid>
+      <description>需求 一个轻量级的 docker registry 方案讨论 Harbor 的功能丰富，但是过于重量级了，与其他平台集成并不方便。Portus 类似。这一类产品都比较侧重 UI 和认证，一般都带</description>
+    </item>
+    
+    <item>
+      <title>BlueTrace与健康码</title>
+      <link>http://yanhang.me/post/2020-07-23-blue-trace/</link>
+      <pubDate>Thu, 23 Jul 2020 16:32:10 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-07-23-blue-trace/</guid>
+      <description>疫情之下，各国都在不断地调整自己的防疫政策。中国的模式已经证明了其可能是最有效的方式之一，但因为种种原因大部分国家难以效仿和接受。从技术层面</description>
+    </item>
+    
+    <item>
+      <title>给 Kubernetes Lens AppImage 添加 Desktop Entry</title>
+      <link>http://yanhang.me/post/2020-04-29-linux-lens-icon/</link>
+      <pubDate>Wed, 29 Apr 2020 22:13:02 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-04-29-linux-lens-icon/</guid>
+      <description>本文记录如何为 Kuberntes Lens 的 Linux 版本的 AppImage 手动创建一个 Desktop Entry 以及生成 Icon 手动创建 Desktop Entry 创建一个 desktop 文件，任意位置均可。假设名字为 lens.desktop: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 [Desktop</description>
+    </item>
+    
+    <item>
+      <title>故国有明</title>
+      <link>http://yanhang.me/post/2020-04-09-ming/</link>
+      <pubDate>Thu, 09 Apr 2020 21:49:55 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-04-09-ming/</guid>
+      <description>前一阵子读《南明史》，颇能理解之前人所说读此书的痛苦之处。自古权臣相斗，未有如南明这般不堪。与蜀汉相比，恰如一个天上，一个地下。另外，作为后</description>
+    </item>
+    
+    <item>
+      <title>Linux 桌面的失败</title>
+      <link>http://yanhang.me/post/2020-04-04-linux-desktop/</link>
+      <pubDate>Sat, 04 Apr 2020 21:29:54 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-04-04-linux-desktop/</guid>
+      <description>之所以说它失败，是指从功利的角度来看。不管是市场占有率，还是软件的可用性，用户友好性，以及生态上，都是失败的。直到2020的今天，以 Ubuntu 为代表</description>
+    </item>
+    
+    <item>
+      <title>Kubernetes in 2020: Let&#39;s Forget About Kubernetes</title>
+      <link>http://yanhang.me/post/2020-01-03-kubernetes-in-2020/</link>
+      <pubDate>Fri, 03 Jan 2020 16:07:42 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-01-03-kubernetes-in-2020/</guid>
+      <description>犹记得 Docker 横空出世的时候，像明星一般，吸引了无数的人去研究它，使用它，推广他。技术的狂热让我们隐隐约约觉得它似乎解决了无数的业内问题，即使它实</description>
+    </item>
+    
+    <item>
+      <title>小城市的公共空间</title>
+      <link>http://yanhang.me/post/2019-11-17-public-city/</link>
+      <pubDate>Sun, 17 Nov 2019 17:41:58 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-11-17-public-city/</guid>
+      <description>每次从老家的小城市准备坐飞机离开，我都会先去找一个咖啡馆呆着消磨时间。小城市咖啡馆数量并不多，比较有格调的更少，我发现有一个咖啡馆无论是在规</description>
+    </item>
+    
+    <item>
+      <title>AI的困境</title>
+      <link>http://yanhang.me/post/2019-10-09-end-of-ai/</link>
+      <pubDate>Wed, 09 Oct 2019 15:36:44 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-10-09-end-of-ai/</guid>
+      <description>大多数人都知道AI很火，而且它有泡沫，市场有盲从的部分。有利的一面是，它催生了很多应用，虽然还算不上智能，但确实依靠大数据让人们的生活更加便</description>
+    </item>
+    
+    <item>
+      <title>不成文章(1)</title>
+      <link>http://yanhang.me/post/2019-09-25-student-union/</link>
+      <pubDate>Wed, 25 Sep 2019 23:40:50 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-09-25-student-union/</guid>
+      <description>学生会是大学最为肮脏的机构，每一个参加过的人都要么太蠢，要么太假 罗永浩是罪犯，应该抓监狱里 李彦宏也是 张一鸣没犯罪，但道德上最坏 抖音 = 毒品 拍照</description>
+    </item>
+    
+    <item>
+      <title>Git 与 GitOps</title>
+      <link>http://yanhang.me/post/2019-09-12-git/</link>
+      <pubDate>Thu, 12 Sep 2019 13:02:41 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-09-12-git/</guid>
+      <description>伴随着 GitOps 的盛行， Git 本身的影响力也在逐渐增大。从最开始只是为了管理 linux kernel, 到支撑起了 Github 这个最大的软件社区，Git 本身的应用范畴早已超出了 vcs 本身，我</description>
+    </item>
+    
+    <item>
+      <title>GitOps</title>
+      <link>http://yanhang.me/post/2019-09-11-gitops/</link>
+      <pubDate>Wed, 11 Sep 2019 16:44:26 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-09-11-gitops/</guid>
+      <description>Kubernetes 确定了统治地位之后，Service Mesh 和 GitOps 也渐渐火热起来。Service Mesh 领域内 , Istio 已经逐渐占了上风，但 GitOps 扔未有统治性的工具出现，尚处于早期</description>
+    </item>
+    
+    <item>
+      <title>Raft 协议笔记</title>
+      <link>http://yanhang.me/post/2019-09-10-raft-notes/</link>
+      <pubDate>Tue, 10 Sep 2019 14:51:05 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-09-10-raft-notes/</guid>
+      <description>关注于 Raft 可能更多是因为 kubernetes/etcd 的原因，二者似乎变成了 raft 最大的客户，时不时地重新理解一下这个协议还是很有必要的。 之所以这样讲，是因为分布式协议本身就</description>
+    </item>
+    
+    <item>
+      <title>他</title>
+      <link>http://yanhang.me/post/2019-09-08-him/</link>
+      <pubDate>Sun, 08 Sep 2019 11:45:53 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-09-08-him/</guid>
+      <description>正在看《谷登堡星汉璀璨》，讲听觉和视觉的部分，突然想起来我之前形成的一个观念: 人们之所以喜欢引述他的话，是因为某种更为深层的文化原因，而不只</description>
+    </item>
+    
+    <item>
+      <title>Oberon操作系统</title>
+      <link>http://yanhang.me/post/2019-09-04-oberon/</link>
+      <pubDate>Wed, 04 Sep 2019 21:25:35 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-09-04-oberon/</guid>
+      <description>文章链接: Oberon – The Overlooked Jewel 很多行业以及技术在早期都呈现出了一种百花争鸣的态势，然后到了成熟期一般都只是几家公司或者技术在互相竞争。操作系统也是如此</description>
+    </item>
+    
+    <item>
+      <title>失败博物馆 - Hadoop</title>
+      <link>http://yanhang.me/post/2019-08-31-hadoop/</link>
+      <pubDate>Sat, 31 Aug 2019 13:35:37 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-08-31-hadoop/</guid>
+      <description>Hadoop 严格来说并不算完全失败了，不像 Mesos 那样，而是人们期待它成为一个大象， 而它却变成了一只兔子。 我刚毕业就开始接触Hadoop, 当时它基本上就是大</description>
+    </item>
+    
+    <item>
+      <title>科大讯飞</title>
+      <link>http://yanhang.me/post/2019-08-31-iflytech/</link>
+      <pubDate>Sat, 31 Aug 2019 13:01:56 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-08-31-iflytech/</guid>
+      <description>讯飞并不是一个很坏的企业，它只是太懒了。 国内的互联网巨头基本上没有干净的，无不是带着一身罪恶爬到了现在的位置。讯飞是一个巨头，因为他在语音行</description>
+    </item>
+    
+    <item>
+      <title>猎豹随感</title>
+      <link>http://yanhang.me/post/2019-08-30-liebao/</link>
+      <pubDate>Fri, 30 Aug 2019 15:52:25 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-08-30-liebao/</guid>
+      <description>突然想起来应该记录一下这段工作经历。 总共在猎豹呆的时间也就一个月。当时是有点着急，但毕竟是自己选的。所以一般的问题也没什么可说的。但是有两个</description>
+    </item>
+    
+    <item>
+      <title>Rick and Morty</title>
+      <link>http://yanhang.me/post/2019-08-29-rick-and-morty/</link>
+      <pubDate>Thu, 29 Aug 2019 11:06:59 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-08-29-rick-and-morty/</guid>
+      <description>我给很多人推荐过这部动画片。可能也是唯一一个我一直在不遗余力地给很多人推荐的艺术作品。 曾经我也跟很多人一样，在追《马男》，看似颓废却又奋进，</description>
+    </item>
+    
+    <item>
+      <title>KARL, ASLR, KASLR</title>
+      <link>http://yanhang.me/post/2019-08-27-karl-aslr/</link>
+      <pubDate>Tue, 27 Aug 2019 11:11:23 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-08-27-karl-aslr/</guid>
+      <description>前段时间在零星地看一些关于 unikerel 的文章。里面提到的一些安全相关的技术非常有趣，就又开始转向 kernel 安全这部分。本文主要探讨的是 KARL, KASLR 以及 ASLR 相关的技术。 安</description>
+    </item>
+    
+    <item>
+      <title>Cloud Native Artifact Registries</title>
+      <link>http://yanhang.me/post/2019-08-26-cnar/</link>
+      <pubDate>Mon, 26 Aug 2019 13:46:42 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-08-26-cnar/</guid>
+      <description>Helm3 的 design proposal 里面介绍了对于Chart Repo 融合到 Distribution 的提议。目前已经有了实验的 demo，理论上并没有什么问题。因为 Distribution的设计里并不</description>
+    </item>
+    
+    <item>
+      <title>失败博物馆 - Mesos/Marathon</title>
+      <link>http://yanhang.me/post/2019-08-23-mesos-marathon/</link>
+      <pubDate>Fri, 23 Aug 2019 10:28:40 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-08-23-mesos-marathon/</guid>
+      <description>Mesos/Marathon 的失败，怎么说，太过典型了。如教科书一般，清晰的不能再清晰。 首先，它流行的时候，是因为大家没得选。一个还在蹒跚学步阶段的 Kubernetes 就开始将它打的节</description>
+    </item>
+    
+    <item>
+      <title>失败博物馆 - Jenkins</title>
+      <link>http://yanhang.me/post/2019-08-22-fuck-jenkins/</link>
+      <pubDate>Thu, 22 Aug 2019 17:02:37 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-08-22-fuck-jenkins/</guid>
+      <description>我想记录一下工作中使用过的软件里的一些在设计上比较失败的。因为它们，工作中多了很多痛苦。 Jenkins 便是其中之一。跟很多软件一样，Jenkins 在商业</description>
+    </item>
+    
+    <item>
+      <title>数据库与操作系统</title>
+      <link>http://yanhang.me/post/2019-08-22-db-os/</link>
+      <pubDate>Thu, 22 Aug 2019 11:21:52 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-08-22-db-os/</guid>
+      <description>数据库一般认为是一种系统软件。而操作系统处于更底层的位置。这是一种通常的认知。 Unix 的一切皆文件的设计思想，从一定程度上来讲，表明了操作系统内部</description>
+    </item>
+    
+    <item>
+      <title>What is Helm Doing Wrong and How a Helm3 Controller Can Fix It</title>
+      <link>http://yanhang.me/post/2019-08-03-helm-controller/</link>
+      <pubDate>Sat, 03 Aug 2019 11:26:30 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-08-03-helm-controller/</guid>
+      <description>Helm is big success for sure, it&amp;rsquo;s nearly the standard application package format in kubernetes.You only need to provide some metadata about your application&amp;rsquo;s name, version, description….Helm can help you package up and upload to a central or custom chart repo.Just like npm,rpm,docker image, or whatever other package management system. About a year ago,</description>
+    </item>
+    
+    <item>
+      <title>古典精神的衰落</title>
+      <link>http://yanhang.me/post/2019-08-02-classic/</link>
+      <pubDate>Fri, 02 Aug 2019 15:20:06 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-08-02-classic/</guid>
+      <description>最近看了两部电影，《哪吒》和《疾速备战》。 《哪吒》从技术成熟度上来说，比之前的都好多的。导演似乎是周星驰的粉丝，充足的笑点吸引了不少小孩子。</description>
+    </item>
+    
+    <item>
+      <title>《疑犯追踪》的有趣小知识</title>
+      <link>http://yanhang.me/post/2019-07-27-poi/</link>
+      <pubDate>Sat, 27 Jul 2019 21:55:03 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-07-27-poi/</guid>
+      <description>最近重温了一下《疑犯追踪》，有了一些新的感悟。感悟难以描述，但是一些有趣的知识可以记录下来。 气动管 以利亚有段时间利用气动管来传递信息，这种古</description>
+    </item>
+    
+    <item>
+      <title>Sinfonia: a new paradigm for building scalable distributed systems</title>
+      <link>http://yanhang.me/post/2019-07-24-sinfonia-paper/</link>
+      <pubDate>Wed, 24 Jul 2019 17:22:10 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-07-24-sinfonia-paper/</guid>
+      <description>论文链接: Sinfonia: a new paradigm for building scalable distributed systems Sinfornia 像是一个构建分布式系统的 SDK 。目前的市面上分布式系统已经非常多了，比如 etcd, zookeeper, ceph 等等。但他们都是分别实现的，彼此之间</description>
+    </item>
+    
+    <item>
+      <title>垃圾分类模拟游戏设定</title>
+      <link>http://yanhang.me/post/2019-07-19-waste-sorting-game/</link>
+      <pubDate>Fri, 19 Jul 2019 16:50:06 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-07-19-waste-sorting-game/</guid>
+      <description>技术条件 Steam 上已经有无数的各种模拟器了，技术上实现的难度不大 可能的类似游戏 垃圾模拟器 冰霜朋克 优势 垃圾分类是全面话题，容易吸引云玩家以及游戏圈之</description>
+    </item>
+    
+    <item>
+      <title>Golang FAQ</title>
+      <link>http://yanhang.me/post/2019-07-19-golang-faq/</link>
+      <pubDate>Fri, 19 Jul 2019 00:11:33 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-07-19-golang-faq/</guid>
+      <description>文档的可得性 语言设计细节 可读性 Generic types Error 与 Exception assertions static link Tips unused imports Golang FAQ 是一篇比较好的关于 Golang 设计的文档。比较琐碎，但是解释了很多 Golang 设计的权衡之处。没有语言是</description>
+    </item>
+    
+    <item>
+      <title>Common Index</title>
+      <link>http://yanhang.me/post/2019-07-16-common-index/</link>
+      <pubDate>Tue, 16 Jul 2019 16:20:10 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-07-16-common-index/</guid>
+      <description>这几天在重温 《疑犯追踪》，作为一个近科幻的代表作，其描绘的社会是如此地贴近现实，让人想到时都会有一种无力感。在技术社区的种种讨论中，总会有零</description>
+    </item>
+    
+    <item>
+      <title>代码与注释</title>
+      <link>http://yanhang.me/post/2019-07-14-code-and-comments/</link>
+      <pubDate>Sun, 14 Jul 2019 21:14:49 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-07-14-code-and-comments/</guid>
+      <description>代码应该拥有良好的注释一直是业界共识，毕竟，在可预见的未来里，阅读代码的主要还是人。所有的语言都支持注释，有的拥有额外的注释提取工具及格式规</description>
+    </item>
+    
+    <item>
+      <title>喜剧</title>
+      <link>http://yanhang.me/post/2019-06-27-comedy-tv/</link>
+      <pubDate>Thu, 27 Jun 2019 14:43:46 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-06-27-comedy-tv/</guid>
+      <description>平时里基本上把《老友记》当作一个背景音。因为看的次数多，基本上听对话也都知道具体的画面是什么。作为一个电视剧来说，《老友记》是独一无二的，在</description>
+    </item>
+    
+    <item>
+      <title>Golang 1.9 Release Note</title>
+      <link>http://yanhang.me/post/2019-05-27-golang-release-note/</link>
+      <pubDate>Mon, 27 May 2019 22:28:38 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-05-27-golang-release-note/</guid>
+      <description>今天在翻存在 Pocket 里的文章，翻到一篇 Golang 1.9 的 Release Note。不得不说，Golang 在文档化上做的相当不错。对比其他语言来说，人们关注于每个版本的更新也</description>
+    </item>
+    
+    <item>
+      <title>作为公共组件的 apiserver</title>
+      <link>http://yanhang.me/post/2019-05-24-apiserver/</link>
+      <pubDate>Fri, 24 May 2019 15:54:47 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-05-24-apiserver/</guid>
+      <description>PDF 文件在此: apiserver 起因是因为一个要做一个新的项目，在综合考量 kubernetes 的各个库之后，发现 kubernetes 已经从主项目中把很多可以复用的项目都单独移出来了。而且包含了很</description>
+    </item>
+    
+    <item>
+      <title>营销改变了什么</title>
+      <link>http://yanhang.me/post/2019-05-09-marketing-all/</link>
+      <pubDate>Thu, 09 May 2019 17:28:18 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-05-09-marketing-all/</guid>
+      <description>起因是在刷微博热榜的时候看到的一个: 看到的时候，我唯一的感觉就是: 恶心。 这里面散发的不是一种因为热爱产品与创造的激情，而是一种为了销量而进行</description>
+    </item>
+    
+    <item>
+      <title>在 Kubernetes 中安装 Gitlab</title>
+      <link>http://yanhang.me/post/2019-05-08-install-gitlab/</link>
+      <pubDate>Wed, 08 May 2019 13:36:33 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-05-08-install-gitlab/</guid>
+      <description>现在很少写这种安装类的博客了。之前在公司部署了一个 Gitlab 作为日常使用，因为步骤比较繁琐。在此把零零散散的资料汇聚一下，记录一个比较完整的安装过程</description>
+    </item>
+    
+    <item>
+      <title>在 Gitlab 中使用 Danger</title>
+      <link>http://yanhang.me/post/2019-05-07-gitlab-danger/</link>
+      <pubDate>Tue, 07 May 2019 23:23:52 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-05-07-gitlab-danger/</guid>
+      <description>Gitlab 社区版的 CI 功能非常好用，能够很方便的地做到代码的 lint/build/test/等等。不过社区版在多人协作上(比如 Merge Request)上阉割</description>
+    </item>
+    
+    <item>
+      <title>jekyll 的问题</title>
+      <link>http://yanhang.me/post/2019-05-05-jekyll/</link>
+      <pubDate>Sun, 05 May 2019 13:14:29 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-05-05-jekyll/</guid>
+      <description>考虑良久，决定将 Blog 迁移到 hexo。整个过程比想象的简单很多，也看了下二者的异同。相对于来讲，我觉得 hexo 在设计上比 jekyll 更为优良一些，更适合作为一个</description>
+    </item>
+    
+    <item>
+      <title>如何防止代码变成 SHIT</title>
+      <link>http://yanhang.me/post/2019-05-01-great-code/</link>
+      <pubDate>Wed, 01 May 2019 19:03:04 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-05-01-great-code/</guid>
+      <description>最近发现之前写过的很多项目，不管是 python/go/cpp 的，最终回看起来代码都变的很难看，尤其是多人合作的时候。 这是一个很头疼的问题。自己平时很在意这个，但是代</description>
+    </item>
+    
+    <item>
+      <title>手机的刘海</title>
+      <link>http://yanhang.me/post/2019-04-27-liuhai/</link>
+      <pubDate>Sat, 27 Apr 2019 16:11:34 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-04-27-liuhai/</guid>
+      <description>我即使是死了,钉在在棺材里了,也要在墓里,用这腐朽的声带喊出: 刘海真丑 &amp;ndash; 鲁迅 买 XR 的时候，觉得续航好+LCD，刘海说不定用一段时间之后就习惯了</description>
+    </item>
+    
+    <item>
+      <title>JFFS3 文件系统</title>
+      <link>http://yanhang.me/post/2019-04-20-jffs3/</link>
+      <pubDate>Sat, 20 Apr 2019 22:35:17 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-04-20-jffs3/</guid>
+      <description>闪存对文件系统的影响 闪存转换层 JFFS3 JFFS2 的问题 Index 的存储 The Journal Garbage collection Superblock Links 看完了闪存,继续看文件系统。网上搜了一圈，发现都是讲 Andriod 的目录结构的，讲文件系统本</description>
+    </item>
+    
+    <item>
+      <title>闪存</title>
+      <link>http://yanhang.me/post/2019-04-18-flash/</link>
+      <pubDate>Thu, 18 Apr 2019 21:01:13 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-04-18-flash/</guid>
+      <description>基本定义 NOR / NAND 写/擦除 eMMC / UFS Links 本来看华为新弄了 FS 和编译器，想学习下。但是目前似乎放出来的技术资料并不多，就先做下技术储备。先研究下他们做这个</description>
+    </item>
+    
+    <item>
+      <title>Google 的经验</title>
+      <link>http://yanhang.me/post/2019-04-14-google/</link>
+      <pubDate>Sun, 14 Apr 2019 11:30:07 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-04-14-google/</guid>
+      <description>看了一篇讲谷歌公司内部的软件管理的论文，虽然对很多东西已经很熟悉了，但还是觉得有了一些新的启发。 业内对 Google 其实大多数都是一种追随者的态度。单说</description>
+    </item>
+    
+    <item>
+      <title>Github 与编程语言</title>
+      <link>http://yanhang.me/post/2019-04-12-github-language/</link>
+      <pubDate>Fri, 12 Apr 2019 15:22:54 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-04-12-github-language/</guid>
+      <description>一个语言的流行程度与多种因素相关,语法的简易性，package 的数量，性能，适用的场景等等。Perl 因为语法的怪异而逐渐无人问津，ROR因性</description>
+    </item>
+    
+    <item>
+      <title>手机的竞争力</title>
+      <link>http://yanhang.me/post/2019-04-11-mobile-phone-war/</link>
+      <pubDate>Thu, 11 Apr 2019 22:31:24 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-04-11-mobile-phone-war/</guid>
+      <description>手机圈已经快进入寡头时代，但仍有众多竞争者在这个舞台上，就连锤子都还没死透。各家为了吸引消费者在硬件以及服务上争奇斗艳，无所不用其极。 芯片，</description>
+    </item>
+    
+    <item>
+      <title>The useless web</title>
+      <link>http://yanhang.me/post/2019-04-10-the-useless-web/</link>
+      <pubDate>Wed, 10 Apr 2019 18:41:54 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-04-10-the-useless-web/</guid>
+      <description>早期互联网的美妙之处在于，它真的是万维网,由无数的由个人或者公司搭建的互联网。没有如此大公司固定平台的限制，这些网站充满了无数的可能性。 之前</description>
+    </item>
+    
+    <item>
+      <title>Docker BuildKit 介绍</title>
+      <link>http://yanhang.me/post/2019-04-08-buildkit/</link>
+      <pubDate>Mon, 08 Apr 2019 16:22:48 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-04-08-buildkit/</guid>
+      <description>为什么需要 BuildKit BuildKit 长什么样子 LLB 有用的新功能 Links 对于 Docker 和 Kubernetes 来说，在自身发展的壮大过程中，都会经历一个因为功能不断增加导致的软件结构庞杂的问题。对于 Kubernetes</description>
+    </item>
+    
+    <item>
+      <title>更安全的 DNS</title>
+      <link>http://yanhang.me/post/2019-04-04-more-secure-dns/</link>
+      <pubDate>Thu, 04 Apr 2019 20:56:03 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-04-04-more-secure-dns/</guid>
+      <description>主要问题 解决方法 使用受信任的 DNS 解析服务器 DoH QNAME minimization 其他问题 Links HTTPS 已经越来越普及了，包括 Github Pages 都可以很方便的集成。浏览器也开始通过各种手段来促进网站都</description>
+    </item>
+    
+    <item>
+      <title>金庸，聂隐娘和顾准</title>
+      <link>http://yanhang.me/post/2019-04-04-jinyong-guzhun-nieyinniang/</link>
+      <pubDate>Thu, 04 Apr 2019 11:33:11 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-04-04-jinyong-guzhun-nieyinniang/</guid>
+      <description>版权归作者所有，任何形式转载请联系作者。 作者：涯余（来自豆瓣） 来源：https://www.douban.com/review/972180</description>
+    </item>
+    
+    <item>
+      <title>社会学家应该做什么</title>
+      <link>http://yanhang.me/post/2019-04-04-what-should-a-sociologist-do/</link>
+      <pubDate>Thu, 04 Apr 2019 11:27:57 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-04-04-what-should-a-sociologist-do/</guid>
+      <description>近年来公共事件频发，传媒手段的革新以及民众权利意识的觉醒是其一，其二便是信息流上的关键节点:一些特殊的个人。目前，自媒体以及官方占据主要位置</description>
+    </item>
+    
+    <item>
+      <title>王垠其人</title>
+      <link>http://yanhang.me/post/2019-03-29-wangyin/</link>
+      <pubDate>Fri, 29 Mar 2019 13:23:49 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-03-29-wangyin/</guid>
+      <description>大学换了笔记本后，不知道什么原因当时装的 win7 老是自己蓝屏。于是，我做了一个愉快的决定，完全换到 linux。促成这一切的，是退学了的王垠写了的一</description>
+    </item>
+    
+    <item>
+      <title>Emacs is drugs</title>
+      <link>http://yanhang.me/post/2019-03-28-emacs-is-drugs/</link>
+      <pubDate>Thu, 28 Mar 2019 21:06:19 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-03-28-emacs-is-drugs/</guid>
+      <description>每个程序员都会遇到这一天，他要做一个决定，vim 还是 emacs,还是 IDE。 近来一直主要用 Golang, 早已不再年轻的我自然是选择功能强大的 Goland, 日常工作无</description>
+    </item>
+    
+    <item>
+      <title>istio</title>
+      <link>http://yanhang.me/post/2019-03-25-istio/</link>
+      <pubDate>Mon, 25 Mar 2019 19:16:44 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-03-25-istio/</guid>
+      <description>整个容器化浪潮诞生了三个胜利者,分别是 docker, kubernetes, istio。 一个额外的胜利者是 golang。 Docker docker 的作用是： 用标准语法描述出一个服务的静态/运行时环</description>
+    </item>
+    
+    <item>
+      <title>煎蛋网</title>
+      <link>http://yanhang.me/post/2019-03-21-jandan/</link>
+      <pubDate>Thu, 21 Mar 2019 23:20:25 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-03-21-jandan/</guid>
+      <description>互联网已经诞生了三十年了。 从 hackernews 的反馈来看，对于现状的不满相当之多。科技公司更容易成为世界上最庞大的公司之一，未来也更是如此。我们有了更加高效</description>
+    </item>
+    
+    <item>
+      <title>小米之恶</title>
+      <link>http://yanhang.me/post/2019-03-17-fuck-xiaomi/</link>
+      <pubDate>Sun, 17 Mar 2019 21:34:44 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-03-17-fuck-xiaomi/</guid>
+      <description>我买过小米手机，也相信小米手机曾经对行业有过良好的贡献。但我仍然觉得，小米是一家作恶多端的公司。 当然，没多少手机厂商是干净的。只是相对来说，</description>
+    </item>
+    
+    <item>
+      <title>2B OR 2C</title>
+      <link>http://yanhang.me/post/2019-03-17-2b/</link>
+      <pubDate>Sun, 17 Mar 2019 14:53:57 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-03-17-2b/</guid>
+      <description>这两天在跟客户讲公司的产品架构，同时简单讨论了目前存在的问题以及客户想要的架构。空闲时间就想了想 2B 类产品的特点（可能仅限于云计算类）。 相对来</description>
+    </item>
+    
+    <item>
+      <title>头条的微信该怎么做</title>
+      <link>http://yanhang.me/post/2019-03-12-toutiao-wechat/</link>
+      <pubDate>Tue, 12 Mar 2019 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-03-12-toutiao-wechat/</guid>
+      <description>首先，多闪是个非常傻逼的产品。原因： 视频社交是个伪需求 产品经理很年轻为什么也成为了一个宣传点？ 微信是一个经常被夸赞的产品，但仍然有很多缺点。</description>
+    </item>
+    
+    <item>
+      <title>刺客信条与金庸武侠</title>
+      <link>http://yanhang.me/post/2019-03-10-assassin-and-jy/</link>
+      <pubDate>Sun, 10 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-03-10-assassin-and-jy/</guid>
+      <description>两个段子 其一： 金庸以自己的 14 本书的书名做了副对联：飞雪连天射白鹿，笑书神侠倚碧鸳。 J.K.罗琳把自己的 7 本书连起来作了半副对联：哈哈哈哈哈哈</description>
+    </item>
+    
+    <item>
+      <title>技术之恶——抖音</title>
+      <link>http://yanhang.me/post/2019-02-28-tiktok/</link>
+      <pubDate>Thu, 28 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-02-28-tiktok/</guid>
+      <description>对于抖音的争议，往往容易分成两拨意见差别非常大的群体，一部分痴迷于这个软件，一部分将大部分的前者视为“脑残”。 引起争议的行为看起来当然是由其</description>
+    </item>
+    
+    <item>
+      <title>Namecoin</title>
+      <link>http://yanhang.me/post/2017-08-22-namecoin/</link>
+      <pubDate>Tue, 22 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2017-08-22-namecoin/</guid>
+      <description>互联网到今日已经越来越趋向于中心化，用户的隐私安全以及大公司的行为也日渐引起担忧。去中心化网络是一个应对此问题的重要思想，blockchia</description>
+    </item>
+    
+    <item>
+      <title>Kubernetes 笔记</title>
+      <link>http://yanhang.me/post/2017-08-18-kubernetes-note/</link>
+      <pubDate>Fri, 18 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2017-08-18-kubernetes-note/</guid>
+      <description>API 声明式的 API API Response 错误处理 Resource Version Version API Group Runtime config REGEX 字段格式 PATCH 与 PUT Events 交互 输出 输入 API 声明式的 API 声明式： 结果是什么 命令式: 做什么 声明式的操作，相对于命令式操</description>
+    </item>
+    
+    <item>
+      <title>Blockchain</title>
+      <link>http://yanhang.me/post/2017-08-12-blockchain/</link>
+      <pubDate>Sat, 12 Aug 2017 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2017-08-12-blockchain/</guid>
+      <description>介绍 区块结构 头结构 区块结构 创世区块 分叉 Proof-of-work(工作量证明) 邮件 Header Bitcoin REF 介绍 区块链是由一串使用密码学方法产生的数据块组成的，</description>
+    </item>
+    
+    <item>
+      <title>Shard</title>
+      <link>http://yanhang.me/post/2017-08-11-sharding/</link>
+      <pubDate>Fri, 11 Aug 2017 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2017-08-11-sharding/</guid>
+      <description>介绍 分片策略 The Lookup strategy The Range strategy The Hash strategy 相关技术 BRIN 介绍 Shard 指对数据的水平切分,每一个切分的部分都可以叫做一个shard,它们拥有相同的 schema,但却</description>
+    </item>
+    
+    <item>
+      <title>一点 python 的经验</title>
+      <link>http://yanhang.me/post/2015-11-10-python-experience/</link>
+      <pubDate>Tue, 10 Nov 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-11-10-python-experience/</guid>
+      <description>可能已经过时了。</description>
+    </item>
+    
+    <item>
+      <title>Scala 笔记: 函数和闭包</title>
+      <link>http://yanhang.me/post/2015-08-31-scala-notes-function-and-closures/</link>
+      <pubDate>Mon, 31 Aug 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-08-31-scala-notes-function-and-closures/</guid>
+      <description>Local functions 在函数式语言里，函数是最基本的功能块。通常为了模块清晰起见，我们需要很多 Help Function，但是这些辅助函数很容易有名字冲突，暴露给外部</description>
+    </item>
+    
+    <item>
+      <title>国士无双者</title>
+      <link>http://yanhang.me/post/2015-08-17-wu-lian-de/</link>
+      <pubDate>Mon, 17 Aug 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-08-17-wu-lian-de/</guid>
+      <description>我自己很少看传记类的东西，一来这东西太容易不客观，二是觉得有很多人不值得这样去解读。前一阵子看了《平如美棠》，我相信他们的故事是很好，但是写</description>
+    </item>
+    
+    <item>
+      <title>Docker 1.7 介绍</title>
+      <link>http://yanhang.me/post/2015-07-12-docker-1.7/</link>
+      <pubDate>Sun, 12 Jul 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-07-12-docker-1.7/</guid>
+      <description>实验特性 很多软件在发布的时候都会分为开发板和稳定版，稳定版可以供生产环境使用，开发版是让 感兴趣的用户使用，体验新特性，并报告 BUG 以助于官方改进</description>
+    </item>
+    
+    <item>
+      <title>人类和机器人的未来</title>
+      <link>http://yanhang.me/post/2015-06-11-the-future-of-human-and-robots/</link>
+      <pubDate>Thu, 11 Jun 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-06-11-the-future-of-human-and-robots/</guid>
+      <description>&lt;p&gt;很多时候，科幻小说或电影里的幻想指引着我们未来技术的发展。电影中那形形色色的机器
+人形象，各式的机械战甲，或许真有一天会出现在我们的日常生活之中,为我们端茶倒水，
+抵御外敌。但当我们乐此不疲地沉浸于这些未来风格的人造物时，却总是忽略了另一个角色
+的发展——我们人类自身。当机器人拥有了智能,遍布地球各地的时候，我们人类看起来还会像现在这样吗？&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>docker 容器的一些概念辨析</title>
+      <link>http://yanhang.me/post/2015-04-16-some-concepts-of-docker-containers/</link>
+      <pubDate>Thu, 16 Apr 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-04-16-some-concepts-of-docker-containers/</guid>
+      <description>&lt;p&gt;本篇的主要内容是为了澄清 docker 容器的一些容易混淆的概念，主要分两部分，
+一是容器端口的&lt;code&gt;publish&lt;/code&gt;和&lt;code&gt;expose&lt;/code&gt;,二是 Dockerfile 中&lt;code&gt;ENTRYPOINT&lt;/code&gt;和&lt;code&gt;CMD&lt;/code&gt;的区分。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>docker 源码分析(6) -- 镜像删除</title>
+      <link>http://yanhang.me/post/2015-04-03-docker-source-code-part6-image-delete/</link>
+      <pubDate>Fri, 03 Apr 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-04-03-docker-source-code-part6-image-delete/</guid>
+      <description>&lt;p&gt;本篇的主要内容是关于如何删除镜像的.听起来是挺简单的一件事,但是&lt;code&gt;docker&lt;/code&gt;本身的删除
+策略定义并不清除，而且在实际的使用过程中,似乎总是与我们预计的结果不符,比如磁盘空间并没有被释放.所以在此单列一篇,详细解析镜
+像删除的过程.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>docker 源码分析(3) -- daemon 启动流程</title>
+      <link>http://yanhang.me/post/2015-02-05-docker-source-code-part3-daemon-start/</link>
+      <pubDate>Thu, 05 Feb 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-02-05-docker-source-code-part3-daemon-start/</guid>
+      <description>&lt;p&gt;本篇的主要内容是关于&lt;code&gt;docker daemon&lt;/code&gt;的启动流程。其主要内容均包含在
+&lt;code&gt;github.com/docker/docker/docker/daemon.go&lt;/code&gt;文件中的&lt;code&gt;mainDaemon&lt;/code&gt;函数中，本文即按
+其执行流程分析源码。因为所涉源码较多，所以所涉部分多是点到为止，详细分析会在后续
+分专篇讲述。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>IOPS 介绍</title>
+      <link>http://yanhang.me/post/2015-02-04-iops/</link>
+      <pubDate>Wed, 04 Feb 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-02-04-iops/</guid>
+      <description>&lt;p&gt;依旧是自己不甚清楚的一个概念，希望通过自己的整理来加深印象，也希望这篇介绍能帮助
+到其他人。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>docker 源码分析(2) -- 主程序及命令行参数解析</title>
+      <link>http://yanhang.me/post/2015-01-30-docker-source-code-part2-start-and-args/</link>
+      <pubDate>Fri, 30 Jan 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-01-30-docker-source-code-part2-start-and-args/</guid>
+      <description>&lt;p&gt;研究一个大项目的源码，最好是从&lt;code&gt;main&lt;/code&gt;函数入口，一步一步与实际程序相结合，将实际代
+码与相应相印证。所以本篇的主要内容就是 docker 主程序的启动流程以及命令行参数解析的
+过程。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>现代化的开发人员实用工具</title>
+      <link>http://yanhang.me/post/2015-01-30-modern-dev-tools/</link>
+      <pubDate>Fri, 30 Jan 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-01-30-modern-dev-tools/</guid>
+      <description>&lt;p&gt;常年混迹于 linux，对命令行程序情有独钟，平时也喜欢搜集各种实用的小工具。&lt;code&gt;github&lt;/code&gt;流行以来，越来越多的新的实用的开
+发工具开源出来，有的可以用来替代一些老的工具，有的则是全新的。本文整理一些实用的
+工具，希望大家能在实际开发中用到。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>docker 源码分析(1) -- 开发环境准备</title>
+      <link>http://yanhang.me/post/2015-01-29-docker-source-code-part1-dev-setup/</link>
+      <pubDate>Thu, 29 Jan 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-01-29-docker-source-code-part1-dev-setup/</guid>
+      <description>&lt;p&gt;之前看过一遍&lt;code&gt;docker&lt;/code&gt;的代码，但比较粗略。第二遍准备详细过一遍并且用博客的方式将其
+整理一下。目前为止&lt;code&gt;docker&lt;/code&gt;的稳定版本为&lt;code&gt;1.4.1&lt;/code&gt;,所以就以此版本的代码为基础进行阅读，分
+析。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>RAID 介绍</title>
+      <link>http://yanhang.me/post/2015-01-25-raid/</link>
+      <pubDate>Sun, 25 Jan 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-01-25-raid/</guid>
+      <description>&lt;p&gt;RAID 是一个我们经常能见到的名词。但却因为很少能在实际环境中体验,所以很难对其原理
+能有很清楚的认识和掌握。本文将对 RAID 技术进行介绍和总结，以期能尽量阐明其概念。&lt;/p&gt;
+&lt;p&gt;RAID 全称为独立磁盘冗余阵列(Redundant Array of Independent Disks),基本思想就是把
+多个相对便宜的硬盘组合起来，成为一个硬盘阵列组，使性能达到甚至超过一个价格昂贵、
+容量巨大的硬盘。RAID 通常被用在服务器电脑上，使用完全相同的硬盘组成一个逻辑扇区,
+因此操作系统只会把它当做一个硬盘。&lt;/p&gt;
+&lt;p&gt;RAID 分为不同的等级，各个不同的等级均在数据可靠性及读写性能上做了不同的权衡。
+在实际应用中，可以依据自己的实际需求选择不同的 RAID 方案。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>bash 各配置文件浅析</title>
+      <link>http://yanhang.me/post/2015-01-23-bash-config-files/</link>
+      <pubDate>Fri, 23 Jan 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-01-23-bash-config-files/</guid>
+      <description>&lt;p&gt;与 bash 相关的配置文件非常之多,用户目录下的&lt;code&gt;.bashrc&lt;/code&gt;,&lt;code&gt;.profile&lt;/code&gt;,&lt;code&gt;.bash_profile&lt;/code&gt;，
+系统级的&lt;code&gt;/etc/profile&lt;/code&gt;等。我们也经常会发现，在某个文件里设置好了环境变量之后，并
+不能总是能在使用 bash 时正确加载。下面将对这个问题进行深入剖析，以解除疑惑。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>CoreOS 安装及配置</title>
+      <link>http://yanhang.me/post/2015-01-22-coreos-install/</link>
+      <pubDate>Thu, 22 Jan 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-01-22-coreos-install/</guid>
+      <description>&lt;p&gt;本文所遵照的步骤是官网的 Installing to disk 方法,即刻录 ISO 镜像 -&amp;gt; 启动 Coreos Live CD -&amp;gt; 安装到硬盘的步骤，与一般的桌面 Linux 安装非常类似。但 coreos 安装时也有一些需要注意的地方:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;cloud-config.yml&lt;/p&gt;
+&lt;p&gt;这是 coreos 用来统一配置系统的地方，系统在每次启动时都会加载这个文件的配置，比
+如系统服务、网络设定、文件修改、用户设定等。这样做的好处是在部署集群的时候可
+以方便地使用相同的配置。在安装 coreos 时，需要指定好这个配置文件。实际操作时，
+可以提前将这个文件写好放在别的机器上，然后用 scp / wget (利用下面的 web server) 下载到 coreos 的 Live CD 即可，或者直接存在 Live CD 里更方便。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;GFW&lt;/p&gt;
+&lt;p&gt;coreos 安装时需要从官网下载镜像，但网站被墙，所以实际安装的时候可能需要用代理来解决，缺点是速度慢。更方便的方法是提前下载好需要的文件并放在局域网内并搭建一个 web server，然后修改安装脚本的 server 即可。具体方法在后面详述。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>人工智能 on 工业革命</title>
+    <link>http://yanhang.me/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/</link>
+    <description>Recent content in 人工智能 on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 09 Oct 2019 15:36:44 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>AI的困境</title>
+      <link>http://yanhang.me/post/2019-10-09-end-of-ai/</link>
+      <pubDate>Wed, 09 Oct 2019 15:36:44 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-10-09-end-of-ai/</guid>
+      <description>大多数人都知道AI很火，而且它有泡沫，市场有盲从的部分。有利的一面是，它催生了很多应用，虽然还算不上智能，但确实依靠大数据让人们的生活更加便</description>
+    </item>
+    
+  </channel>
+</rss>

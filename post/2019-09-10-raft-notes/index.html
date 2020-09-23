@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Raft 协议笔记 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="关注于 Raft 可能更多是因为 kubernetes/etcd 的原因，二者似乎变成了 raft 最大的客户，时不时地重新理解一下这个协议还是很有必要的。 之所以这样讲，是因为分布式协议本身就" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2019-09-10-raft-notes/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Raft 协议笔记" />
+<meta property="og:description" content="关注于 Raft 可能更多是因为 kubernetes/etcd 的原因，二者似乎变成了 raft 最大的客户，时不时地重新理解一下这个协议还是很有必要的。 之所以这样讲，是因为分布式协议本身就" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2019-09-10-raft-notes/" />
+<meta property="article:published_time" content="2019-09-10T14:51:05+00:00" />
+<meta property="article:modified_time" content="2019-09-10T14:51:05+00:00" />
+<meta itemprop="name" content="Raft 协议笔记">
+<meta itemprop="description" content="关注于 Raft 可能更多是因为 kubernetes/etcd 的原因，二者似乎变成了 raft 最大的客户，时不时地重新理解一下这个协议还是很有必要的。 之所以这样讲，是因为分布式协议本身就">
+<meta itemprop="datePublished" content="2019-09-10T14:51:05+00:00" />
+<meta itemprop="dateModified" content="2019-09-10T14:51:05+00:00" />
+<meta itemprop="wordCount" content="1613">
+
+
+
+<meta itemprop="keywords" content="论文,分布式," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Raft 协议笔记"/>
+<meta name="twitter:description" content="关注于 Raft 可能更多是因为 kubernetes/etcd 的原因，二者似乎变成了 raft 最大的客户，时不时地重新理解一下这个协议还是很有必要的。 之所以这样讲，是因为分布式协议本身就"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Raft 协议笔记</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-09-10 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 1613 字 </span>
+          <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#基本知识">基本知识</a></li>
+        <li><a href="#leader-election">Leader election</a></li>
+        <li><a href="#log-replication">Log replication</a></li>
+        <li><a href="#log-compaction">Log compaction</a></li>
+        <li><a href="#client-交互">Client 交互</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>关注于 Raft 可能更多是因为 kubernetes/etcd 的原因，二者似乎变成了 raft 最大的<code>客户</code>，时不时地重新理解一下这个协议还是很有必要的。</p>
+<p>之所以这样讲，是因为分布式协议本身就很难理解。即使 raft 论文中一再声称它的主要目的之一便是容易理解，比 paxos 更好懂，但对于一般从业者来说，要想完整地理解它还是有困难的。所以经常需要温故而知新。并且，在网上一搜，关于 raft 协议的 blog 也是汗牛充栋，每个人都在试着理解，记录。可能后续还需要参考下别人的笔记，互相印证。</p>
+<blockquote>
+<p>论文地址: <a href="https://raft.github.io/raft.pdf">In Search of an Understandable Consensus Algorithm</a></p>
+</blockquote>
+<h2 id="基本知识">基本知识</h2>
+<p><code>leader</code> 的概念是核心之一。raft 作为一个分布式系统，各个 server 通过固定的算法选举出 leader , 然后 leader 负责状态的维护，处理 client 的请求，维护整个集群的状态等等。跟民主制度里面多党选举有点像， 一旦大多数投票通过，总统就拥有至高权力。</p>
+<p>除了 leader 之外，还有另外两个角色是 <code>follower</code>以及<code>candidate</code>。选举状态下，大家都是<code>candidate</code>,正常工作情况下，就分成了<code>leader</code>和<code>follower</code>。</p>
+<p>Raft 并没有使用系统时钟来作为同步机制，因为太不可靠了，而且维护起来很麻烦。raft 使用了一个 <code>term</code> 的概念来代表时序。</p>
+<h2 id="leader-election">Leader election</h2>
+<p>一般的流程如下所示:</p>
+<ul>
+<li>server 启动时，成为 follower</li>
+<li>如果 follower 在 election timeout 的时间内，没有收到 leader 发来的 heartbeat， 那么它就假定没有 leader, 准备开始选举</li>
+<li>follower 将自己变为 candidate， 然后给自己投一票， 然后发信息给其他 server 问其他 server 是否可以给自己投票。结果要么是大多数投了它，它成为 leader, 或者另外一个 candidate 成为了 leader, 或者没有 leader (splite vote,没有 server 获取到大多数 vote)，那么就进行一下次投票。</li>
+<li>在 election 的过程中，有可能其他的 candidate 已经成为了 leader, 并给当前的 candidate 发来了同步数据的请求。这时候就可以通过 term 的比较来判定，如果发过来的 term 数不小于自己的，那么就承认发送者的 leader 地位，并且把自己切换回 follower 状态。否则的话拒绝请求并且继续选举。</li>
+</ul>
+<p>这里面有一个问题，所有人都在给所有人发请求要求 vote 自己，怎么能达到有一个 candidate 获取到 大多数 vote 呢? raft 采用了 randomized election timeout 来解决这个问题。不同 server 的 lection timout 不一样，避免了大部分情况下的 splite vote 情况。如果发生 splite vote, 重来一次。这种机制跟 TCP 的拥塞控制有些类似。</p>
+<h2 id="log-replication">Log replication</h2>
+<p>log replication 有几个概念，如下图所示:</p>
+<p><img src="/images/raft/log.png" alt=""></p>
+<p>Entry 代表了一次操作，一条记录，每个 term 可能包含一条或者多条 entry, entry分为 commited entries 和 非 commited entries.  commited entries 是 leader 确定那些可以提交到 state machines 里的 entries。这些 entries 能确保一直可用(比如 leader crash)，并且被大部分的 server 同步。Entry 有个前置性推断， commited entries 之前的 entries 也是 commited entries。</p>
+<p>可以理解， raft 系统的目的就是尽量保证所有的 server 有相同的 entry 序列。这中间要经历选主，leader crash, follower crash ,各种 timeout 等等。在 raft 中，如果 follower 与 leader 的 entries 有不一致的地方，会用 leader 的来覆盖 follower 的。而 leader 自己的 log, 不会覆盖也不会删除。这个逻辑是挺简单的，但实现起来略微繁琐。 leader 需要找到各个 follower 与 自己一致的地方，删除 之后follower 中<code>错误</code>的数据，并且把自己 发过去进行覆盖。在这个过程中，leader 给每个 follower 维护了一个 <code>nextIndex</code> 序列，用做要发给各个 follower 的数据的指示。如果被 follower 拒绝了，那么就继续往回找，直到找到二者的相同序列。</p>
+<h2 id="log-compaction">Log compaction</h2>
+<p>如果没有 compaction, server 的 log entries 就会无限制的增长。所以一般需要某种 snapshot 技术来压缩已经 commited 的 entries。如下图所示:</p>
+<p><img src="/images/raft/compaction.png" alt=""></p>
+<p>每个 server 各自做各自的 snapshots., 并且添加一些 index 来指明位置。同时增加了 leader 向 follower 同步 snapshot 的功能。</p>
+<h2 id="client-交互">Client 交互</h2>
+<p>因为所有的情况下 client 的请求都由 leader 处理，但 client 又知道 leader 是谁。所以会随机发给一个 server，由 server 告知 client leader 相关信息。网络请求都要考虑重试以及可重入性的情况。假设 leader处理了一个请求，在 response 发出去之前 crash 了，那么client 会重试，这个操作就又会被执行第二遍。解决办法是给每个 client 的每个 command 一个序列号， raft 追踪下每个 client已经执行过 的最新的序列号,如果发现新发过来的已经执行过，就跳过了。</p>
+<p>普通的 read 操作也会有问题，虽然不涉及到数据改动，但可能会读取到 stale data。有可能在读的时候有了新的 leader 并且当前数据已经过期了，所以 raft 在返回 read-only 的操作的 response 之前又增加了一个 leader exchange heartbeat 步骤来同步 leader 状态。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-09-10
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E8%AE%BA%E6%96%87/">论文</a>
+          <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2019-09-11-gitops/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">GitOps</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2019-09-08-him/">
+            <span class="next-text nav-default">他</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

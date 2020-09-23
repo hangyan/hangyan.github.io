@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Shard - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="介绍 分片策略 The Lookup strategy The Range strategy The Hash strategy 相关技术 BRIN 介绍 Shard 指对数据的水平切分,每一个切分的部分都可以叫做一个shard,它们拥有相同的 schema,但却" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2017-08-11-sharding/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Shard" />
+<meta property="og:description" content="介绍 分片策略 The Lookup strategy The Range strategy The Hash strategy 相关技术 BRIN 介绍 Shard 指对数据的水平切分,每一个切分的部分都可以叫做一个shard,它们拥有相同的 schema,但却" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2017-08-11-sharding/" />
+<meta property="article:published_time" content="2017-08-11T21:37:39+08:00" />
+<meta property="article:modified_time" content="2017-08-11T21:37:39+08:00" />
+<meta itemprop="name" content="Shard">
+<meta itemprop="description" content="介绍 分片策略 The Lookup strategy The Range strategy The Hash strategy 相关技术 BRIN 介绍 Shard 指对数据的水平切分,每一个切分的部分都可以叫做一个shard,它们拥有相同的 schema,但却">
+<meta itemprop="datePublished" content="2017-08-11T21:37:39+08:00" />
+<meta itemprop="dateModified" content="2017-08-11T21:37:39+08:00" />
+<meta itemprop="wordCount" content="1314">
+
+
+
+<meta itemprop="keywords" content="存储," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Shard"/>
+<meta name="twitter:description" content="介绍 分片策略 The Lookup strategy The Range strategy The Hash strategy 相关技术 BRIN 介绍 Shard 指对数据的水平切分,每一个切分的部分都可以叫做一个shard,它们拥有相同的 schema,但却"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Shard</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-08-11 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 1314 字 </span>
+          <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#介绍">介绍</a>
+      <ul>
+        <li><a href="#分片策略">分片策略</a>
+          <ul>
+            <li><a href="#the-lookup-strategy">The Lookup strategy</a></li>
+            <li><a href="#the-range-strategy">The Range strategy</a></li>
+            <li><a href="#the-hash-strategy">The Hash strategy</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#相关技术">相关技术</a>
+      <ul>
+        <li><a href="#brin">BRIN</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <!-- toc -->
+<ul>
+<li><a href="#%E4%BB%8B%E7%BB%8D">介绍</a>
+<ul>
+<li><a href="#%E5%88%86%E7%89%87%E7%AD%96%E7%95%A5">分片策略</a>
+<ul>
+<li><a href="#the-lookup-strategy">The Lookup strategy</a></li>
+<li><a href="#the-range-strategy">The Range strategy</a></li>
+<li><a href="#the-hash-strategy">The Hash strategy</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E7%9B%B8%E5%85%B3%E6%8A%80%E6%9C%AF">相关技术</a>
+<ul>
+<li><a href="#brin">BRIN</a></li>
+</ul>
+</li>
+</ul>
+<!-- tocstop -->
+<h1 id="介绍">介绍</h1>
+<p>Shard 指对数据的水平切分,每一个切分的部分都可以叫做一个<code>shard</code>,它们拥有相同的 schema,但却拥有不同的数据集。对数据库来说，是指对数据库的表按行进行切分(与按列的垂直切分对应)，不同的 shard 可能位于不同的数据库服务器或者物理机器上。它的优势体现在以下几点:</p>
+<ul>
+<li>表的大小减少,索引体积减小,提升查询性能(某些方面)</li>
+<li>如果数据本身有比较明显的分区(比如国家,地区等),那么做 shard 很容易并且查询很大程度上都能落在一个 shard 上。</li>
+<li>水平扩展性好，可以通过添加新节点来扩充</li>
+</ul>
+<p>劣势有以下几点:</p>
+<ul>
+<li>查询需要跨多个 shard 时会增加 latency</li>
+<li>因为 shard 经常只能做到某一位维度。所以在这一维度的查询的性能可能提高，但其他维度的查询的性能则可能会下降。</li>
+<li>跨 shard 的数据一致性和可用性也更加复杂和难以保障</li>
+</ul>
+<p>shard 本身的问题让他成为一个<code>迫不得已</code>的选择。尽量在没有其他优化方式的情况下选择 shard.理想情况下，应该有底层框架来处理 shard 而让应用层做到对 shard 无感知，不然还不如不用。</p>
+<h2 id="分片策略">分片策略</h2>
+<p>如果将数据集进行 shard,有很多策略可以选择，常见的有</p>
+<h3 id="the-lookup-strategy">The Lookup strategy</h3>
+<p>用 shard key 做一个映射表，包含不同 shard key 的请求会转发到相应的 shard 上。这种情况下，不同 shard key 的数据可能会落在同一个 shard 上，但相同 shard key 的数据则一定在同一个 shard 上.shard 与物理地址的映射也不能是一对一的，可以用类似于 consistent hashing 里面的那种 virtual node 的方式，设置一些<code>virtual shard</code>，几个 virtual shard 可以对应于同样的物理位置(reblancing 的时候对上层代码的影响很小)。</p>
+<p><img src="https://hangyan.github.io/images/db/sharding-tenant.png" alt=""></p>
+<h3 id="the-range-strategy">The Range strategy</h3>
+<p>适用于需要获取区间连续数据的场景。与第一种策略类似，用 shard key 做分区，但 shard key 是按顺序排列的，每个 shard 内部的数据也经是有序的.(通常有一个 row key 用来在内部排序).</p>
+<p><img src="https://hangyan.github.io/images/db/sharding-sequential-sets.png" alt=""></p>
+<h3 id="the-hash-strategy">The Hash strategy</h3>
+<p>为了分散数据和请求，也可以用 hash 函数对数据做分片。上面两种策略避免不了的一个问题是,假如有一些数据是热点数据，那么他们很可能是位于少量的几个 shard 上，这样就造成了负载的不均衡。而利用 hash 函数则能尽量将热点数据分散开，必要时还可以加入一些随机元素来提高随机性.</p>
+<p><img src="https://hangyan.github.io/images/db/sharding-data-hash.png" alt=""></p>
+<h1 id="相关技术">相关技术</h1>
+<h2 id="brin">BRIN</h2>
+<p>Block Range Index.是一种作用于数据库索引上的类似于 shard 的技术。图示；</p>
+<p><img src="https://hangyan.github.io/images/db/shard-b-tree.png" alt="">
+<img src="https://hangyan.github.io/images/db/shard-brin.png" alt=""></p>
+<p>数据库里的数据在磁盘里存储时也是按 block 存储，通常也是按 key 的顺序。那么 BRIN 相当于对每一个 block 的一个描述:我拥有的最大值是多少，最小值是多少。对于查询来说，它知道了这个信息之后，发现目标值不在这个 block 的最小和最大值范围之间，那就可以直接跳过这个 block.因为对于每个 block 只需要存一个 tuple 的值，内存占用很小，所以所有的 BRIN 信息都可以放在内存中(相比较而言 B-Trees 的 index 信息如果全放置在内存中占用会比较高)</p>
+<p>优势</p>
+<ul>
+<li>对于读的场景来说，尤其是需要顺序扫描索引，用 B-tree 结合 BRIN 能够提高查询速度</li>
+<li>索引的一个坏处是会降低写入的速度，因为在写入的时候要一直维护索引。已经有各种优化措施，但是也比较复杂，很多场景也不实用。考虑用 BRIN 来代替普通索引的话，能够极大地减少维护索引的开销</li>
+<li>对于非常大的数据集，B-tree 索引可能需要水平切分.创建 BRIN 的开销相比而言就要小的多，并且速度也更快。</li>
+</ul>
+<p>对于随机性比较强的数据集或者有明显热点数据集的场景,BRIN 不是很合适。因为它的作用是用来排除区间，上述两种场景并不能有效地排除有效的数据区间。</p>
+<p>Ref:</p>
+<ol>
+<li><a href="https://en.wikipedia.org/wiki/Shard_(database_architecture)">Shard (database architecture)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Block_Range_Index">BRIN wiki</a></li>
+<li><a href="https://docs.microsoft.com/en-us/azure/architecture/patterns/sharding">sharding patterns</a></li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2017-08-11
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E5%AD%98%E5%82%A8/">存储</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2017-08-12-blockchain/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Blockchain</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2015-11-10-python-experience/">
+            <span class="next-text nav-default">一点 python 的经验</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

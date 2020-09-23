@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>存储 on 工业革命</title>
+    <link>http://yanhang.me/tags/%E5%AD%98%E5%82%A8/</link>
+    <description>Recent content in 存储 on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 20 Apr 2019 22:35:17 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/%E5%AD%98%E5%82%A8/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>JFFS3 文件系统</title>
+      <link>http://yanhang.me/post/2019-04-20-jffs3/</link>
+      <pubDate>Sat, 20 Apr 2019 22:35:17 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-04-20-jffs3/</guid>
+      <description>闪存对文件系统的影响 闪存转换层 JFFS3 JFFS2 的问题 Index 的存储 The Journal Garbage collection Superblock Links 看完了闪存,继续看文件系统。网上搜了一圈，发现都是讲 Andriod 的目录结构的，讲文件系统本</description>
+    </item>
+    
+    <item>
+      <title>闪存</title>
+      <link>http://yanhang.me/post/2019-04-18-flash/</link>
+      <pubDate>Thu, 18 Apr 2019 21:01:13 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-04-18-flash/</guid>
+      <description>基本定义 NOR / NAND 写/擦除 eMMC / UFS Links 本来看华为新弄了 FS 和编译器，想学习下。但是目前似乎放出来的技术资料并不多，就先做下技术储备。先研究下他们做这个</description>
+    </item>
+    
+    <item>
+      <title>Shard</title>
+      <link>http://yanhang.me/post/2017-08-11-sharding/</link>
+      <pubDate>Fri, 11 Aug 2017 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2017-08-11-sharding/</guid>
+      <description>介绍 分片策略 The Lookup strategy The Range strategy The Hash strategy 相关技术 BRIN 介绍 Shard 指对数据的水平切分,每一个切分的部分都可以叫做一个shard,它们拥有相同的 schema,但却</description>
+    </item>
+    
+  </channel>
+</rss>

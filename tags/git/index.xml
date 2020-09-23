@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Git on 工业革命</title>
+    <link>http://yanhang.me/tags/git/</link>
+    <description>Recent content in Git on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 12 Sep 2019 13:02:41 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/git/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Git 与 GitOps</title>
+      <link>http://yanhang.me/post/2019-09-12-git/</link>
+      <pubDate>Thu, 12 Sep 2019 13:02:41 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-09-12-git/</guid>
+      <description>伴随着 GitOps 的盛行， Git 本身的影响力也在逐渐增大。从最开始只是为了管理 linux kernel, 到支撑起了 Github 这个最大的软件社区，Git 本身的应用范畴早已超出了 vcs 本身，我</description>
+    </item>
+    
+  </channel>
+</rss>

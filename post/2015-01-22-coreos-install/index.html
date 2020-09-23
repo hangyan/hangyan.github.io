@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>CoreOS 安装及配置 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="本文所遵照的步骤是官网的 Installing to disk 方法,即刻录 ISO 镜像 -&amp;gt; 启动 Coreos Live CD -&amp;gt; 安装到硬盘的步骤，与一般的桌面 Linux 安装非常类似。但 coreos 安装时也有一些需要注意的地方:
+  cloud-config.yml
+这是 coreos 用来统一配置系统的地方，系统在每次启动时都会加载这个文件的配置，比 如系统服务、网络设定、文件修改、用户设定等。这样做的好处是在部署集群的时候可 以方便地使用相同的配置。在安装 coreos 时，需要指定好这个配置文件。实际操作时， 可以提前将这个文件写好放在别的机器上，然后用 scp / wget (利用下面的 web server) 下载到 coreos 的 Live CD 即可，或者直接存在 Live CD 里更方便。
+  GFW
+coreos 安装时需要从官网下载镜像，但网站被墙，所以实际安装的时候可能需要用代理来解决，缺点是速度慢。更方便的方法是提前下载好需要的文件并放在局域网内并搭建一个 web server，然后修改安装脚本的 server 即可。具体方法在后面详述。
+ " /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2015-01-22-coreos-install/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="CoreOS 安装及配置" />
+<meta property="og:description" content="本文所遵照的步骤是官网的 Installing to disk 方法,即刻录 ISO 镜像 -&gt; 启动 Coreos Live CD -&gt; 安装到硬盘的步骤，与一般的桌面 Linux 安装非常类似。但 coreos 安装时也有一些需要注意的地方:
+
+
+cloud-config.yml
+这是 coreos 用来统一配置系统的地方，系统在每次启动时都会加载这个文件的配置，比
+如系统服务、网络设定、文件修改、用户设定等。这样做的好处是在部署集群的时候可
+以方便地使用相同的配置。在安装 coreos 时，需要指定好这个配置文件。实际操作时，
+可以提前将这个文件写好放在别的机器上，然后用 scp / wget (利用下面的 web server) 下载到 coreos 的 Live CD 即可，或者直接存在 Live CD 里更方便。
+
+
+GFW
+coreos 安装时需要从官网下载镜像，但网站被墙，所以实际安装的时候可能需要用代理来解决，缺点是速度慢。更方便的方法是提前下载好需要的文件并放在局域网内并搭建一个 web server，然后修改安装脚本的 server 即可。具体方法在后面详述。
+
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2015-01-22-coreos-install/" />
+<meta property="article:published_time" content="2015-01-22T21:37:39+08:00" />
+<meta property="article:modified_time" content="2015-01-22T21:37:39+08:00" />
+<meta itemprop="name" content="CoreOS 安装及配置">
+<meta itemprop="description" content="本文所遵照的步骤是官网的 Installing to disk 方法,即刻录 ISO 镜像 -&gt; 启动 Coreos Live CD -&gt; 安装到硬盘的步骤，与一般的桌面 Linux 安装非常类似。但 coreos 安装时也有一些需要注意的地方:
+
+
+cloud-config.yml
+这是 coreos 用来统一配置系统的地方，系统在每次启动时都会加载这个文件的配置，比
+如系统服务、网络设定、文件修改、用户设定等。这样做的好处是在部署集群的时候可
+以方便地使用相同的配置。在安装 coreos 时，需要指定好这个配置文件。实际操作时，
+可以提前将这个文件写好放在别的机器上，然后用 scp / wget (利用下面的 web server) 下载到 coreos 的 Live CD 即可，或者直接存在 Live CD 里更方便。
+
+
+GFW
+coreos 安装时需要从官网下载镜像，但网站被墙，所以实际安装的时候可能需要用代理来解决，缺点是速度慢。更方便的方法是提前下载好需要的文件并放在局域网内并搭建一个 web server，然后修改安装脚本的 server 即可。具体方法在后面详述。
+
+">
+<meta itemprop="datePublished" content="2015-01-22T21:37:39+08:00" />
+<meta itemprop="dateModified" content="2015-01-22T21:37:39+08:00" />
+<meta itemprop="wordCount" content="1636">
+
+
+
+<meta itemprop="keywords" content="技术," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="CoreOS 安装及配置"/>
+<meta name="twitter:description" content="本文所遵照的步骤是官网的 Installing to disk 方法,即刻录 ISO 镜像 -&gt; 启动 Coreos Live CD -&gt; 安装到硬盘的步骤，与一般的桌面 Linux 安装非常类似。但 coreos 安装时也有一些需要注意的地方:
+
+
+cloud-config.yml
+这是 coreos 用来统一配置系统的地方，系统在每次启动时都会加载这个文件的配置，比
+如系统服务、网络设定、文件修改、用户设定等。这样做的好处是在部署集群的时候可
+以方便地使用相同的配置。在安装 coreos 时，需要指定好这个配置文件。实际操作时，
+可以提前将这个文件写好放在别的机器上，然后用 scp / wget (利用下面的 web server) 下载到 coreos 的 Live CD 即可，或者直接存在 Live CD 里更方便。
+
+
+GFW
+coreos 安装时需要从官网下载镜像，但网站被墙，所以实际安装的时候可能需要用代理来解决，缺点是速度慢。更方便的方法是提前下载好需要的文件并放在局域网内并搭建一个 web server，然后修改安装脚本的 server 即可。具体方法在后面详述。
+
+"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">CoreOS 安装及配置</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2015-01-22 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 1636 字 </span>
+          <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#刻录-iso-镜像">刻录 ISO 镜像</a></li>
+            <li><a href="#安装">安装</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>本文所遵照的步骤是官网的 Installing to disk 方法,即刻录 ISO 镜像 -&gt; 启动 Coreos Live CD -&gt; 安装到硬盘的步骤，与一般的桌面 Linux 安装非常类似。但 coreos 安装时也有一些需要注意的地方:</p>
+<ol>
+<li>
+<p>cloud-config.yml</p>
+<p>这是 coreos 用来统一配置系统的地方，系统在每次启动时都会加载这个文件的配置，比
+如系统服务、网络设定、文件修改、用户设定等。这样做的好处是在部署集群的时候可
+以方便地使用相同的配置。在安装 coreos 时，需要指定好这个配置文件。实际操作时，
+可以提前将这个文件写好放在别的机器上，然后用 scp / wget (利用下面的 web server) 下载到 coreos 的 Live CD 即可，或者直接存在 Live CD 里更方便。</p>
+</li>
+<li>
+<p>GFW</p>
+<p>coreos 安装时需要从官网下载镜像，但网站被墙，所以实际安装的时候可能需要用代理来解决，缺点是速度慢。更方便的方法是提前下载好需要的文件并放在局域网内并搭建一个 web server，然后修改安装脚本的 server 即可。具体方法在后面详述。</p>
+</li>
+</ol>
+<h3 id="刻录-iso-镜像">刻录 ISO 镜像</h3>
+<ol>
+<li>下载 ISO :  <a href="https://coreos.com/docs/running-coreos/platforms/iso/">Go to Download Page</a></li>
+<li>刻录 : U 盘的话在 linux 上直接用 dd 命令即可。</li>
+</ol>
+<h3 id="安装">安装</h3>
+<h4 id="网络配置"><strong>网络配置</strong></h4>
+<p>因为安装过程中需要联网，所以需要配置 Live CD 内部的 coreos 系统的网络。coreos 使用
+systemd 来管理系统服务，所以写一个 unit file 并启动即可。</p>
+<p>在 <code>/etc/systemd/network</code> 目录下创建 <code>static.network</code>文件,示例内容如下:</p>
+<pre><code>[Match]
+Name=eno1
+
+[Network]
+DNS=114.114.114.114
+Address=192.168.200.12/24
+Gateway=192.168.200.11
+</code></pre>
+<p><code>Name</code>为网卡名，<code>Address</code>为静态 IP 地址,依自己情况设置即可。</p>
+<p>执行如下命令生效:</p>
+<pre><code>sudo systemctl restart systemd-networkd
+</code></pre>
+<h4 id="cloud-config"><strong>cloud-config</strong></h4>
+<p>一个基本的 cloud-config.yml 示例文件如下：</p>
+<pre><code>#cloud-config
+
+hostname: coreos-12    
+manage_etc_hosts: localhost
+
+coreos:
+  etcd:
+    discovery: https://discovery.etcd.io/&lt;your-own-uuid&gt;
+    addr: 192.168.200.12:4001
+    peer-addr: 192.168.200.12:7001
+  units:
+    - name: etcd.service
+      command: start
+    - name: fleet.service
+      command: start
+    -  name: 00-eno1.network
+      runtime: true
+      content: |
+        [Match]
+        Name=eno1
+
+        [Network]
+        DNS=114.114.114.114
+        Address=192.168.200.12/24
+        Gateway=192.168.200.11
+users:
+  - name: core
+    ssh-authorized-keys:
+     - ssh-rsa     ...
+  - groups:
+     - sudo
+     - docker
+</code></pre>
+<p>配置文件的语法很简单，很多部分都可以见名知意，具体文件格式定义请参见:<a href="https://coreos.com/docs/cluster-management/setup/cloudinit-cloud-config/">Using Cloud-Config</a>
+如果配置中有错误，如果不影响启动，会在启动完成后显示错误信息。官方文档中提示
+<code>coreos-cloudinit -validate</code> 命令可以用来检查此配置文件中是否有语法错误，但是在
+实际安装的时候发现并没有这个参数(V0.10.9),还好官网提供一个在线的检测页面可供检
+查 : <a href="https://coreos.com/validate/">Cloud-Config Validator</a></p>
+<p>此文件中有几个点应注意 :</p>
+<ol>
+<li><code>#cloud-config</code> 为必备部分</li>
+<li>如果没有添加 <code>manage_etc_hosts</code>选项,在 <code>/etc/hosts</code> 文件中将不会有
+<code>localhost</code>的记录</li>
+<li>如果只是部署单机环境, <code>etcd</code> 中的 <code>discovery</code> 字段可以先省略，此字段是用来做
+服务发现的(供多个 etcd 通信).具体请参见<a href="https://coreos.com/docs/cluster-management/setup/cluster-discovery/">CoreOS Cluster Discovery</a></li>
+<li>units 部分的设置会转换为相应的 systemd unit. <code>etcd</code>,<code>fleet</code> 等都是已定义好的，
+配置为开机启动即可。<code>fleet</code>为<code>systemd</code>提供了在集群内部调度<code>systemd unit</code>的能
+力。</li>
+<li>users 部分的<code>ssh-authorized-keys</code>是用来设置需要登入这台 coreos 的 key 的,可为多个。
+因为 Coreos 安装默认是<code>core</code>和<code>root</code>两个用户，都没有密码,只能通过远程<code>ssh</code> 登陆
+来操作。选择好以后将用来登陆 coreos 的机器之后，将其 ssh key 粘贴到这即可，可添加
+多台机器的 key.如果需要，也可以生成为 core 用户生成密码，但没多大必要，具体可参
+见相关文档。</li>
+<li>安装完成之后, <code>cloud-config.yml</code>的内容会保存在
+<code>/var/lib/coreos-install/user_data</code>文件中，后续机器重启均会加载此文件。后续的
+更改也应该在这里进行。</li>
+</ol>
+<h4 id="内网环境"><strong>内网环境</strong></h4>
+<p>之前提过因为墙的原因很难下到安装时所需的镜像。下面介绍内网部署的方法:</p>
+<ol>
+<li>
+<p>下载安装脚本 :
+<a href="https://raw.githubusercontent.com/coreos/init/master/bin/coreos-install">https://raw.githubusercontent.com/coreos/init/master/bin/coreos-install</a>,
+添加可执行权限。</p>
+</li>
+<li>
+<p>查看 <code>BASE_URL</code> 变量所指向的地址,如下所示 :</p>
+<pre><code> BASE_URL=&quot;http://${CHANNEL_ID}.release.core-os.net/amd64-usr/${VERSION_ID}&quot;
+</code></pre>
+<p>其中<code>CHANNEL_ID</code>是在下载 ISO 的时候就选择好的，一般都是<code>stable</code>,<code>VERSION_ID</code>为 LIVE CD 的版本号,在 <code>/etc/os-release</code>中。</p>
+</li>
+<li>
+<p>在上面的地址中下载如下文件 :</p>
+<ol>
+<li>coreos_production_image.bin.bz2</li>
+<li>coreos_production_image.bin.bz2.DIGESTS</li>
+<li>coreos_production_image.bin.bz2.DIGESTS.asc</li>
+<li>coreos_production_image.bin.bz2.DIGESTS.sig</li>
+<li>coreos_production_image.bin.bz2.sig</li>
+</ol>
+<p>这个看自己能力了。如果实在下不下来，可以到百度网盘里搜一下,应该已经有人在里面存有。</p>
+</li>
+<li>
+<p>在另外一台机器上部署<code>web server</code>,不嫌麻烦的可以用 <code>apache</code>,更简单的方法如下 :
+在文件所在的目录下执行 :</p>
+<pre><code> python -m SimpleHTTPSever
+</code></pre>
+<p>默认监听端口为 8000.</p>
+</li>
+<li>
+<p>修改 <code>coreos-install</code> 文件中的 <code>BASE_URL</code> 变量,改为自己的目录位置即可。</p>
+</li>
+</ol>
+<h4 id="最终安装"><strong>最终安装</strong></h4>
+<p>安装命令就一个 :</p>
+<pre><code>coreos-install -d /dev/sda -C stable -c ~/cloud-config.yaml
+</code></pre>
+<p>注意点 :</p>
+<ol>
+<li>
+<p>/dev/sda 为所要安装到的硬盘。安装有可能会出现 &ldquo;Device Or Resource Busy &ldquo;之类
+的问题，一般重启下机器即可。</p>
+</li>
+<li>
+<p>安装之后如果发现有问题并且进不去系统,比如网络故障，可以用 Live CD 来修复,将有
+问题的系统挂在到 Live CD 上修改<code>user_data</code>即可。 命令如下 :</p>
+<pre><code> mount -o subvol=root /dev/sda9 /mnt/
+</code></pre>
+</li>
+</ol>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2015-01-22
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E6%8A%80%E6%9C%AF/">技术</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2015-01-23-bash-config-files/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">bash 各配置文件浅析</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

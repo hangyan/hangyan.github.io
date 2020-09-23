@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>What is Helm Doing Wrong and How a Helm3 Controller Can Fix It - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="Helm is big success for sure, it&amp;rsquo;s nearly the standard application package format in kubernetes.You only need to provide some metadata about your application&amp;rsquo;s name, version, description….Helm can help you package up and upload to a central or custom chart repo.Just like npm,rpm,docker image, or whatever other package management system. About a year ago," /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2019-08-03-helm-controller/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="What is Helm Doing Wrong and How a Helm3 Controller Can Fix It" />
+<meta property="og:description" content="Helm is big success for sure, it&rsquo;s nearly the standard application package format in kubernetes.You only need to provide some metadata about your application&rsquo;s name, version, description….Helm can help you package up and upload to a central or custom chart repo.Just like npm,rpm,docker image, or whatever other package management system. About a year ago," />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2019-08-03-helm-controller/" />
+<meta property="article:published_time" content="2019-08-03T11:26:30+00:00" />
+<meta property="article:modified_time" content="2019-08-03T11:26:30+00:00" />
+<meta itemprop="name" content="What is Helm Doing Wrong and How a Helm3 Controller Can Fix It">
+<meta itemprop="description" content="Helm is big success for sure, it&rsquo;s nearly the standard application package format in kubernetes.You only need to provide some metadata about your application&rsquo;s name, version, description….Helm can help you package up and upload to a central or custom chart repo.Just like npm,rpm,docker image, or whatever other package management system. About a year ago,">
+<meta itemprop="datePublished" content="2019-08-03T11:26:30+00:00" />
+<meta itemprop="dateModified" content="2019-08-03T11:26:30+00:00" />
+<meta itemprop="wordCount" content="1393">
+
+
+
+<meta itemprop="keywords" content="Kubernetes,docker,helm," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="What is Helm Doing Wrong and How a Helm3 Controller Can Fix It"/>
+<meta name="twitter:description" content="Helm is big success for sure, it&rsquo;s nearly the standard application package format in kubernetes.You only need to provide some metadata about your application&rsquo;s name, version, description….Helm can help you package up and upload to a central or custom chart repo.Just like npm,rpm,docker image, or whatever other package management system. About a year ago,"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">What is Helm Doing Wrong and How a Helm3 Controller Can Fix It</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-08-03 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 1393 字 </span>
+          <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#why-is-there-a-tiller-server">Why is There a Tiller Server?</a></li>
+        <li><a href="#resource-conflicts">Resource Conflicts</a></li>
+        <li><a href="#hook-management">Hook Management</a></li>
+        <li><a href="#the-default-release-name">The Default Release Name</a></li>
+        <li><a href="#conclusion">Conclusion</a></li>
+        <li><a href="#links">Links</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>Helm is big success for sure, it&rsquo;s nearly the standard application package format in kubernetes.You only need to provide some metadata about  your application&rsquo;s name, version, description….Helm can help you package up and upload to a central or custom chart repo.Just like npm,rpm,docker image, or whatever other package management system.</p>
+<p>About a year ago, Helm3 was drafted. Since it&rsquo;s still on the proposal stage, most users are still using helm2, include us. The journey we spent with helm was not a very pleasant one, we struggled very hard to make it work. In the end, we decided to create a kubernetes controller based on Helm3 proposal, it works well and we open source it on github: <a href="https://github.com/alauda/captain">captain</a>.</p>
+<p>This articles will describe what problem we have encountered when we are using helm2 and how we fix it in captain.</p>
+<h2 id="why-is-there-a-tiller-server">Why is There a Tiller Server?</h2>
+<p>I remembered reading a article about a helm3 intro talk, when the speaker is showing the slide about removing tiller in helm3, the audience is so exited they applause for a very long time. Ah, awaked moment&hellip;Yes, everyone hates Tiller.</p>
+<p>So, back to the beginning. From the helm doc:</p>
+<blockquote>
+<p>Tiller is the in-cluster component of Helm. It interacts directly with the Kubernetes API server to install, upgrade, query, and remove Kubernetes resources. It also stores the objects that represent releases.</p>
+</blockquote>
+<p>Seems promising. But in the real scenario, it introduced tons of problems:</p>
+<ol>
+<li>complicates RBAC since it&rsquo;s not using the RBAC of the user or pod running the helm commands to read/write kubernetes resources.</li>
+<li>all releases should have a unique name within a tiller.  If you are using a global tiller(yes, a cluster can have multiple tillers&hellip;), means that all your release name must be unique across all namespaces, even when the actual release info is stored in a namespace based secret or configmap.Often you have to choose long names and it cause a lot of problems in kubernetes service discovery.</li>
+<li>can cause lots of version conflicts between helm clients + tiller versions</li>
+</ol>
+<p>So, before the helm3 can be production ready, users in the community have  to lives with it, enormous issues has been reported on this topic:</p>
+<ul>
+<li><a href="https://github.com/helm/helm/issues/5105">Error: could not find tiller</a></li>
+<li><a href="https://github.com/helm/helm/issues/4685">Helm says tiller is installed AND could not find tiller</a></li>
+<li><a href="https://gitlab.com/gitlab-org/gitlab-ee/issues/11725">Problem installing helm tiller</a></li>
+<li><a href="https://github.com/helm/helm/issues/5389">Authentication problem when installing something</a></li>
+</ul>
+<p>I believe a lot of people who just want to install a chart have stuck at the first place: let tiller running normally!</p>
+<p>And, even this is harder, but there is still some solutions to avoid it when using helm2:</p>
+<ul>
+<li><a href="https://jenkins-x.io/news/helm-without-tiller/">How to avoid Tiller</a></li>
+<li><a href="https://rimusz.net/tillerless-helm">Tillerless Helm v2</a></li>
+</ul>
+<p>Since helm3 remove tiller and the core helm code is in it&rsquo;s alpha stage, we choose to create a kubernetes controller using helm code as a library(also a proposal in helm3). Of course the helm3 code is not production ready, and we have to do some modification to make the controller working properly, but the result is promising. The workflow around helm also changed, from a <code>helm install</code> command with various command line args to a HelmRequest CRD, this also brought some advantages:</p>
+<ul>
+<li>The controller can automatic retry install/upgrade if failed</li>
+<li>Since  HelmRequest CRD  is a simple yaml file, it can be saved to the source code repo</li>
+<li>store common configs in a configmap or secret allow multiple HelmRequest resource to ref to</li>
+<li>&hellip;</li>
+</ul>
+<h2 id="resource-conflicts">Resource Conflicts</h2>
+<p>The helm v3 proposal does&rsquo;t seems to  mention this at all, but i believe it&rsquo;s a much worse problem than Tiller. You want to install a chart, some resources already exist, it failed. you upgrade it, somehow it failed again, you delete it and reinstall it again, it failed. I believe most of the users have encountered this kind of problem.</p>
+<p>In fact, this problem drives us crazy, just because we have a few charts  which contains dozens of resources and a few of  crds. Constantly, it fails when we deploy these charts. This is the directly reason why we make the effort to create captain, the helm controller.</p>
+<p>There is no need to paste github issues or stackoverflow questions on this topic, just search &lsquo;helm install failure&rsquo; or &lsquo;helm upgrade failure&rsquo; in google. you will find numerous results on this topic. The underlying reason is simple: the developer of helm didn&rsquo;t think this is problem. Why? doesn&rsquo;t matter now,  the consequences has prove that this is a totally wrong deceision no matter what .</p>
+<p>Just when i&rsquo;m writing this, we have encounter a problem liks this:</p>
+<ul>
+<li><a href="https://github.com/helm/helm/issues/3275">Error: UPGRADE FAILED: no resource with the name &ldquo;anything_goes&rdquo; found</a></li>
+</ul>
+<p>Yes, we want to upgarde a release, but it reported this error message. It&rsquo;s very confusing, and i&rsquo;m tired of tracing these kind of  issues, let me  quote one  of the responses from this github issue:</p>
+<p><img src="/images/helm/rc.png" alt="image-20190803142538909"></p>
+<p>Let&rsquo;s see how kubectl handle this problem, it has a <code>kubectl create</code> command, and also a <code>kubectl apply</code> command, it&rsquo;s logic is very simple:</p>
+<ul>
+<li>if the resource not exist, create</li>
+<li>if it exist, update it</li>
+</ul>
+<p>I think <code>kubectl apply</code> is one of the most heavily used command in kubectl. Since helm3 does not intend to fix this issue, we have fix it in captain, by adding anther resource handle layer on top of helm3. It&rsquo;s not perfect, but it works well.</p>
+<h2 id="hook-management">Hook Management</h2>
+<p>Hooks is a very powerful tool, if only you used it correctly. Helm&rsquo;s hook is bit of odd and confusing, I think it&rsquo;s happens a lot when you use helm. It&rsquo;s hard to guess what helm does under the hood.</p>
+<p>For example, the <code>crd-install</code> hook. It&rsquo;s can be used to ensure helm install these CRDs first, so the upcoming CRs can be installed correctly (the apiserver need sometime to update it&rsquo;s discovery info). But, if you add crd-install hook to a CRD, the CRD is not a normal resource to helm anymore. If you delete the release, the CRD will not be deleted. Next time you install the same chart again, boom, the install will failed. Why? because it already exist. Even worse, it seems sometimes you cannot upgrade a crd with crd-install hook:</p>
+<ul>
+<li><a href="https://github.com/helm/helm/issues/4697">crd-install hook is not working on upgrade</a></li>
+</ul>
+<p>We have encountered this problem once, we don&rsquo;t know what to do. We have to delete the CRD, just like Thanos doing his finger snap.. a lot of related resource was gone….</p>
+<p>Helm also provide an alternative solution: put all your CRDs in a single chart. Install it first, and then install other charts later. This actually is not helpful in many circumstances. Usually wen we hit this problem, we already have a first version of the charts&rsquo;s structure. If we move the crds around, we will have to do a upgrade(migration), again, either the upgrade failed, or the same resource conflicts problem occurs as described above.</p>
+<p>In <code>captain</code>, since we choose an <code>apply</code> logic when create/update resource , none of this will happens again.</p>
+<h2 id="the-default-release-name">The Default Release Name</h2>
+<p>If you install a helm chart, and does not specific a release name, helm will generate a random one for you, in the same format when docker create containers, such as <code>listening-rodent</code>,<code>mortal-kudu</code>.</p>
+<p>Docker choose this name format, because they assign each container a uuid and users often use this uuid, so the names often doest not matter. But in helm release, this name is important, you need use this name to upgrade and delete a release, and helm generated this crap for you.</p>
+<p>So, wen we design the HelmRequest CRD, the obvious and most simple choice is : If use supply a release name, use it, If not, use the HelmRequest&rsquo;s name. Since HelmRequest is namespace based, there is no need to worry about name conflicts any more.</p>
+<p>For example, a origin resource description is :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">HelmRequest</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">app.alauda.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">nginx-ingress</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">chart</span><span class="p">:</span><span class="w"> </span><span class="l">stable/nginx-ingress</span><span class="w">
+</span><span class="w">  
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Turns to after created:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">app.alauda.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">HelmRequest</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">finalizers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="l">captain.alauda.io</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">nginx-ingress</span><span class="w">
+</span><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">chart</span><span class="p">:</span><span class="w"> </span><span class="l">stable/nginx-ingress</span><span class="w">
+</span><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
+</span><span class="w">  </span><span class="nt">releaseName</span><span class="p">:</span><span class="w"> </span><span class="l">nginx-ingress</span><span class="w">
+</span><span class="w">  </span><span class="nt">clusterName</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">installToAllClusters</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id="conclusion">Conclusion</h2>
+<p>This list can go on and go on, different users may suffer from different issues. The helm3 proposal seems quite promising, and it brought a lot of new awesome features, and we are very looking forward to it to become production ready.</p>
+<p>Again, weclome to check the <a href="https://github.com/alauda/captain">captain</a> project out, all suggestions and PRs are welcome.</p>
+<h2 id="links">Links</h2>
+<ol>
+<li><a href="https://helm.sh/docs/glossary/">Helm Glossary</a></li>
+<li><a href="https://github.com/helm/community/blob/master/helm-v3/000-helm-v3.md">Helm 3 Design Proposal</a></li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-08-03
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/kubernetes/">Kubernetes</a>
+          <a href="/tags/docker/">docker</a>
+          <a href="/tags/helm/">helm</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2019-08-22-db-os/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">数据库与操作系统</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2019-08-02-classic/">
+            <span class="next-text nav-default">古典精神的衰落</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

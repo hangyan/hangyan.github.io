@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Golang 1.9 Release Note - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="今天在翻存在 Pocket 里的文章，翻到一篇 Golang 1.9 的 Release Note。不得不说，Golang 在文档化上做的相当不错。对比其他语言来说，人们关注于每个版本的更新也" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2019-05-27-golang-release-note/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Golang 1.9 Release Note" />
+<meta property="og:description" content="今天在翻存在 Pocket 里的文章，翻到一篇 Golang 1.9 的 Release Note。不得不说，Golang 在文档化上做的相当不错。对比其他语言来说，人们关注于每个版本的更新也" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2019-05-27-golang-release-note/" />
+<meta property="article:published_time" content="2019-05-27T22:28:38+00:00" />
+<meta property="article:modified_time" content="2019-05-27T22:28:38+00:00" />
+<meta itemprop="name" content="Golang 1.9 Release Note">
+<meta itemprop="description" content="今天在翻存在 Pocket 里的文章，翻到一篇 Golang 1.9 的 Release Note。不得不说，Golang 在文档化上做的相当不错。对比其他语言来说，人们关注于每个版本的更新也">
+<meta itemprop="datePublished" content="2019-05-27T22:28:38+00:00" />
+<meta itemprop="dateModified" content="2019-05-27T22:28:38+00:00" />
+<meta itemprop="wordCount" content="1038">
+
+
+
+<meta itemprop="keywords" content="Golang,language," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Golang 1.9 Release Note"/>
+<meta name="twitter:description" content="今天在翻存在 Pocket 里的文章，翻到一篇 Golang 1.9 的 Release Note。不得不说，Golang 在文档化上做的相当不错。对比其他语言来说，人们关注于每个版本的更新也"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Golang 1.9 Release Note</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-05-27 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 1038 字 </span>
+          <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#19-新特性介绍">1.9 新特性介绍</a>
+      <ul>
+        <li><a href="#syncmap">sync.Map</a></li>
+        <li><a href="#test">Test</a>
+          <ul>
+            <li><a href="#testhelper">test.Helper()</a></li>
+            <li><a href="#benchmark">Benchmark</a></li>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="#subtests">Subtests</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#links">Links</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <!-- toc -->
+<p>今天在翻存在 Pocket 里的文章，翻到一篇 Golang 1.9 的 <a href="https://golang.org/doc/go1.9">Release Note</a>。不得不说，Golang 在文档化上做的相当不错。对比其他语言来说，人们关注于每个版本的更新也会更多。不过这样的对比样本比较少，可能也不是很公正。Python 因为 2/3 版本的分离，可能很多人都不太关心 3 版本的更新。C/CPP 的文档一直比较欠缺，差距太大，而且版本之间迭代的也比较慢（历史包袱也多）。</p>
+<p>现在 Golang 的版本已经到 1.13 了大概，2 的 design 也应该有不少文档。这样追下去应该有不少发现。利用语言的新特性来优化代码也是一件很有乐趣的事情。</p>
+<h1 id="19-新特性介绍">1.9 新特性介绍</h1>
+<h2 id="syncmap">sync.Map</h2>
+<p>之前知道有这么个东西，但是自己在写代码的时候仍然没有将他作为一个<code>默认的选项</code>来考虑，仍然是自己加了 lock 手工实现，不得不说是一件很拙劣的事情。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">type</span> <span class="nx">a</span> <span class="kd">struct</span> <span class="p">{</span>
+  <span class="nx">lock</span>      <span class="nx">sync</span><span class="p">.</span><span class="nx">RWMutex</span>
+  <span class="nx">data</span>      <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>再加上一些自己实现的<code>get/set</code>函数。现在用一个普通的<code>sync.Map</code>即可。注释上说了它有自己的适用场景：</p>
+<ol>
+<li>value 只写一次但是多次读</li>
+<li>不同 goroutines 读写的数据不重合</li>
+</ol>
+<p>即使这样，适用的场景还是挺多的。更少的代码，更好的性能，值得考虑。</p>
+<h2 id="test">Test</h2>
+<p>Golang 的 Test 包也包含了很多比较<code>少见</code>的的功能。借助 1.9 的 Release Note 看了下，也都是很实用的。</p>
+<h3 id="testhelper">test.Helper()</h3>
+<p>在测试中我们经常需要写一些 helper function,这些函数是服务于真正的测试函数。如果它们出错并且打印出来，只能显示到 helper function 的文件名和行号。比如我们自己实现一个 assert 函数，查看错误就很不方便。而<code>test.Helper()</code>就是为了解决这个问题，当在 helper function 中打印具体的错误时，会显示的是调用者的文件名和行号，如下面例子所示:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">helper</span>
+
+<span class="kn">import</span> <span class="s">&#34;testing&#34;</span>
+
+<span class="kd">func</span> <span class="nf">TestHelper</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">a</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">asserter</span><span class="p">{</span><span class="nx">T</span><span class="p">:</span> <span class="nx">t</span><span class="p">}</span>
+	<span class="nx">a</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+	<span class="nx">a</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+	<span class="nx">a</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">asserter</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">T</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">asserter</span><span class="p">)</span> <span class="nf">Equal</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">{</span>
+	<span class="nx">m</span><span class="p">.</span><span class="nx">T</span><span class="p">.</span><span class="nf">Helper</span><span class="p">()</span>
+	<span class="k">if</span> <span class="nx">a</span> <span class="o">!=</span> <span class="nx">b</span> <span class="p">{</span>
+		<span class="nx">m</span><span class="p">.</span><span class="nx">T</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;expected %#v (%T) was %#v (%T)&#34;</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>输出如下:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">===</span> RUN   TestHelper
+--- FAIL: TestHelper <span class="o">(</span>0.00s<span class="o">)</span>
+        run_test.go:8: expected <span class="m">1</span> <span class="o">(</span>int<span class="o">)</span> was <span class="m">2</span> <span class="o">(</span>int<span class="o">)</span>
+        run_test.go:9: expected <span class="m">1</span> <span class="o">(</span>int<span class="o">)</span> was <span class="m">3</span> <span class="o">(</span>int<span class="o">)</span>
+FAIL
+<span class="nb">exit</span> status <span class="m">1</span>
+FAIL    github.com/tobstarr/gohelper    0.001s
+
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="benchmark">Benchmark</h3>
+<p>Benchmark 类的测试在业务上可能用处不是很大， 一般来说更适用于自定义的数据结构，比如 Golang 的标准包里的那些，需要严格测试其性能。在业务上，一般来说测试的都是具体业务逻辑，很多地方都是 mock，也没法直接测试性能，可能直接用集成测试更好。但是一旦有自定义的类似于标准包里的那些数据结构，还是挺合适的。</p>
+<h3 id="examples">Examples</h3>
+<p>有点类似于简化版的 tests，但是可以用于 godoc 的展示。也是一个一般业务上不太用到的功能。</p>
+<h3 id="subtests">Subtests</h3>
+<p>应该推广的 <code>table driven tests</code>。基本上在一个 test 函数内需要多次对比结果的都应该这样写，在测试结果的输出上也更加清晰。不一定非要写成 for 循环的格式。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">TestFoo</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// &lt;setup code&gt;
+</span><span class="c1"></span>    <span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;A=1&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span> <span class="o">...</span> <span class="p">})</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;A=2&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span> <span class="o">...</span> <span class="p">})</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="s">&#34;B=1&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span> <span class="o">...</span> <span class="p">})</span>
+    <span class="c1">// &lt;tear-down code&gt;
+</span><span class="c1"></span><span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><h1 id="links">Links</h1>
+<ol>
+<li><a href="https://golang.org/pkg/sync/#Map">sync.Map</a></li>
+<li><a href="https://www.tobstarr.com/2017/06/16/better-test-helpers-in-go/">Better test helpers in go 1.9</a></li>
+<li><a href="https://golang.org/pkg/testing/">testing</a></li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-05-27
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/golang/">Golang</a>
+          <a href="/tags/language/">language</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2019-06-27-comedy-tv/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">喜剧</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2019-05-24-apiserver/">
+            <span class="next-text nav-default">作为公共组件的 apiserver</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

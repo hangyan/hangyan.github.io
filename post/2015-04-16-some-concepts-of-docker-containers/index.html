@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>docker 容器的一些概念辨析 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="本篇的主要内容是为了澄清 docker 容器的一些容易混淆的概念，主要分两部分， 一是容器端口的publish和expose,二是 Dockerfile 中ENTRYPOINT和CMD的区分。
+" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2015-04-16-some-concepts-of-docker-containers/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="docker 容器的一些概念辨析" />
+<meta property="og:description" content="本篇的主要内容是为了澄清 docker 容器的一些容易混淆的概念，主要分两部分，
+一是容器端口的publish和expose,二是 Dockerfile 中ENTRYPOINT和CMD的区分。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2015-04-16-some-concepts-of-docker-containers/" />
+<meta property="article:published_time" content="2015-04-16T21:37:39+08:00" />
+<meta property="article:modified_time" content="2015-04-16T21:37:39+08:00" />
+<meta itemprop="name" content="docker 容器的一些概念辨析">
+<meta itemprop="description" content="本篇的主要内容是为了澄清 docker 容器的一些容易混淆的概念，主要分两部分，
+一是容器端口的publish和expose,二是 Dockerfile 中ENTRYPOINT和CMD的区分。">
+<meta itemprop="datePublished" content="2015-04-16T21:37:39+08:00" />
+<meta itemprop="dateModified" content="2015-04-16T21:37:39+08:00" />
+<meta itemprop="wordCount" content="1580">
+
+
+
+<meta itemprop="keywords" content="docker," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="docker 容器的一些概念辨析"/>
+<meta name="twitter:description" content="本篇的主要内容是为了澄清 docker 容器的一些容易混淆的概念，主要分两部分，
+一是容器端口的publish和expose,二是 Dockerfile 中ENTRYPOINT和CMD的区分。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">docker 容器的一些概念辨析</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2015-04-16 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 1580 字 </span>
+          <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#expose-or-publish">Expose or Publish</a></li>
+        <li><a href="#entrypoint-or-cmd">ENTRYPOINT or CMD</a>
+          <ul>
+            <li><a href="#run">RUN</a></li>
+            <li><a href="#cmd">CMD</a></li>
+            <li><a href="#entrypoint">ENTRYPOINT</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>本篇的主要内容是为了澄清 docker 容器的一些容易混淆的概念，主要分两部分，
+一是容器端口的<code>publish</code>和<code>expose</code>,二是 Dockerfile 中<code>ENTRYPOINT</code>和<code>CMD</code>的区分。</p>
+<h2 id="expose-or-publish">Expose or Publish</h2>
+<p><code>expose</code>的作用是为了容器间通信，也就是说 expose 的端口只能被其他容器访问，但是
+不能被 docker 之外访问，而<code>publish</code>的端口即可用于容器间通信也可被外界访问。所以从
+逻辑上来说,<code>publish</code>包含了<code>expose</code>。</p>
+<p>有这样的区分主要是为了可移植性。我们知道在<code>Dockerfile</code>文件中只有<code>Expose</code>命令,
+<code>expose</code>暴露的端口只能用于容器间通信，不会跟主机上的端口冲突。如果在
+<code>Dockerfile</code>中加入了<code>publish</code>，在其他的机器上构建时就有可能导致端口冲突。</p>
+<p>在命令行里使用这两个参数时，二者是可以混用的，不会冲突。同时指定<code>--expose</code>和
+<code>--publish</code>与单独使用<code>--publish</code>的效果一样。</p>
+<h2 id="entrypoint-or-cmd">ENTRYPOINT or CMD</h2>
+<p>Docker 提供了一个默认的<code>ENTRYPOINT</code>:<code>/bin/sh -c</code>,但是没有默认的<code>CMD</code>。比如当我们
+在命令行里执行<code>docker run -it ubuntu bash</code>的时候,entrypoint 就是<code>/bin/sh -c</code>，
+command 就是<code>bash</code>。</p>
+<p>在命令行里,所有镜像名字之后的参数都是作为 command 传给了 entrypoint。在<code>Dockerfile</code>
+中，我们可以指定默认的<code>ENTRYPOINT</code>和<code>CMD</code>。比如我们执行<code>docker run -it ubuntu</code>的
+时候，效果和<code>docker run -it ubuntu bash</code>是一样的，因为 ubuntu 的 Dockerfile 里指定了
+<code>CMD</code>为<code>bash</code>.</p>
+<p>二者的分离主要也是应用在 Dockerfile 中,通过灵活的设置，我们可以做出来一些有趣的，
+很方便使用的镜像。比如将<code>ENTRYPOINT</code>设为<code>[/bin/cat]</code>,那么在执行<code>docker run　catimg /etc/password</code>的时候就相当于在执行<code>/bin/cat /etc/password</code>,整个镜像此时变
+成了一个二进制程序。这个例子可能显得有点无聊，但是既然任意程序都可以用做
+<code>ENTRYPOINT</code>,自然是只有想不到，没有做不到了。如果将一个 redis 镜像的<code>ENTRYPOINT</code>设
+为<code>[&quot;redis&quot;, &quot;-H&quot;, &quot;something&quot;, &quot;-u&quot;, &quot;toto&quot;]</code>,那么在执行<code>docker run redisimg get key</code>就相当于<code>docker run redisimg redis -H something -u toto get key</code>,这就是
+一个简单明了的 redis 客户端，也不用输那么多参数了。</p>
+<p>Dockerfile 中与此相关的命令还有一个<code>RUN</code>，相关细节较为琐碎，下面将详细叙述：</p>
+<h3 id="run">RUN</h3>
+<p><code>RUN</code>用来在上一层 layer 的基础上执行一些系统命令并且创建新的一层，可以说是
+Dockerfile 中最为常见的命令了，主要有两种形式</p>
+<ul>
+<li><code>RUN &lt;command&gt;</code> 通过<code>/bin/sh -c</code>执行</li>
+<li><code>RUN [&quot;executable&quot;, &quot;param1&quot;, &quot;param2&quot;]</code> (exec 形式)</li>
+</ul>
+<p>exec 形式可以避免 shell 对参数的一些处理并且可以用在一些没有<code>/bin/sh</code>的基本镜像上，
+如果想使用别的 shell，也可以使用此种方式,比如<code>RUN [&quot;/bin/bash&quot;, &quot;-c&quot;, &quot;echo hello&quot;]</code>。
+注意事项:</p>
+<ol>
+<li>exec 形式是以 json 数组的形式来解析的，所以各参数必须用双引号<code>&quot;&quot;</code>，不能用单引号<code>''</code>。</li>
+<li>exec 形式下如果不明确制定是不会调用 shell 的，也就意味着一些环境变量是无法解析的，</li>
+</ol>
+<p>比如<code>RUN [ &quot;echo&quot;, &quot;$HOME&quot; ]</code>，如果需要必须自己明确指定所用的 shell</p>
+<h3 id="cmd">CMD</h3>
+<p><code>CMD</code>主要是为容器提供默认的运行程序，有三种形式:</p>
+<ul>
+<li><code>CMD [&quot;executable&quot;,&quot;param1&quot;,&quot;param2&quot;]</code> (exec 形式)</li>
+<li><code>CMD [&quot;param1&quot;,&quot;param2&quot;]</code> (将参数传给<code>ENTRYPOINT</code>)</li>
+<li><code>CMD command param1 param2</code> (shell 形式,<code>/bin/sh -c</code>执行)</li>
+</ul>
+<p>一个 Dockerfile 中只能有一个<code>CMD</code>，如果指定了多个，只有最后一个起作用。运行时的参
+数会覆盖 Dockerfile 中<code>CMD</code>。</p>
+<p>注意事项可参考<code>RUN</code>的注意事项</p>
+<h3 id="entrypoint">ENTRYPOINT</h3>
+<p><code>ENTRYPOINT</code>有两种形式:</p>
+<ul>
+<li><code>ENTRYPOINT [&quot;executable&quot;, &quot;param1&quot;, &quot;param2&quot;]</code> (exec 形式)</li>
+<li><code>ENTRYPOINT command param1 param2</code> (shell 形式)</li>
+</ul>
+<p>类似于<code>CMD</code>,如果指定了多个<code>ENTRYPOINT</code>，只有最后一个起作用。<code>docker run --entrypoint</code>可覆盖 Dockerfile 中的设置。</p>
+<p>exec 形式是最常用的，shell 形式会阻止任何<code>CMD</code>或者<code>run</code>的参数的执行(因为已经在
+ENTRYPOINT 中指定了执行程序),但是不能传递信号。</p>
+<p>##　参考链接</p>
+<ol>
+<li><a href="http://docs.docker.com/reference/builder/#entrypoint">Dockerfile Reference</a></li>
+<li><a href="http://stackoverflow.com/questions/22111060/difference-between-expose-and-publish-in-docker">Difference between “expose” and “publish” in docker</a></li>
+<li><a href="http://stackoverflow.com/questions/21553353/what-is-the-difference-between-cmd-and-entrypoint-in-a-dockerfile">What is the difference between CMD and ENTRYPOINT in a Dockerfile?</a></li>
+</ol>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2015-04-16
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/docker/">docker</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2015-05-08-container-process-monitor/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">docker 容器内多进程的管理方案</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2015-04-03-docker-source-code-part6-image-delete/">
+            <span class="next-text nav-default">docker 源码分析(6) -- 镜像删除</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

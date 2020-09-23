@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>在 Gitlab 中使用 Danger - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="Gitlab 社区版的 CI 功能非常好用，能够很方便的地做到代码的 lint/build/test/等等。不过社区版在多人协作上(比如 Merge Request)上阉割" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2019-05-07-gitlab-danger/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="在 Gitlab 中使用 Danger" />
+<meta property="og:description" content="Gitlab 社区版的 CI 功能非常好用，能够很方便的地做到代码的 lint/build/test/等等。不过社区版在多人协作上(比如 Merge Request)上阉割" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2019-05-07-gitlab-danger/" />
+<meta property="article:published_time" content="2019-05-07T23:23:52+00:00" />
+<meta property="article:modified_time" content="2019-05-07T23:23:52+00:00" />
+<meta itemprop="name" content="在 Gitlab 中使用 Danger">
+<meta itemprop="description" content="Gitlab 社区版的 CI 功能非常好用，能够很方便的地做到代码的 lint/build/test/等等。不过社区版在多人协作上(比如 Merge Request)上阉割">
+<meta itemprop="datePublished" content="2019-05-07T23:23:52+00:00" />
+<meta itemprop="dateModified" content="2019-05-07T23:23:52+00:00" />
+<meta itemprop="wordCount" content="874">
+
+
+
+<meta itemprop="keywords" content="工具,CI/CD,Gitlab," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="在 Gitlab 中使用 Danger"/>
+<meta name="twitter:description" content="Gitlab 社区版的 CI 功能非常好用，能够很方便的地做到代码的 lint/build/test/等等。不过社区版在多人协作上(比如 Merge Request)上阉割"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">在 Gitlab 中使用 Danger</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-05-07 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 874 字 </span>
+          <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#功能">功能</a></li>
+        <li><a href="#安装">安装</a>
+          <ul>
+            <li><a href="#创建用户">创建用户</a></li>
+            <li><a href="#添加-danger-到-gitlab-ci-文件中">添加 Danger 到 Gitlab CI 文件中</a></li>
+            <li><a href="#添加-dangerfile">添加 Dangerfile</a></li>
+            <li><a href="#效果">效果</a></li>
+          </ul>
+        </li>
+        <li><a href="#links">Links</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>Gitlab 社区版的 CI 功能非常好用，能够很方便的地做到代码的 lint/build/test/等等。不过社区版在多人协作上(比如 Merge Request)上阉割了不少功能，
+比如将 MR assign 给多人等。通常来说，在代码合并这块，CI/CD 一般包括两部分: 代码本身以及 MR/PR 本身。Danger 这个工具正好可以补足 Gitlab 在后者的不足。</p>
+<h2 id="功能">功能</h2>
+<p>Gitlab CI 的关注点在于提交的代码本身，而 Danger 的关注点在于 Merge Request 本身，当然也可以做到很多 Gitlab CI 能做到的事情，各种第三方插件也能极大地扩种 Danger 自身的能力。目前我觉得几个非常有用的功能是：</p>
+<ol>
+<li>检查 Commit Message 的格式。这个功能是很基本的，但是很多 CI 系统本身都不支持。</li>
+<li>检查与 jira 的关联。强制让每一个 MR 都关联一个 jira,方便项目管理</li>
+<li>检查 MR 是否打标签。在 MR 非常多的时候用于给 MR 归类，在 Github 上的大项目上我们经常见到</li>
+<li>检查 MR 的大小。改动太大的 MR 是不推荐的，因为 Review 起来难度太大，推荐分裂成比较小的 MR</li>
+<li>检查是否 rebase 过了目标分支,保持一个干净的提交记录。</li>
+</ol>
+<h2 id="安装">安装</h2>
+<p>因为 MR 本身属于 Git 系统的一个功能，所以 Danger 的一个主要能力在于与各大平台的集成性上,目前主流的 Gitlab/Github/都支持。也很容易部署。下面简要介绍与 Gitlab 的集成方法</p>
+<h3 id="创建用户">创建用户</h3>
+<ol>
+<li>创建一个新的用户，给予目标 Group 的 Reporter 权限</li>
+<li>生成一个具有 API 访问权限的 TOKEN，并且在目标项目的 CI/CD 配置里加到环境变量里: <code>DANGER_GITLAB_API_TOKEN</code></li>
+</ol>
+<h3 id="添加-danger-到-gitlab-ci-文件中">添加 Danger 到 Gitlab CI 文件中</h3>
+<p>一个示例如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">danger</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">only</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="l">merge_requests</span><span class="w">
+</span><span class="w">  </span><span class="nt">stage</span><span class="p">:</span><span class="w"> </span><span class="l">pre</span><span class="w">
+</span><span class="w">  </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">hangyan/danger</span><span class="w">
+</span><span class="w">  </span><span class="nt">script</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="l">danger --fail-on-errors=true</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>将其放在一个单独的 stage 中，一般在 MR 最开始的时候运行。<code>hangyan/danger</code>镜像的 Dockerfile 如下:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Dockerfile" data-lang="Dockerfile"><span class="k">FROM</span><span class="s"> ruby:2.4.1</span><span class="err">
+</span><span class="err"></span><span class="k">MAINTAINER</span><span class="s"> hangyan &lt;hangyan@hotmail.com&gt;</span><span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="k">RUN</span> gem install danger-gitlab danger-jira danger-commit_lint<span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="k">RUN</span> danger --version<span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="k">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&#34;danger&#34;</span><span class="p">]</span><span class="err">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>内容比较简单，安装了三个包</p>
+<ol>
+<li>danger-gitlab: danger 本身</li>
+<li>danger-jira: 检查与 jira 的关联</li>
+<li>danger-commit_lint: 检查 Commit Message</li>
+</ol>
+<h3 id="添加-dangerfile">添加 Dangerfile</h3>
+<p>Dangerfile 本身是一个 ruby 文件，作为配置文件来说有一定的学习成本，但一般的简单配置官网都可以找到示例。下面是一个 Example Config:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-ruby" data-lang="ruby"><span class="c1"># check milestone</span>
+<span class="n">has_milestone</span> <span class="o">=</span> <span class="n">gitlab</span><span class="o">.</span><span class="n">mr_json</span><span class="o">[</span><span class="s2">&#34;milestone&#34;</span><span class="o">]</span> <span class="o">!=</span> <span class="kp">nil</span>
+<span class="nb">warn</span><span class="p">(</span><span class="s2">&#34;This MR does not refer to an existing milestone&#34;</span><span class="p">,</span> <span class="ss">sticky</span><span class="p">:</span> <span class="kp">true</span><span class="p">)</span> <span class="k">unless</span> <span class="n">has_milestone</span>
+
+<span class="c1"># check label</span>
+<span class="n">failure</span> <span class="s2">&#34;Please add labels to this MR&#34;</span> <span class="k">if</span> <span class="n">gitlab</span><span class="o">.</span><span class="n">mr_labels</span><span class="o">.</span><span class="n">empty?</span>
+
+
+<span class="c1"># check jira</span>
+<span class="n">jira</span><span class="o">.</span><span class="n">check</span><span class="p">(</span>
+  <span class="ss">key</span><span class="p">:</span> <span class="o">[</span><span class="s2">&#34;DEV&#34;</span><span class="p">,</span> <span class="s2">&#34;INCI&#34;</span><span class="o">]</span><span class="p">,</span>
+  <span class="ss">url</span><span class="p">:</span> <span class="s2">&#34;http://jira.alaudatech.com/browse&#34;</span><span class="p">,</span>
+  <span class="ss">search_title</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span>
+  <span class="ss">search_commits</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span>
+  <span class="ss">fail_on_warning</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span>
+  <span class="ss">report_missing</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span>
+  <span class="ss">skippable</span><span class="p">:</span> <span class="kp">true</span>
+<span class="p">)</span>
+
+
+<span class="c1"># Ensure a clean commits history</span>
+<span class="k">if</span> <span class="n">git</span><span class="o">.</span><span class="n">commits</span><span class="o">.</span><span class="n">any?</span> <span class="p">{</span> <span class="o">|</span><span class="n">c</span><span class="o">|</span> <span class="n">c</span><span class="o">.</span><span class="n">message</span> <span class="o">=~</span> <span class="sr">/^Merge branch/</span> <span class="p">}</span>
+  <span class="nb">fail</span><span class="p">(</span><span class="s1">&#39;Please rebase to get rid of the merge commits in this PR&#39;</span><span class="p">)</span>
+<span class="k">end</span>
+
+
+<span class="c1"># Warn when there is a big PR</span>
+<span class="nb">warn</span><span class="p">(</span><span class="s2">&#34;Big PR, try to keep changes smaller if you can&#34;</span><span class="p">)</span> <span class="k">if</span> <span class="n">git</span><span class="o">.</span><span class="n">lines_of_code</span> <span class="o">&gt;</span> <span class="mi">500</span>
+
+
+<span class="c1"># commit message</span>
+<span class="n">commit_lint</span><span class="o">.</span><span class="n">check</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>每一部分都有响应的注释。</p>
+<h3 id="效果">效果</h3>
+<p><img src="/images/gitlab/danger.png" alt=""></p>
+<h2 id="links">Links</h2>
+<ol>
+<li><a href="https://github.com/hangyan/Danger">Dockerfile</a></li>
+<li><a href="https://danger.systems/guides/getting_started.html">Danger</a></li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-05-07
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E5%B7%A5%E5%85%B7/">工具</a>
+          <a href="/tags/ci/cd/">CI/CD</a>
+          <a href="/tags/gitlab/">Gitlab</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2019-05-08-install-gitlab/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">在 Kubernetes 中安装 Gitlab</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2019-05-06-debugger/">
+            <span class="next-text nav-default">少有人用的 debugger</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

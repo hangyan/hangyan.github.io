@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>docker 源码分析(1) -- 开发环境准备 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="之前看过一遍docker的代码，但比较粗略。第二遍准备详细过一遍并且用博客的方式将其 整理一下。目前为止docker的稳定版本为1.4.1,所以就以此版本的代码为基础进行阅读，分 析。
+" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2015-01-29-docker-source-code-part1-dev-setup/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="docker 源码分析(1) -- 开发环境准备" />
+<meta property="og:description" content="之前看过一遍docker的代码，但比较粗略。第二遍准备详细过一遍并且用博客的方式将其
+整理一下。目前为止docker的稳定版本为1.4.1,所以就以此版本的代码为基础进行阅读，分
+析。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2015-01-29-docker-source-code-part1-dev-setup/" />
+<meta property="article:published_time" content="2015-01-29T21:37:39+08:00" />
+<meta property="article:modified_time" content="2015-01-29T21:37:39+08:00" />
+<meta itemprop="name" content="docker 源码分析(1) -- 开发环境准备">
+<meta itemprop="description" content="之前看过一遍docker的代码，但比较粗略。第二遍准备详细过一遍并且用博客的方式将其
+整理一下。目前为止docker的稳定版本为1.4.1,所以就以此版本的代码为基础进行阅读，分
+析。">
+<meta itemprop="datePublished" content="2015-01-29T21:37:39+08:00" />
+<meta itemprop="dateModified" content="2015-01-29T21:37:39+08:00" />
+<meta itemprop="wordCount" content="1778">
+
+
+
+<meta itemprop="keywords" content="docker," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="docker 源码分析(1) -- 开发环境准备"/>
+<meta name="twitter:description" content="之前看过一遍docker的代码，但比较粗略。第二遍准备详细过一遍并且用博客的方式将其
+整理一下。目前为止docker的稳定版本为1.4.1,所以就以此版本的代码为基础进行阅读，分
+析。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">docker 源码分析(1) -- 开发环境准备</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2015-01-29 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 1778 字 </span>
+          <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#本篇内容">本篇内容</a></li>
+    <li><a href="#源码编译-docker">源码编译 docker</a>
+      <ul>
+        <li><a href="#构建">构建</a></li>
+        <li><a href="#注意事项">注意事项</a></li>
+      </ul>
+    </li>
+    <li><a href="#开发环境">开发环境</a>
+      <ul>
+        <li><a href="#ide">IDE</a></li>
+        <li><a href="#emacs">Emacs</a>
+          <ul>
+            <li><a href="#go-modehttpsgithubcomdominikhgo-modeel"><a href="https://github.com/dominikh/go-mode.el">go-mode</a></a></li>
+            <li><a href="#gocodehttpsgithubcomnsfgocode"><a href="https://github.com/nsf/gocode">gocode</a></a></li>
+            <li><a href="#xcscopehttpsgithubcomdkoganxcscopeel"><a href="https://github.com/dkogan/xcscope.el">xcscope</a></a></li>
+            <li><a href="#ecbhttpecbsourceforgenet"><a href="http://ecb.sourceforge.net/">ecb</a></a></li>
+            <li><a href="#helmhttpsgithubcomemacs-helmhelm"><a href="https://github.com/emacs-helm/helm">helm</a></a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>之前看过一遍<code>docker</code>的代码，但比较粗略。第二遍准备详细过一遍并且用博客的方式将其
+整理一下。目前为止<code>docker</code>的稳定版本为<code>1.4.1</code>,所以就以此版本的代码为基础进行阅读，分
+析。</p>
+<h1 id="本篇内容">本篇内容</h1>
+<p>一个大项目的源码阅读当然是从主程序入口开始最好, 一步一步，结合实际程序进行测试分
+析。 本来准备一起介绍相关环境设置以及源码中关于启动部分的，但前者内容较多，所以
+单列一篇进行介绍。</p>
+<h1 id="源码编译-docker">源码编译 docker</h1>
+<h2 id="构建">构建</h2>
+<p><code>ubuntu</code>的<code>docker</code>源有 1.4.1 版本的 docker，可以直接用来与代码进行对照测试。但是能
+自己手动编译一遍还是很有好处的。docker 官网上关于开发环境设置的博客
+(<a href="https://docs.docker.com/contributing/devenvironment/">Setting Up a Dev Environment</a>)
+，里面已经讲的很清楚了,下面仅作简要描述，详细内容请参考官方文档。</p>
+<p>首先看一下 docker 源码的目录结构 :</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-1/docker-root-dir.png" alt=" " title="DockerDir"></p>
+<p>下面有一个<code>makefile</code>文件和一个<code>Dockerfile</code>。直接执行<code>make</code>，会根据<code>Dockerfile</code>创
+建镜像，里面包含特定版本的<code>golang</code>(由源码编译)以及其他编译 docker 所需的依赖，当前目录的 docker
+源码也会被整个拷贝进镜像里用于编译。最后根据生成的镜像创建<code>container</code>用于实际的
+编译并生成可执行程序。注意最后生成的可执行程序是位于<code>container</code>内部的，所以如果
+要使用所编译的程序，应该使用如下命令 :</p>
+<pre><code> sudo make binary
+</code></pre>
+<p>最终生成的程序位于<code>./bundles/&lt;version&gt;-dev/binary/</code>,如果没有看到这些文件，一般都
+是因为<code>BINDDIR</code>环境变量有问题，此时可以执行如下命令 :</p>
+<pre><code> sudo make BINDDIR=. binary
+</code></pre>
+<p>可以用生成的程序替换系统程序来方便测试 :</p>
+<pre><code> sudo service docker stop ; sudo cp $(which docker) $(which docker)_ ; sudo cp ./bundles/&lt;version&gt;-dev/binary/docker-&lt;version&gt;-dev $(which docker);sudo service docker start
+</code></pre>
+<h2 id="注意事项">注意事项</h2>
+<ol>
+<li>
+<p>第一次构建过程会很长，因为需要从源码构建<code>golang</code>,<code>llvm</code>以及 clone 一些依赖项目。后续再
+次构建时会复用之前生成的中间镜像，所以会很快。</p>
+</li>
+<li>
+<p>在墙内的话，一般第一次编译都会失败，因为有两个所需的网站被墙。。。第一个是
+<code>golang</code>的下载网站，这个很好解决,因为有好多网站对它做了镜像。docker v1.4.1 所
+用的 golang 版本为 1.3.3，Dockerfile 中可以看到文件名 :</p>
+<pre><code> RUN     curl -sSL https://golang.org/dl/go1.3.3.src.tar.gz | tar -v -C /usr/local -xz
+</code></pre>
+<p>在谷歌用 <code>Index of</code> 搜索此文件 :</p>
+<pre><code> &quot;Index of&quot; go1.3.3.src.tar.gz
+</code></pre>
+<p>找一个可用的网站替换 Dockerfile 中的 URL 即可，下面是一个可用的 :
+<a href="http://pkgs.fedoraproject.org/repo/pkgs/golang/go1.3.3.src.tar.gz/2cdbad6baefcf1007f3cf54a5bc878b7/go1.3.3.src.tar.gz">http://pkgs.fedoraproject.org/repo/pkgs/golang/go1.3.3.src.tar.gz/2cdbad6baefcf1007f3cf54a5bc878b7/go1.3.3.src.tar.gz</a></p>
+<p>另一个被墙的便是<code>golang.org</code>,解决办法是从 github 上从 github 上下载其 fork 版本,并且用软连接或者直接拷贝到相应目录即可。具体步骤是 :</p>
+<ul>
+<li>
+<p>Dockerfile 构建镜像会有好多中间镜像，找到最后成功构建的那一个,用其创建一个
+<code>container</code>来进行操作</p>
+</li>
+<li>
+<p>从 github 上下载相关项目。我自己 fork 了一个，可以直接使用 <a href="https://github.com/hangyan/golang.org">https://github.com/hangyan/golang.org</a></p>
+</li>
+<li>
+<p>做 link 或者 copy :</p>
+<pre><code>  mkdir -p /go/src/golang.org/ &amp;&amp; ln -sf
+  /go/src/github.com/hangyan/golang.org/x /go/src/golang.org/x
+</code></pre>
+</li>
+<li>
+<p>提交镜像，修改 Dockerfile，将其作为新的 baseimage。中间已经成功的很多步骤也可以删掉
+了。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Dockerfile 中将<code>GOPATH</code> 设了两个目录,如下所示 :</p>
+<pre><code> ENV     GOPATH  /go:/go/src/github.com/docker/docker/vendor
+</code></pre>
+<p>原因是由于 docker 依赖项目较多，所以大部分依赖都已经在 <code>vendor</code>目录下提供，编
+译时将其设为<code>GOPATH</code>即可使用。</p>
+</li>
+</ol>
+<h1 id="开发环境">开发环境</h1>
+<h2 id="ide">IDE</h2>
+<p>刚开始用<code>golang</code>的时候，好多 IDE 还在初级阶段,缺少很多必须的功能，所以就一直用
+Emacs 了。IDE 基本不用配置，上手简单，嫌麻烦的可以直接使用。下面是一个常用 IDE 的列表及链接。</p>
+<ul>
+<li>
+<p>LiteIDE : <a href="http://sourceforge.net/projects/liteide/files/">sourceforge</a>.</p>
+<p>感觉界面不好看。</p>
+</li>
+<li>
+<p>Zeus IDE : <a href="http://www.zeusedit.com/download.html">zeus</a></p>
+<p>windows 上的，没用过.</p>
+</li>
+<li>
+<p>Go IDE : <a href="http://go-ide.com/2011/08/09/goide_release_1_0_darwin.html">go-ide</a></p>
+<p>基于 Intellij IDEA 做的一个 IDE,功能比较简单。</p>
+</li>
+<li>
+<p>Golang Komodo : <a href="http://komodoide.com/resources/languages/komodo--golang/">Komodo</a></p>
+<p>是一个 Komodo 平台的插件。</p>
+</li>
+</ul>
+<h2 id="emacs">Emacs</h2>
+<p>有很多关于 Golang 的插件可以使用，下面是我在使用的一些插件及配置 :</p>
+<h3 id="go-modehttpsgithubcomdominikhgo-modeel"><a href="https://github.com/dominikh/go-mode.el">go-mode</a></h3>
+<p>除了基本的语法高亮及自动对齐之外，还提供了如下功能 :</p>
+<ul>
+<li>
+<p><code>gofmt</code> 集成，保存时自动排版代码</p>
+</li>
+<li>
+<p><code>godoc</code> 集成,</p>
+</li>
+<li>
+<p><code>import</code> 管理</p>
+</li>
+<li>
+<p><code>godef</code> 代码跳转</p>
+<p>依赖<code>code.google.com/p/rog-go/exp/cmd/godef</code>项目，依旧被墙。可以从 github 上
+fork 的项目来 build,地址为<a href="https://github.com/hangyan/godef">godef</a></p>
+</li>
+<li>
+<p><code>flymake</code> 集成，实施检查代码语法错误。</p>
+</li>
+</ul>
+<p>Emacs 配置示例：</p>
+<pre><code> (require 'go-mode)
+ (add-hook 'before-save-hook 'gofmt-before-save)
+</code></pre>
+<h3 id="gocodehttpsgithubcomnsfgocode"><a href="https://github.com/nsf/gocode">gocode</a></h3>
+<p>提供代码自动补全功能，依赖于<code>autocomplete</code>或<code>company</code>。这个项目在 github 上的 star 数已经超过 2000,可见其流行程度。其主页上已经有关于 Emacs 的
+配置，此处不再详述。</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-1/company-go.png" alt=" " title="CompanyGo"></p>
+<h3 id="xcscopehttpsgithubcomdkoganxcscopeel"><a href="https://github.com/dkogan/xcscope.el">xcscope</a></h3>
+<p>xcscope 可以作为<code>godef</code>的一个补充项，它可以将一个目录下的代码包含的 symbols 和文件
+建成一个索引数据库，然后从其中查询。原生的 xcscope 并不支持 go 语言，需要修改其索引
+脚本。我现在使用的脚本链接为
+<a href="https://github.com/hangyan/Emacs/blob/master/bin/cscope-indexer">cscope-indexer</a>
+。</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-1/xcscope.png" alt=" " title="Xcscope"></p>
+<h3 id="ecbhttpecbsourceforgenet"><a href="http://ecb.sourceforge.net/">ecb</a></h3>
+<p>浏览代码神器，可以自己定制各窗口大小，内容 :</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-1/ecb.png" alt=" " title="ECB"></p>
+<h3 id="helmhttpsgithubcomemacs-helmhelm"><a href="https://github.com/emacs-helm/helm">helm</a></h3>
+<p>Emacs 原生<code>M-x</code>增强工具，功能极多，还可以用来浏览当前文件的代码结构及跳转到相应函数或变量定
+义。</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-1/helm.png" alt=" " title="HELM"></p>
+<p>主要的插件就这几个，如果有兴趣，可以参考我的 Emacs 配置 :
+<a href="https://github.com/hangyan/Emacs">Emacs</a>。</p>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2015-01-29
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/docker/">docker</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2015-01-30-modern-dev-tools/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">现代化的开发人员实用工具</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2015-01-25-raid/">
+            <span class="next-text nav-default">RAID 介绍</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>互联网 on 工业革命</title>
+    <link>http://yanhang.me/tags/%E4%BA%92%E8%81%94%E7%BD%91/</link>
+    <description>Recent content in 互联网 on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 12 Sep 2020 12:30:28 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/%E4%BA%92%E8%81%94%E7%BD%91/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hugo 的优点</title>
+      <link>http://yanhang.me/post/fuck-hexo/</link>
+      <pubDate>Sat, 12 Sep 2020 12:30:28 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/fuck-hexo/</guid>
+      <description>经历了 N 次在各个不同的环境里初始化 Hexo 的环境失败之后，我终于换了 Hugo. 从 Jekyll -&amp;gt; Hexo -&amp;gt; Hugo 我算是发现了，依赖不好处理的平台根本不适合做 static blog generato</description>
+    </item>
+    
+    <item>
+      <title>Common Index</title>
+      <link>http://yanhang.me/post/2019-07-16-common-index/</link>
+      <pubDate>Tue, 16 Jul 2019 16:20:10 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-07-16-common-index/</guid>
+      <description>这几天在重温 《疑犯追踪》，作为一个近科幻的代表作，其描绘的社会是如此地贴近现实，让人想到时都会有一种无力感。在技术社区的种种讨论中，总会有零</description>
+    </item>
+    
+    <item>
+      <title>The useless web</title>
+      <link>http://yanhang.me/post/2019-04-10-the-useless-web/</link>
+      <pubDate>Wed, 10 Apr 2019 18:41:54 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-04-10-the-useless-web/</guid>
+      <description>早期互联网的美妙之处在于，它真的是万维网,由无数的由个人或者公司搭建的互联网。没有如此大公司固定平台的限制，这些网站充满了无数的可能性。 之前</description>
+    </item>
+    
+    <item>
+      <title>煎蛋网</title>
+      <link>http://yanhang.me/post/2019-03-21-jandan/</link>
+      <pubDate>Thu, 21 Mar 2019 23:20:25 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-03-21-jandan/</guid>
+      <description>互联网已经诞生了三十年了。 从 hackernews 的反馈来看，对于现状的不满相当之多。科技公司更容易成为世界上最庞大的公司之一，未来也更是如此。我们有了更加高效</description>
+    </item>
+    
+    <item>
+      <title>小米之恶</title>
+      <link>http://yanhang.me/post/2019-03-17-fuck-xiaomi/</link>
+      <pubDate>Sun, 17 Mar 2019 21:34:44 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-03-17-fuck-xiaomi/</guid>
+      <description>我买过小米手机，也相信小米手机曾经对行业有过良好的贡献。但我仍然觉得，小米是一家作恶多端的公司。 当然，没多少手机厂商是干净的。只是相对来说，</description>
+    </item>
+    
+    <item>
+      <title>2B OR 2C</title>
+      <link>http://yanhang.me/post/2019-03-17-2b/</link>
+      <pubDate>Sun, 17 Mar 2019 14:53:57 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-03-17-2b/</guid>
+      <description>这两天在跟客户讲公司的产品架构，同时简单讨论了目前存在的问题以及客户想要的架构。空闲时间就想了想 2B 类产品的特点（可能仅限于云计算类）。 相对来</description>
+    </item>
+    
+    <item>
+      <title>头条的微信该怎么做</title>
+      <link>http://yanhang.me/post/2019-03-12-toutiao-wechat/</link>
+      <pubDate>Tue, 12 Mar 2019 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-03-12-toutiao-wechat/</guid>
+      <description>首先，多闪是个非常傻逼的产品。原因： 视频社交是个伪需求 产品经理很年轻为什么也成为了一个宣传点？ 微信是一个经常被夸赞的产品，但仍然有很多缺点。</description>
+    </item>
+    
+    <item>
+      <title>技术之恶——抖音</title>
+      <link>http://yanhang.me/post/2019-02-28-tiktok/</link>
+      <pubDate>Thu, 28 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-02-28-tiktok/</guid>
+      <description>对于抖音的争议，往往容易分成两拨意见差别非常大的群体，一部分痴迷于这个软件，一部分将大部分的前者视为“脑残”。 引起争议的行为看起来当然是由其</description>
+    </item>
+    
+    <item>
+      <title>公众号及开放互联网</title>
+      <link>http://yanhang.me/post/2019-02-13-wechat/</link>
+      <pubDate>Wed, 13 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-02-13-wechat/</guid>
+      <description>开放互联网 link 是一切的基础 任何公司及个人产生的内容以及管理的内容平台，只要是公开的内容，都应该尽力提供可以访问的url 搜索引擎可以索引这些 link 公</description>
+    </item>
+    
+  </channel>
+</rss>

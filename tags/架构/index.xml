@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>架构 on 工业革命</title>
+    <link>http://yanhang.me/tags/%E6%9E%B6%E6%9E%84/</link>
+    <description>Recent content in 架构 on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 31 Aug 2019 13:35:37 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/%E6%9E%B6%E6%9E%84/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>失败博物馆 - Hadoop</title>
+      <link>http://yanhang.me/post/2019-08-31-hadoop/</link>
+      <pubDate>Sat, 31 Aug 2019 13:35:37 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-08-31-hadoop/</guid>
+      <description>Hadoop 严格来说并不算完全失败了，不像 Mesos 那样，而是人们期待它成为一个大象， 而它却变成了一只兔子。 我刚毕业就开始接触Hadoop, 当时它基本上就是大</description>
+    </item>
+    
+    <item>
+      <title>失败博物馆 - Mesos/Marathon</title>
+      <link>http://yanhang.me/post/2019-08-23-mesos-marathon/</link>
+      <pubDate>Fri, 23 Aug 2019 10:28:40 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-08-23-mesos-marathon/</guid>
+      <description>Mesos/Marathon 的失败，怎么说，太过典型了。如教科书一般，清晰的不能再清晰。 首先，它流行的时候，是因为大家没得选。一个还在蹒跚学步阶段的 Kubernetes 就开始将它打的节</description>
+    </item>
+    
+    <item>
+      <title>失败博物馆 - Jenkins</title>
+      <link>http://yanhang.me/post/2019-08-22-fuck-jenkins/</link>
+      <pubDate>Thu, 22 Aug 2019 17:02:37 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-08-22-fuck-jenkins/</guid>
+      <description>我想记录一下工作中使用过的软件里的一些在设计上比较失败的。因为它们，工作中多了很多痛苦。 Jenkins 便是其中之一。跟很多软件一样，Jenkins 在商业</description>
+    </item>
+    
+    <item>
+      <title>少有人用的 debugger</title>
+      <link>http://yanhang.me/post/2019-05-06-debugger/</link>
+      <pubDate>Mon, 06 May 2019 11:32:22 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-05-06-debugger/</guid>
+      <description>不知道别人是怎么认为的，我之前一直认为，Debugger 应该是一个正统的解决软件问题的方式。我们应该尽力地去多用这种方式，通过各种其他的 print 等</description>
+    </item>
+    
+    <item>
+      <title>jekyll 的问题</title>
+      <link>http://yanhang.me/post/2019-05-05-jekyll/</link>
+      <pubDate>Sun, 05 May 2019 13:14:29 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-05-05-jekyll/</guid>
+      <description>考虑良久，决定将 Blog 迁移到 hexo。整个过程比想象的简单很多，也看了下二者的异同。相对于来讲，我觉得 hexo 在设计上比 jekyll 更为优良一些，更适合作为一个</description>
+    </item>
+    
+    <item>
+      <title>Kubernetes 笔记</title>
+      <link>http://yanhang.me/post/2017-08-18-kubernetes-note/</link>
+      <pubDate>Fri, 18 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2017-08-18-kubernetes-note/</guid>
+      <description>API 声明式的 API API Response 错误处理 Resource Version Version API Group Runtime config REGEX 字段格式 PATCH 与 PUT Events 交互 输出 输入 API 声明式的 API 声明式： 结果是什么 命令式: 做什么 声明式的操作，相对于命令式操</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>现代化的开发人员实用工具 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="常年混迹于 linux，对命令行程序情有独钟，平时也喜欢搜集各种实用的小工具。github流行以来，越来越多的新的实用的开 发工具开源出来，有的可以用来替代一些老的工具，有的则是全新的。本文整理一些实用的 工具，希望大家能在实际开发中用到。
+" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2015-01-30-modern-dev-tools/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="现代化的开发人员实用工具" />
+<meta property="og:description" content="常年混迹于 linux，对命令行程序情有独钟，平时也喜欢搜集各种实用的小工具。github流行以来，越来越多的新的实用的开
+发工具开源出来，有的可以用来替代一些老的工具，有的则是全新的。本文整理一些实用的
+工具，希望大家能在实际开发中用到。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2015-01-30-modern-dev-tools/" />
+<meta property="article:published_time" content="2015-01-30T21:37:39+08:00" />
+<meta property="article:modified_time" content="2015-01-30T21:37:39+08:00" />
+<meta itemprop="name" content="现代化的开发人员实用工具">
+<meta itemprop="description" content="常年混迹于 linux，对命令行程序情有独钟，平时也喜欢搜集各种实用的小工具。github流行以来，越来越多的新的实用的开
+发工具开源出来，有的可以用来替代一些老的工具，有的则是全新的。本文整理一些实用的
+工具，希望大家能在实际开发中用到。">
+<meta itemprop="datePublished" content="2015-01-30T21:37:39+08:00" />
+<meta itemprop="dateModified" content="2015-01-30T21:37:39+08:00" />
+<meta itemprop="wordCount" content="1343">
+
+
+
+<meta itemprop="keywords" content="工具," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="现代化的开发人员实用工具"/>
+<meta name="twitter:description" content="常年混迹于 linux，对命令行程序情有独钟，平时也喜欢搜集各种实用的小工具。github流行以来，越来越多的新的实用的开
+发工具开源出来，有的可以用来替代一些老的工具，有的则是全新的。本文整理一些实用的
+工具，希望大家能在实际开发中用到。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">现代化的开发人员实用工具</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2015-01-30 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 1343 字 </span>
+          <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#httppie">httppie</a></li>
+    <li><a href="#icdiff">icdiff</a></li>
+    <li><a href="#slap">slap</a></li>
+    <li><a href="#jq">jq</a></li>
+    <li><a href="#cheat">cheat</a></li>
+    <li><a href="#gource">gource</a></li>
+    <li><a href="#finalterm">finalterm</a></li>
+    <li><a href="#q">q</a></li>
+    <li><a href="#ranger">ranger</a></li>
+    <li><a href="#cv">cv</a></li>
+    <li><a href="#oh-my-zsh">oh-my-zsh</a></li>
+    <li><a href="#babun">babun</a></li>
+    <li><a href="#impressjs">impress.js</a></li>
+    <li><a href="#ungit">ungit</a></li>
+    <li><a href="#stackedit">stackedit</a></li>
+    <li><a href="#cmdlinefu">cmdlinefu</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>常年混迹于 linux，对命令行程序情有独钟，平时也喜欢搜集各种实用的小工具。<code>github</code>流行以来，越来越多的新的实用的开
+发工具开源出来，有的可以用来替代一些老的工具，有的则是全新的。本文整理一些实用的
+工具，希望大家能在实际开发中用到。</p>
+<h1 id="httppie">httppie</h1>
+<p><a href="http://httpie.org/">website</a> / <a href="https://github.com/jakubroztocil/httpie">github</a></p>
+<p>一个命令行版的<code>http</code>客户端,<code>github</code>上的 star 数已经超过 13000。可以用非常自然的语法来发
+送 http 请求，并且彩色化输出结果。可以用来测试，调试，与<code>web server</code>交互等。官网上
+有详细的文档以及示例，很容易上手.</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/httpie.png" alt=" " title="httpie"></p>
+<p>在用 docker 的时候用<code>httpie</code>代替<code>curl</code>与<code>web server</code>交互就非常方便,比如搜索镜像,用<code>curl</code>:</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/curl-search-images.png" alt=" " title="curl-search-images"></p>
+<p>用<code>httpie</code>:</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/httpie-search-images.png" alt=" " title="httpie-search-images"></p>
+<h1 id="icdiff">icdiff</h1>
+<p><a href="http://www.jefftk.com/icdiff">website</a> / <a href="https://github.com/jeffkaufman/icdiff">github</a></p>
+<p>意为<code>Improved colored diff</code>,可以用来替代原生的<code>diff</code>。</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/icdiff.png" alt=" " title="icdiff"></p>
+<h1 id="slap">slap</h1>
+<p><a href="https://github.com/slap-editor/slap">github</a></p>
+<p>类似<code>sublime text</code>的命令行版的编辑器，感觉在服务器上使用会很方便。</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/slap.png" alt=" " title="slap"></p>
+<p>VS 前项目经理开发的新一代 IDE : <a href="https://github.com/LightTable/LightTable">Light Table</a>。</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/lighttable.png" alt=" " title="lighttable"></p>
+<p>Github 发布的 <a href="https://github.com/atom/atom">Atom</a> :</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/atom.png" alt=" " title="atom"></p>
+<h1 id="jq">jq</h1>
+<p><a href="http://stedolan.github.io/jq/">website</a> / <a href="https://github.com/stedolan/jq">github</a></p>
+<p>命令行版的<code>json</code>处理工具,经常用来排版输出。</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/jq.png" alt=" " title="jq"></p>
+<p>在没有<code>jq</code>的情况下，可以使用<code>python -mjson.tool</code>来处理，不过没有着色功能了。</p>
+<h1 id="cheat">cheat</h1>
+<p><a href="https://github.com/chrisallenlane/cheat">github</a></p>
+<p><code>man</code>的补充。经常想使用一个命令，但是却不知道用什么参数，<code>man</code>命令常常的英文又不
+想看,这时候就可以用到<code>cheat</code>了。<code>cheat</code>不提供全面的解释，但是给出了不少常用的使
+用示例，让你很快就知道用法。</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/cheat.png" alt=" " title="cheat"></p>
+<h1 id="gource">gource</h1>
+<p><a href="https://code.google.com/p/gource/">website</a></p>
+<p>打不开的话，<code>github</code>的 fork 地址为: <a href="https://github.com/acaudwell/Gource">https://github.com/acaudwell/Gource</a>。</p>
+<p>Software version control visualization。可视化代码提交历史，可以用于各种分布式代
+码管理系统。</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/gource.jpg" alt=" " title="gource"></p>
+<p>可以制作成非常酷炫的视频用于展示。<code>youtube</code>和优酷上应该有很多演示视频，感兴趣的
+可以自行查看。我们有一次发布会就用的这个工具制作了一部分视频。</p>
+<h1 id="finalterm">finalterm</h1>
+<p><a href="http://finalterm.org/">website</a> / <a href="https://github.com/p-e-w/finalterm">github</a></p>
+<p>是一个 terminal 工具，linux 上的 terminal 工具多如牛毛，常见的有 KDE 的<code>konsole</code>,GNOME
+的<code>gnome-terminal</code>，XFCE 的<code>Terminal</code>,以及古老但非常强大的<code>xterm</code>，<code>urxvt</code>。这个
+算起来是较新的一个,UI 不错。</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/finalterm.gif" alt=" " title="finalterm"></p>
+<p>机械领域的两大美学趋向便是蒸汽朋克与赛博朋克。如果上面的<code>finalterm</code>属于赛博朋克
+流派的话，下面的两个便是蒸汽朋克风格的经典之作:</p>
+<p><a href="https://github.com/Swordfish90/cool-retro-term">cool-retro-term</a> :</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/cool-retro-term.png" alt=" " title="cool-retro-term"></p>
+<p><a href="https://code.google.com/p/vinterm/">vinterm</a> :</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/vinterm.png" alt=" " title="vinterm"></p>
+<h1 id="q">q</h1>
+<p><a href="http://harelba.github.io/q/">website</a> / <a href="https://github.com/harelba/q">github</a></p>
+<p>在 CSV 或者 TSV 文件上执行 SQL 查询。</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/q.png" alt=" " title="q"></p>
+<p><a href="https://github.com/dinedal/textql">textql</a>,功能类似，golang 写的:</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/textql.gif" alt=" " title="textql"></p>
+<h1 id="ranger">ranger</h1>
+<p><a href="http://ranger.nongnu.org/">website</a> / <a href="https://github.com/hut/ranger">github</a></p>
+<p>比较老的一个软件了，命令行下的文件管理器,类似 VI 的键绑定。可扩展性很强，支持很多
+种文件类型的预览。</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/ranger.png" alt=" " title="ranger"></p>
+<h1 id="cv">cv</h1>
+<p><a href="https://github.com/Xfennec/cv">github</a></p>
+<p>显示 cp,rm,dd&hellip;等命令的进展：</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/cv.png" alt=" " title="cv"></p>
+<h1 id="oh-my-zsh">oh-my-zsh</h1>
+<p><a href="http://ohmyz.sh/">website</a> / <a href="https://github.com/robbyrussell/oh-my-zsh">github</a></p>
+<p>zsh 的配置文件，在 github 上的 star 数超过 21000，可想而知它是多么的火。作为 bash 的替代
+品,<code>zsh</code>提供了极强的可扩展能力。智能的自动补全，历史命令查询复用,丰富的 PS1 定制……
+通过一些简单的配置，能够大幅度提高你的工作效率。</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/zsh.png" alt=" " title="zsh"></p>
+<p>另一个优秀的<code>bash</code>替代品是
+<a href="https://github.com/fish-shell/fish-shell">fish-shell</a>,相对于 zsh 的优点是无需配置
+便提供了非常丰富的功能:</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/fish.png" alt=" " title="fish"></p>
+<h1 id="babun">babun</h1>
+<p><a href="https://github.com/babun/babun">github</a></p>
+<p>windows 下的一个非常优秀的<code>terminal</code>工具。</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/babun.png" alt=" " title="babun"></p>
+<h1 id="impressjs">impress.js</h1>
+<p><a href="http://bartaz.github.io/impress.js/#/bored">website</a> / <a href="https://github.com/bartaz/impress.js">github</a></p>
+<p>github 上 star 数目最多的列表中第一页就可以看到，用来做非常酷炫的 PPT.Demo 链接 :<a href="http://bartaz.github.io/impress.js/#/bored">Demo</a></p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/impress.jpg" alt=" " title="impress"></p>
+<h1 id="ungit">ungit</h1>
+<p><a href="https://github.com/FredrikNoren/ungit">github</a></p>
+<p>使用 git 的便捷工具,有非常漂亮的 UI，github 集成。</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/ungit.png" alt=" " title="ungit"></p>
+<h1 id="stackedit">stackedit</h1>
+<p><a href="https://stackedit.io/">website</a> / <a href="https://github.com/benweet/stackedit">github</a></p>
+<p>浏览器里的<code>markdown</code>编辑器,功能丰富,支持与多个云存储平台的同步:</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/stack-edit.jpg" alt=" " title="stack-edit"></p>
+<h1 id="cmdlinefu">cmdlinefu</h1>
+<p><a href="http://www.commandlinefu.com/commands/browse/sort-by-votes">github</a></p>
+<p>最后是一个网站，有很多人分享的非常实用的命令:</p>
+<p><img src="http://hangyan.github.io/images/posts/dev-tools/cmdlinefu.png" alt=" " title="cmdlinefu"></p>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2015-01-30
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E5%B7%A5%E5%85%B7/">工具</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2015-01-30-docker-source-code-part2-start-and-args/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">docker 源码分析(2) -- 主程序及命令行参数解析</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2015-01-29-docker-source-code-part1-dev-setup/">
+            <span class="next-text nav-default">docker 源码分析(1) -- 开发环境准备</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>eBPF系列1 - 介绍 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="一直想写(整理)一些关于 eBPF 的文章。在我眼中，它是 未来技术 之一。 最近零零碎碎看了一些，感觉信息太多，怕是永远也看不完，索性开始一遍看一边记笔记" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/ebpf-1/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="eBPF系列1 - 介绍" />
+<meta property="og:description" content="一直想写(整理)一些关于 eBPF 的文章。在我眼中，它是 未来技术 之一。 最近零零碎碎看了一些，感觉信息太多，怕是永远也看不完，索性开始一遍看一边记笔记" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/ebpf-1/" />
+<meta property="article:published_time" content="2020-09-22T22:39:41+08:00" />
+<meta property="article:modified_time" content="2020-09-22T22:39:41+08:00" />
+<meta itemprop="name" content="eBPF系列1 - 介绍">
+<meta itemprop="description" content="一直想写(整理)一些关于 eBPF 的文章。在我眼中，它是 未来技术 之一。 最近零零碎碎看了一些，感觉信息太多，怕是永远也看不完，索性开始一遍看一边记笔记">
+<meta itemprop="datePublished" content="2020-09-22T22:39:41+08:00" />
+<meta itemprop="dateModified" content="2020-09-22T22:39:41+08:00" />
+<meta itemprop="wordCount" content="1815">
+
+
+
+<meta itemprop="keywords" content="eBPF," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="eBPF系列1 - 介绍"/>
+<meta name="twitter:description" content="一直想写(整理)一些关于 eBPF 的文章。在我眼中，它是 未来技术 之一。 最近零零碎碎看了一些，感觉信息太多，怕是永远也看不完，索性开始一遍看一边记笔记"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">eBPF系列1 - 介绍</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-09-22 </span>
+        <div class="post-category">
+            <a href="/categories/ebpf/"> eBPF </a>
+            </div>
+          <span class="more-meta"> 约 1815 字 </span>
+          <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#ebpf-是什么">eBPF 是什么</a></li>
+        <li><a href="#程序校验">程序校验</a></li>
+        <li><a href="#数据结构">数据结构</a>
+          <ul>
+            <li><a href="#bpf">bpf()</a></li>
+            <li><a href="#ebpf-map">eBPF MAP</a></li>
+            <li><a href="#ebpf-程序类型">eBPF 程序类型</a></li>
+          </ul>
+        </li>
+        <li><a href="#如何开发-ebpf-程序">如何开发 eBPF 程序</a>
+          <ul>
+            <li><a href="#bcc">bcc</a></li>
+            <li><a href="#bpftrace">bpftrace</a></li>
+            <li><a href="#language-library">language library</a></li>
+          </ul>
+        </li>
+        <li><a href="#links">Links</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>一直想写(整理)一些关于 eBPF 的文章。在我眼中，它是 <code>未来技术</code> 之一。 最近零零碎碎看了一些，感觉信息太多，怕是永远也看不完，索性开始一遍看一边记笔记吧。这一篇是介绍。</p>
+<h2 id="ebpf-是什么">eBPF 是什么</h2>
+<p>先介绍下 eBPF 的前身: BPF -&gt; <code>Berkeley Packet Filter</code>. 看名字就知道，主要是用于网络 packet 的过滤用的。 过滤程序是运行于基于寄存器的虚拟机之上．　BPF 展示了在内核中运行用户程序的良好开端．但它的缺点也很明显，虚拟机的设计以及指令集都比较落后，跟不上现代处理器的发展(尤其是多核方面)，也无法利用现在的 64bit 寄存器．</p>
+<p>eBPF extend 了 BPF, 将其机制大大地泛化，不止用于网络数据包的处理，而是可以 hook 在任意的系统调用上, 这样它就变成了一个几乎具有无限功能的系统。 在硬件上，它跟现代的处理器的指令集更为贴近,并且能充分利用现在数量众多的 64bit 寄存器．这样就使 JIT 编译器的产生变为了可能，大大提升了性能.</p>
+<p><img src="https://ebpf.io/static/syscall_hook-b4f7d64d4d04806a1de60126926d5f3a.png" alt=""></p>
+<p><img src="https://ebpf.io/static/hook_overview-99c69bbff092c35b9c83f00a80fed240.png" alt=""></p>
+<p>在没有　eBPF 只之前，如果我们想对内核行为进行修改，基本上就是往内核里添加代码或者通过 kernel modules 进行．这二者的门槛都不低，所以影响有限．eBPF 提供了一种新的可能性，通过普通的编程方式，去控制内核的行为，同时保证了高性能．这就是它之所以独特和具有极大潜力的主要原因．</p>
+<p><img src="https://img2020.cnblogs.com/blog/1334952/202008/1334952-20200806131434176-1093013946.png" alt=""></p>
+<h2 id="程序校验">程序校验</h2>
+<p><img src="https://ebpf.io/static/loader-7eec5ccd8f6fbaf055256da4910acd5a.png" alt=""></p>
+<p>当 eBPF 程序被加载进内核之后，要先做一些程序校验工作, 比如:</p>
+<ul>
+<li>权限是否具备。 加载 eBPF 的程序是否有权限加载.一般来讲，程序必须得是 root 用户运行的或者有 <code>CAP_BPF</code> 权限才能加载。 如果开启了 <code>unprivileged eBPF</code>, 那么普通程序也可以加载一些功能受限的 eBPF 程序(比如不允许指针操作)。</li>
+<li>eBPF 程序是否有可能 crash</li>
+<li>在每次指令执行前后都需要校验虚拟机的状态，保证寄存器和栈的状态都是有效的. 校验器不会检查程序的每条路径，它能够知道程序的当前状态是否是已经检查过的程序的子集。由于前面的所有路径都必须是有效的(否则程序会加载失败)，当前的路径也必须是有效的，因此允许验证器“修剪”当前分支并跳过其模拟阶段。</li>
+<li>不能访问未初始化的变量或者越界访问</li>
+<li>程序大小有 limit.</li>
+<li>复杂程度有 limit. 检查程序会估算所有的执行路径以评估其复杂程度。</li>
+<li>eBPF 是否会无法终止运行(比如 loop forever)</li>
+<li>不同类型的 eBPF 程序只能访问特定类型的系统调用</li>
+</ul>
+<p>之所以有这么多检查，就是因为它能做的事情太多了，也太有可能造成破坏了，所以在校验阶段就尽量多做一些。</p>
+<h2 id="数据结构">数据结构</h2>
+<h3 id="bpf">bpf()</h3>
+<p>使用<code>bpf()</code>系统调用和<code>BPF_PROG_LOAD</code>命令加载程序。该系统调用的原型为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">bpf</span><span class="p">(</span><span class="kt">int</span> <span class="n">cmd</span><span class="p">,</span> <span class="k">union</span> <span class="n">bpf_attr</span> <span class="o">*</span><span class="n">attr</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">size</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其中 attr 用于在 user space 和 kernel 之间传递数据
+, size 是 <code>bpf_attr</code> 的大小.</p>
+<h3 id="ebpf-map">eBPF MAP</h3>
+<p>上述的 <code>cmd</code> 支持如下类型:</p>
+<pre><code>BPF_MAP_CREATE
+          Create a map and return a file descriptor that refers to the
+          map.  The close-on-exec file descriptor flag (see fcntl(2)) is
+          automatically enabled for the new file descriptor.
+
+   BPF_MAP_LOOKUP_ELEM
+          Look up an element by key in a specified map and return its
+          value.
+
+   BPF_MAP_UPDATE_ELEM
+          Create or update an element (key/value pair) in a specified
+          map.
+
+   BPF_MAP_DELETE_ELEM
+          Look up and delete an element by key in a specified map.
+
+   BPF_MAP_GET_NEXT_KEY
+          Look up an element by key in a specified map and return the
+          key of the next element.
+
+   BPF_PROG_LOAD
+          Verify and load an eBPF program, returning a new file descrip‐
+          tor associated with the program.  The close-on-exec file
+          descriptor flag (see fcntl(2)) is automatically enabled for
+          the new file descriptor.
+</code></pre>
+<p><code>attr</code> 主要是 eBPF MAP. MAP 是 eBPF 程序中最为重要的数据结构，依赖于它来存取状态。</p>
+<p><img src="https://ebpf.io/static/map_architecture-e7909dc59d2b139b77f901fce04f60a1.png" alt=""></p>
+<p>使用<code>bpf()</code>系统调用创建和管理map。当成功创建一个map后，会返回与该map关联的文件描述符。关闭相应的文件描述符的同时会销毁map。每个map定义了4个值：类型，元素最大数目，数值的字节大小，以及key的字节大小。eBPF提供了不同的map类型，不同类型的map提供了不同的特性。</p>
+<pre><code>BPF_MAP_TYPE_HASH: a hash table
+BPF_MAP_TYPE_ARRAY: an array map, optimized for fast lookup speeds, often used for counters
+BPF_MAP_TYPE_PROG_ARRAY: an array of file descriptors corresponding to eBPF programs; used to implement jump tables and sub-programs to handle specific packet protocols
+BPF_MAP_TYPE_PERCPU_ARRAY: a per-CPU array, used to implement histograms of latency
+BPF_MAP_TYPE_PERF_EVENT_ARRAY: stores pointers to struct perf_event, used to read and store perf event counters
+BPF_MAP_TYPE_CGROUP_ARRAY: stores pointers to control groups
+BPF_MAP_TYPE_PERCPU_HASH: a per-CPU hash table
+BPF_MAP_TYPE_LRU_HASH: a hash table that only retains the most recently used items
+BPF_MAP_TYPE_LRU_PERCPU_HASH: a per-CPU hash table that only retains the most recently used items
+BPF_MAP_TYPE_LPM_TRIE: a longest-prefix match trie, good for matching IP addresses to a range
+BPF_MAP_TYPE_STACK_TRACE: stores stack traces
+BPF_MAP_TYPE_ARRAY_OF_MAPS: a map-in-map data structure
+BPF_MAP_TYPE_HASH_OF_MAPS: a map-in-map data structure
+BPF_MAP_TYPE_DEVICE_MAP: for storing and looking up network device references
+BPF_MAP_TYPE_SOCKET_MAP: stores and looks up sockets and allows socket redirection with BPF helper functions 
+</code></pre>
+<h3 id="ebpf-程序类型">eBPF 程序类型</h3>
+<p>使用BPF_PROG_LOAD加载的程序类型确定了四件事：附加的程序的位置，验证器允许调用的内核辅助函数，是否可以直接访问网络数据报文，以及传递给程序的第一个参数对象的类型。实际上，程序类型本质上定义了一个API。创建新的程序类型甚至纯粹是为了区分不同的可调用函数列表(例如，BPF_PROG_TYPE_CGROUP_SKB 和BPF_PROG_TYPE_SOCKET_FILTER)。
+目前内核支持的程序类型有:</p>
+<pre><code>BPF_PROG_TYPE_SOCKET_FILTER: a network packet filter
+BPF_PROG_TYPE_KPROBE: determine whether a kprobe should fire or not
+BPF_PROG_TYPE_SCHED_CLS: a network traffic-control classifier
+BPF_PROG_TYPE_SCHED_ACT: a network traffic-control action
+BPF_PROG_TYPE_TRACEPOINT: determine whether a tracepoint should fire or not
+BPF_PROG_TYPE_XDP: a network packet filter run from the device-driver receive path
+BPF_PROG_TYPE_PERF_EVENT: determine whether a perf event handler should fire or not
+BPF_PROG_TYPE_CGROUP_SKB: a network packet filter for control groups
+BPF_PROG_TYPE_CGROUP_SOCK: a network packet filter for control groups that is allowed to modify socket options
+BPF_PROG_TYPE_LWT_*: a network packet filter for lightweight tunnels
+BPF_PROG_TYPE_SOCK_OPS: a program for setting socket parameters
+BPF_PROG_TYPE_SK_SKB: a network packet filter for forwarding packets between sockets
+BPF_PROG_CGROUP_DEVICE: determine if a device operation should be permitted or not 
+</code></pre>
+<h2 id="如何开发-ebpf-程序">如何开发 eBPF 程序</h2>
+<p>通过 llvm 等工具，可以使用各种高级语言的 package 或者 binding 来开发 eBPF 程序.</p>
+<p><img src="https://ebpf.io/static/clang-a7160cd231b062b321f2a479a4d0848f.png" alt=""></p>
+<h3 id="bcc">bcc</h3>
+<p><img src="https://ebpf.io/static/bcc-def942c66b8c7565f0cfeab1c1017a80.png" alt=""></p>
+<h3 id="bpftrace">bpftrace</h3>
+<p><img src="https://ebpf.io/static/bpftrace-c53dfcbff6ea67a8f00896bd76e4c07c.png" alt=""></p>
+<h3 id="language-library">language library</h3>
+<p><img src="https://ebpf.io/static/go-1a1bb6f1e64b1ad5597f57dc17cf1350.png" alt="">
+<img src="https://ebpf.io/static/libbpf-f4991ee40f74df260dbb3e0541855044.png" alt=""></p>
+<h2 id="links">Links</h2>
+<ol>
+<li><a href="https://ebpf.io/what-is-ebpf#what-is-ebpf">eBPF Documentation</a></li>
+<li><a href="https://lwn.net/Articles/740157/">A thorough introduction to eBPF</a></li>
+<li><a href="https://www.cnblogs.com/charlieroro/p/13403672.html">全面介绍eBPF-概念</a></li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2020-09-22
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/ebpf/">eBPF</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/fuck-hexo/">
+            <span class="next-text nav-default">Hugo 的优点</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>blockchain on 工业革命</title>
+    <link>http://yanhang.me/tags/blockchain/</link>
+    <description>Recent content in blockchain on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 22 Aug 2017 00:00:00 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/blockchain/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Namecoin</title>
+      <link>http://yanhang.me/post/2017-08-22-namecoin/</link>
+      <pubDate>Tue, 22 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2017-08-22-namecoin/</guid>
+      <description>互联网到今日已经越来越趋向于中心化，用户的隐私安全以及大公司的行为也日渐引起担忧。去中心化网络是一个应对此问题的重要思想，blockchia</description>
+    </item>
+    
+    <item>
+      <title>Blockchain</title>
+      <link>http://yanhang.me/post/2017-08-12-blockchain/</link>
+      <pubDate>Sat, 12 Aug 2017 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2017-08-12-blockchain/</guid>
+      <description>介绍 区块结构 头结构 区块结构 创世区块 分叉 Proof-of-work(工作量证明) 邮件 Header Bitcoin REF 介绍 区块链是由一串使用密码学方法产生的数据块组成的，</description>
+    </item>
+    
+  </channel>
+</rss>

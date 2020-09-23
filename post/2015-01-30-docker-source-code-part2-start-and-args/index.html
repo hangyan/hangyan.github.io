@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>docker 源码分析(2) -- 主程序及命令行参数解析 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="研究一个大项目的源码，最好是从main函数入口，一步一步与实际程序相结合，将实际代 码与相应相印证。所以本篇的主要内容就是 docker 主程序的启动流程以及命令行参数解析的 过程。
+" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2015-01-30-docker-source-code-part2-start-and-args/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="docker 源码分析(2) -- 主程序及命令行参数解析" />
+<meta property="og:description" content="研究一个大项目的源码，最好是从main函数入口，一步一步与实际程序相结合，将实际代
+码与相应相印证。所以本篇的主要内容就是 docker 主程序的启动流程以及命令行参数解析的
+过程。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2015-01-30-docker-source-code-part2-start-and-args/" />
+<meta property="article:published_time" content="2015-01-30T21:37:39+08:00" />
+<meta property="article:modified_time" content="2015-01-30T21:37:39+08:00" />
+<meta itemprop="name" content="docker 源码分析(2) -- 主程序及命令行参数解析">
+<meta itemprop="description" content="研究一个大项目的源码，最好是从main函数入口，一步一步与实际程序相结合，将实际代
+码与相应相印证。所以本篇的主要内容就是 docker 主程序的启动流程以及命令行参数解析的
+过程。">
+<meta itemprop="datePublished" content="2015-01-30T21:37:39+08:00" />
+<meta itemprop="dateModified" content="2015-01-30T21:37:39+08:00" />
+<meta itemprop="wordCount" content="4618">
+
+
+
+<meta itemprop="keywords" content="docker," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="docker 源码分析(2) -- 主程序及命令行参数解析"/>
+<meta name="twitter:description" content="研究一个大项目的源码，最好是从main函数入口，一步一步与实际程序相结合，将实际代
+码与相应相印证。所以本篇的主要内容就是 docker 主程序的启动流程以及命令行参数解析的
+过程。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">docker 源码分析(2) -- 主程序及命令行参数解析</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2015-01-30 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 4618 字 </span>
+          <span class="more-meta"> 预计阅读 10 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#程序入口">程序入口</a></li>
+    <li><a href="#命令行参数解析">命令行参数解析</a>
+      <ul>
+        <li><a href="#init-设定">init 设定</a></li>
+        <li><a href="#flagset">FlagSet</a></li>
+        <li><a href="#设置过程">设置过程</a></li>
+        <li><a href="#解析过程">解析过程</a></li>
+      </ul>
+    </li>
+    <li><a href="#后续设定">后续设定</a>
+      <ul>
+        <li><a href="#版本号">版本号</a></li>
+        <li><a href="#日志级别">日志级别</a></li>
+        <li><a href="#sockets">sockets</a></li>
+        <li><a href="#daemon">daemon</a></li>
+        <li><a href="#tls-认证">TLS 认证</a></li>
+        <li><a href="#dockercli">DockerCli</a></li>
+        <li><a href="#子命令">子命令</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>研究一个大项目的源码，最好是从<code>main</code>函数入口，一步一步与实际程序相结合，将实际代
+码与相应相印证。所以本篇的主要内容就是 docker 主程序的启动流程以及命令行参数解析的
+过程。</p>
+<h1 id="程序入口">程序入口</h1>
+<p>docker 的<code>main</code>函数位于<code>github.com/docker/docker/docker/docker.go</code>文件中。代码不
+是很长，逻辑也比较简单，主要的内容便是解析命令行参数并且进行各项设定，启动
+<code>daemon</code>等。下面将详述各个部分。</p>
+<h1 id="命令行参数解析">命令行参数解析</h1>
+<p>支持命令行参数几乎是所有 cmd 程序所必备的功能，先不看 docker 的代码，依据我们过去的
+经验，应该不难理出命令行参数解析的一般流程 :</p>
+<ol>
+<li>
+<p>设定好程序所支持的命令行参数列表，长选项、短选项、数据类型、默认值、描述信
+息……等</p>
+</li>
+<li>
+<p>一个一个解析实际输入的参数，获取实际值。其中要考虑短选项的组合、错误的参数、
+出错的提示信息……</p>
+</li>
+</ol>
+<p>在 docker 的<code>main</code>函数中，命令行参数解析的功能主要由<code>mflag</code>包提供，而在<code>main</code>里只
+需要这一句调用 :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">import</span> <span class="p">(</span>
+	<span class="nx">flag</span> <span class="s">&#34;github.com/docker/docker/pkg/mflag&#34;</span>
+	<span class="o">...</span>
+<span class="p">)</span>
+
+<span class="nx">flag</span><span class="p">.</span><span class="nf">Parse</span><span class="p">()</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>看函数名的意思，应该就是直接开始解析了。那解析前的设定在哪呢？</p>
+<h2 id="init-设定">init 设定</h2>
+<p>在 golang 中,<code>main</code>并不总是最早开始执行的代码。在执行一个<code>package</code>中的代码的时候，需
+要先初始化其<code>package-level</code>的变量以及执行<code>init</code>函数，如果有的话。如果导入了其他
+的包，也要先对其进行初始化。在<code>docker</code>中,命令行参数的初始化设定即是通过包内的变量及
+<code>init</code>函数来进行的。</p>
+<p><code>github.com/docker/docker/docker/flags.go</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">flVersion</span>     <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nf">Bool</span><span class="p">([]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;v&#34;</span><span class="p">,</span> <span class="s">&#34;-version&#34;</span><span class="p">},</span> <span class="kc">false</span><span class="p">,</span> <span class="s">&#34;Print version information and quit&#34;</span><span class="p">)</span>
+<span class="nx">flDaemon</span>      <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nf">Bool</span><span class="p">([]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;d&#34;</span><span class="p">,</span> <span class="s">&#34;-daemon&#34;</span><span class="p">},</span> <span class="kc">false</span><span class="p">,</span> <span class="s">&#34;Enable daemon mode&#34;</span><span class="p">)</span>
+<span class="nx">flDebug</span>       <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nf">Bool</span><span class="p">([]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;D&#34;</span><span class="p">,</span> <span class="s">&#34;-debug&#34;</span><span class="p">},</span> <span class="kc">false</span><span class="p">,</span> <span class="s">&#34;Enable debug mode&#34;</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="nx">flLogLevel</span>    <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nf">String</span><span class="p">([]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;l&#34;</span><span class="p">,</span> <span class="s">&#34;-log-level&#34;</span><span class="p">},</span> <span class="s">&#34;info&#34;</span><span class="p">,</span> <span class="s">&#34;Set the logging level&#34;</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在命令行里输入<code>docker</code>看下:</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-2/arg-1.png" alt="arg-1"></p>
+<p>可以看到结果和代码是一一对应的。</p>
+<p>各个参数的设定都是类似的，长/短选项，默认值,描述信息。进入其中一个函数看看：</p>
+<p><code>github.com/docker/docker/pkg/mflag/flag.go</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"> <span class="kd">func</span> <span class="nf">Bool</span><span class="p">(</span><span class="nx">names</span> <span class="p">[]</span><span class="kt">string</span><span class="p">,</span> <span class="nx">value</span> <span class="kt">bool</span><span class="p">,</span> <span class="nx">usage</span> <span class="kt">string</span><span class="p">)</span> <span class="o">*</span><span class="kt">bool</span> <span class="p">{</span>
+	 <span class="k">return</span> <span class="nx">CommandLine</span><span class="p">.</span><span class="nf">Bool</span><span class="p">(</span><span class="nx">names</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">usage</span><span class="p">)</span>
+ <span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>各个参数依其数据类型分类,我们先看看<code>CommandLine</code>是什么 :</p>
+<p><code>github.com/docker/docker/pkg/mflag/flag.go</code> :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"> <span class="kd">var</span> <span class="nx">CommandLine</span> <span class="p">=</span> <span class="nf">NewFlagSet</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">ExitOnError</span><span class="p">)</span>
+
+ <span class="kd">func</span> <span class="nf">NewFlagSet</span><span class="p">(</span><span class="nx">name</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">errorHandling</span> <span class="nx">ErrorHandling</span><span class="p">)</span> <span class="o">*</span><span class="nx">FlagSet</span> <span class="p">{</span>
+	 <span class="nx">f</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">FlagSet</span><span class="p">{</span>
+		 <span class="nx">name</span><span class="p">:</span>          <span class="nx">name</span><span class="p">,</span>
+		 <span class="nx">errorHandling</span><span class="p">:</span> <span class="nx">errorHandling</span><span class="p">,</span>
+	 <span class="p">}</span>
+	 <span class="k">return</span> <span class="nx">f</span>
+ <span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>CommandLine</code>属于<code>package-level</code>的变量，在被 docker 的<code>main</code>包导入时就已经初始化好
+了。<code>CommandLine</code>就是我们预设命令行参数的存储地方，其类型为<code>FlagSet</code>。</p>
+<h2 id="flagset">FlagSet</h2>
+<p><code>Flagset</code>存储了我们预先设定好的所支持的命令行参数信息，并且在解析过程中动态更
+新 :</p>
+<p><code>github.com/docker/docker/pkg/mflag/flag.go</code> :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"> <span class="kd">type</span> <span class="nx">FlagSet</span> <span class="kd">struct</span> <span class="p">{</span>
+	 <span class="nx">Usage</span> <span class="kd">func</span><span class="p">()</span>
+	 <span class="nx">name</span>          <span class="kt">string</span>
+	 <span class="nx">parsed</span>        <span class="kt">bool</span>
+	 <span class="nx">actual</span>        <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="o">*</span><span class="nx">Flag</span>
+	 <span class="nx">formal</span>        <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="o">*</span><span class="nx">Flag</span>
+	 <span class="nx">args</span>          <span class="p">[]</span><span class="kt">string</span>
+	 <span class="nx">errorHandling</span> <span class="nx">ErrorHandling</span>
+	 <span class="nx">output</span>        <span class="nx">io</span><span class="p">.</span><span class="nx">Writer</span> 
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>
+<p><code>Usage</code> : 见名知意，可知是用来输出<code>help</code>信息的。一般是在没输入参数或者参数出错
+的时候使用</p>
+</li>
+<li>
+<p><code>name</code> : <code>CommandLine</code>将其设为<code>docker</code>(<code>os.Args[0]</code>).</p>
+</li>
+<li>
+<p><code>parsed</code> : 是否已经解析完成</p>
+</li>
+<li>
+<p><code>actual</code> : 实际解析出来的命令行参数结果.</p>
+</li>
+<li>
+<p><code>formal</code> : 存储预先定义好的所支持的命令行参数信息。</p>
+</li>
+<li>
+<p><code>args</code>   : 输入的命令行参数列表</p>
+</li>
+<li>
+<p><code>errorHandling</code> : 解析遇到错误时的处理方式。</p>
+</li>
+</ol>
+<p>每一个命令行参数所对应的结构体为<code>Flag</code>,其定义为 :</p>
+<p><code>github.com/docker/docker/pkg/mflag/flag.go</code> :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"> <span class="kd">type</span> <span class="nx">Flag</span> <span class="kd">struct</span> <span class="p">{</span>
+	 <span class="nx">Names</span>    <span class="p">[]</span><span class="kt">string</span> <span class="c1">// name as it appears on command line
+</span><span class="c1"></span>	 <span class="nx">Usage</span>    <span class="kt">string</span>   <span class="c1">// help message
+</span><span class="c1"></span>	 <span class="nx">Value</span>    <span class="nx">Value</span>    <span class="c1">// value as set
+</span><span class="c1"></span>	 <span class="nx">DefValue</span> <span class="kt">string</span>   <span class="c1">// default value (as text); for usage message
+</span><span class="c1"></span> <span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>定义简单明了，<code>Names</code>为<code>string</code>列表是因为很多参数既有长类型也有短类型，两个名字
+都存下来。还有一些个别的情况时将要废弃的参数形式，比如:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"> <span class="nx">flEnableCors</span>  <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nf">Bool</span><span class="p">([]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;#api-enable-cors&#34;</span><span class="p">,</span> <span class="s">&#34;-api-enable-cors&#34;</span><span class="p">},</span> <span class="kc">false</span><span class="p">,</span> <span class="s">&#34;Enable CORS headers in the remote API&#34;</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其名字前有一个<code>#</code>符号。在解析时如果遇到这类参数，会输出一些警告信息 :</p>
+<p><code>github.com/docker/docker/pkg/mflag/flag.go#parseOne()</code> :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">for</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">n</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">flag</span><span class="p">.</span><span class="nx">Names</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;#%s&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">replacement</span> <span class="o">:=</span> <span class="s">&#34;&#34;</span>
+		<span class="k">for</span> <span class="nx">j</span> <span class="o">:=</span> <span class="nx">i</span><span class="p">;</span> <span class="nx">j</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">flag</span><span class="p">.</span><span class="nx">Names</span><span class="p">);</span> <span class="nx">j</span><span class="o">++</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="nx">flag</span><span class="p">.</span><span class="nx">Names</span><span class="p">[</span><span class="nx">j</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="sc">&#39;#&#39;</span> <span class="p">{</span>
+				<span class="nx">replacement</span> <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nx">Names</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span>
+				<span class="k">break</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="nx">replacement</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="p">{</span> <span class="c1">// 内容过长，省略部分。
+</span><span class="c1"></span>			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintf</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nf">out</span><span class="p">(),</span> <span class="s">&#34;Warning: &#39;-%s&#39; is deprecated, ...)
+</span><span class="s">		} else {
+</span><span class="s">			fmt.Fprintf(f.out(), &#34;</span><span class="nx">Warning</span><span class="p">:</span> <span class="err">&#39;</span><span class="o">-%</span><span class="nx">s</span><span class="err">&#39;</span> <span class="nx">is</span> <span class="nx">deprecated</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+		<span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>  
+
+</code></pre></td></tr></table>
+</div>
+</div><p>效果如下图所示 :</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-2/deprecated.png" alt="deprecated"></p>
+<h2 id="设置过程">设置过程</h2>
+<p>这里说的设置过程是指在<code>package</code>初始化时所设定的支持的命令行参数的过程，以前面提
+到过的<code>daemon</code>参数为例。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"> <span class="nx">flDaemon</span>      <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nf">Bool</span><span class="p">([]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;d&#34;</span><span class="p">,</span> <span class="s">&#34;-daemon&#34;</span><span class="p">},</span> <span class="kc">false</span><span class="p">,</span> <span class="s">&#34;Enable daemon mode&#34;</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>前面已经提到过，<code>flag</code>大部分的操作都由<code>CommandLine</code>变量执行,调用结果为:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">f</span> <span class="o">*</span><span class="nx">FlagSet</span><span class="p">)</span> <span class="nf">Bool</span><span class="p">(</span><span class="nx">names</span> <span class="p">[]</span><span class="kt">string</span><span class="p">,</span> <span class="nx">value</span> <span class="kt">bool</span><span class="p">,</span> <span class="nx">usage</span> <span class="kt">string</span><span class="p">)</span> <span class="o">*</span><span class="kt">bool</span> <span class="p">{</span>
+	<span class="nx">p</span> <span class="o">:=</span> <span class="nb">new</span><span class="p">(</span><span class="kt">bool</span><span class="p">)</span>
+	<span class="nx">f</span><span class="p">.</span><span class="nf">BoolVar</span><span class="p">(</span><span class="nx">p</span><span class="p">,</span> <span class="nx">names</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">usage</span><span class="p">)</span>
+	<span class="k">return</span> <span class="nx">p</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>基本上还是向下传递参数，只不过多了一个<code>p</code>,<code>p</code>是一个指针，<code>flDaemon</code>和<code>p</code>指向同一
+个地址，即参数的值。前面说过在解析过程中会动态更新参数的值，用指针既可保证
+<code>flDaemon</code>指向的是最后实际解析出来的值。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">BoolVar</span><span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="kt">bool</span><span class="p">,</span> <span class="nx">names</span> <span class="p">[]</span><span class="kt">string</span><span class="p">,</span> <span class="nx">value</span> <span class="kt">bool</span><span class="p">,</span> <span class="nx">usage</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">CommandLine</span><span class="p">.</span><span class="nf">Var</span><span class="p">(</span><span class="nf">newBoolValue</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">p</span><span class="p">),</span> <span class="nx">names</span><span class="p">,</span> <span class="nx">usage</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">boolValue</span> <span class="kt">bool</span>
+	
+<span class="kd">func</span> <span class="nf">newBoolValue</span><span class="p">(</span><span class="nx">val</span> <span class="kt">bool</span><span class="p">,</span> <span class="nx">p</span> <span class="o">*</span><span class="kt">bool</span><span class="p">)</span> <span class="o">*</span><span class="nx">boolValue</span> <span class="p">{</span>
+	<span class="o">*</span><span class="nx">p</span> <span class="p">=</span> <span class="nx">val</span>
+	<span class="k">return</span> <span class="p">(</span><span class="o">*</span><span class="nx">boolValue</span><span class="p">)(</span><span class="nx">p</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>type 定义了一个新的类型<code>boolValue</code>,可以猜想处理<code>string</code>会有<code>stringValue</code>,处理<code>in</code>会有<code>intValue</code>&hellip;它们都实现了<code>Value</code>接口:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Value</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">String</span><span class="p">()</span> <span class="kt">string</span>
+	<span class="nf">Set</span><span class="p">(</span><span class="kt">string</span><span class="p">)</span> <span class="kt">error</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>Value</code>是用于动态存储位于<code>Flag</code>中的值的接口.想想看,在最开始解析命令行参数时,我们需要对不同的类型作分别处理,有了统一的<code>Value</code>接口,
+后续的处理就可以统一进行,不用对每种类型都定义处理函数.</p>
+<p>以<code>int</code>为例,其<code>intValue</code>各接口定义如下:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">intValue</span> <span class="kt">int</span>
+
+<span class="kd">func</span> <span class="nf">newIntValue</span><span class="p">(</span><span class="nx">val</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">p</span> <span class="o">*</span><span class="kt">int</span><span class="p">)</span> <span class="o">*</span><span class="nx">intValue</span> <span class="p">{</span>
+	<span class="o">*</span><span class="nx">p</span> <span class="p">=</span> <span class="nx">val</span>
+	<span class="k">return</span> <span class="p">(</span><span class="o">*</span><span class="nx">intValue</span><span class="p">)(</span><span class="nx">p</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">i</span> <span class="o">*</span><span class="nx">intValue</span><span class="p">)</span> <span class="nf">Set</span><span class="p">(</span><span class="nx">s</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="nx">v</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">strconv</span><span class="p">.</span><span class="nf">ParseInt</span><span class="p">(</span><span class="nx">s</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+	<span class="o">*</span><span class="nx">i</span> <span class="p">=</span> <span class="nf">intValue</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span>
+	<span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">i</span> <span class="o">*</span><span class="nx">intValue</span><span class="p">)</span> <span class="nf">Get</span><span class="p">()</span> <span class="kd">interface</span><span class="p">{}</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="o">*</span><span class="nx">i</span><span class="p">)</span> <span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">i</span> <span class="o">*</span><span class="nx">intValue</span><span class="p">)</span> <span class="nf">String</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;%v&#34;</span><span class="p">,</span> <span class="o">*</span><span class="nx">i</span><span class="p">)</span> <span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>其他类型与此类似，稍有不同的是<code>bool</code>类型。因为<code>bool</code>类型的参数通常并不需要明确地
+指明其值，只要参数出现，即可认为为<code>true</code>。比如<code>-d</code>参数,并不需要写<code>-d=true</code>。针对
+这种情况,<code>boolValue</code>提供了额外的<code>IsBoolFlag()</code>函数和<code>boolFlag</code> interface.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">boolValue</span><span class="p">)</span> <span class="nf">IsBoolFlag</span><span class="p">()</span> <span class="kt">bool</span> <span class="p">{</span> <span class="k">return</span> <span class="kc">true</span> <span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">boolFlag</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nx">Value</span>
+	<span class="nf">IsBoolFlag</span><span class="p">()</span> <span class="kt">bool</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>再回到原来的处理流程，看看最终的<code>Var</code>函数的实现 :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">f</span> <span class="o">*</span><span class="nx">FlagSet</span><span class="p">)</span> <span class="nf">Var</span><span class="p">(</span><span class="nx">value</span> <span class="nx">Value</span><span class="p">,</span> <span class="nx">names</span> <span class="p">[]</span><span class="kt">string</span><span class="p">,</span> <span class="nx">usage</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">flag</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">Flag</span><span class="p">{</span><span class="nx">names</span><span class="p">,</span> <span class="nx">usage</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">value</span><span class="p">.</span><span class="nf">String</span><span class="p">()}</span>
+	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">name</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">names</span> <span class="p">{</span>
+		<span class="nx">name</span> <span class="p">=</span> <span class="nx">strings</span><span class="p">.</span><span class="nf">TrimPrefix</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="s">&#34;#&#34;</span><span class="p">)</span>
+		<span class="nx">_</span><span class="p">,</span> <span class="nx">alreadythere</span> <span class="o">:=</span> <span class="nx">f</span><span class="p">.</span><span class="nx">formal</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span>
+		<span class="k">if</span> <span class="nx">alreadythere</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">msg</span> <span class="kt">string</span>
+			<span class="k">if</span> <span class="nx">f</span><span class="p">.</span><span class="nx">name</span> <span class="o">==</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+				<span class="nx">msg</span> <span class="p">=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;flag redefined: %s&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">msg</span> <span class="p">=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;%s flag redefined: %s&#34;</span><span class="p">,</span> <span class="nx">f</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span>
+			<span class="p">}</span>
+			<span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintln</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nf">out</span><span class="p">(),</span> <span class="nx">msg</span><span class="p">)</span>
+			<span class="nb">panic</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span> 
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="nx">f</span><span class="p">.</span><span class="nx">formal</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nx">f</span><span class="p">.</span><span class="nx">formal</span> <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="o">*</span><span class="nx">Flag</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="nx">f</span><span class="p">.</span><span class="nx">formal</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="p">=</span> <span class="nx">flag</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>整个逻辑比较简单，先生成相应的<code>Flag</code>变量，然后建立各个参数名(长短名，将要废弃的
+名字)对其的映射。各个参数均以此流程设置，最后都存储在<code>FlagSet</code>的<code>formal</code>映射表中，
+后续的解析便可以对照着处理了。</p>
+<h2 id="解析过程">解析过程</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">Parse</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">CommandLine</span><span class="p">.</span><span class="nf">Parse</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Args</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>解析过程和设定过程一样都是由<code>CommandLine</code>变量来执行的，<code>Parse</code>直接读取全部参数
+(除<code>Args[0]</code>即<code>docker</code>外)进行处理 :</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-2/parse.png" alt="parse"></p>
+<p>首先将<code>parsed</code>置为<code>true</code>,然后将所有参数存入<code>CommandLine</code>的<code>args</code>,之后便是逐个处
+理参数，在<code>for</code>循环内一直调用<code>parseOne</code>，处理出错的参数，依据<code>errorHandling</code>的设
+置来决定是继续还是退出等等。我们先看看<code>parseOne</code>的实现,因为函数代码过长，分段详述:</p>
+<ol>
+<li>先判断是不是一个 flag</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+<span class="nx">s</span> <span class="o">:=</span> <span class="nx">f</span><span class="p">.</span><span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="sc">&#39;-&#39;</span> <span class="o">||</span> <span class="nb">len</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+<span class="k">if</span> <span class="nx">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;-&#39;</span> <span class="o">&amp;&amp;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="p">{</span> <span class="c1">// &#34;--&#34; terminates the flags
+</span><span class="c1"></span>	<span class="nx">f</span><span class="p">.</span><span class="nx">args</span> <span class="p">=</span> <span class="nx">f</span><span class="p">.</span><span class="nx">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+	<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+<span class="nx">name</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;=&#39;</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">f</span><span class="p">.</span><span class="nf">failf</span><span class="p">(</span><span class="s">&#34;bad flag syntax: %s&#34;</span><span class="p">,</span> <span class="nx">s</span><span class="p">)</span>
+<span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p><code>len(f.args) == 0</code> 一般代表解析的终止,没有更多的参数了，结合上述<code>Parse</code>函数中的
+判断，此时就会跳出<code>for</code>循环，正常结束解析流程。其他的几种<code>args[0]</code>情况也会导致相同结果:</p>
+<ul>
+<li>长度为 0 或 1</li>
+<li>不以<code>-</code>开头</li>
+<li>值为 <code>--</code></li>
+<li>格式错误，比如<code>-=</code>之类的。</li>
+</ul>
+<p>如果确定<code>args[0]</code>是一个 flag,其会从<code>f.args</code>去除，以便下一次处理的<code>args[0]</code>是下一
+个参数。如果<code>args[0]</code>是形如<code>--debug=false</code>的格式，便需从中取出相应的<code>name</code>和
+<code>value</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">f</span><span class="p">.</span><span class="nx">args</span> <span class="p">=</span> <span class="nx">f</span><span class="p">.</span><span class="nx">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+<span class="nx">has_value</span> <span class="o">:=</span> <span class="kc">false</span>
+<span class="nx">value</span> <span class="o">:=</span> <span class="s">&#34;&#34;</span>
+<span class="k">if</span> <span class="nx">i</span> <span class="o">:=</span> <span class="nx">strings</span><span class="p">.</span><span class="nf">Index</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="s">&#34;=&#34;</span><span class="p">);</span> <span class="nx">i</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="p">{</span>
+	<span class="nx">value</span> <span class="p">=</span> <span class="nf">trimQuotes</span><span class="p">(</span><span class="nx">name</span><span class="p">[</span><span class="nx">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:])</span>
+	<span class="nx">has_value</span> <span class="p">=</span> <span class="kc">true</span>
+	<span class="nx">name</span> <span class="p">=</span> <span class="nx">name</span><span class="p">[:</span><span class="nx">i</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>有了<code>name</code>和<code>value</code>后，便可以与之前存在<code>f.formal</code>中的参数列表相对照,看其是否属于
+程序所支持的参数:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">flag</span><span class="p">,</span> <span class="nx">alreadythere</span> <span class="o">:=</span> <span class="nx">m</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="c1">// BUG
+</span><span class="c1"></span><span class="k">if</span> <span class="p">!</span><span class="nx">alreadythere</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nx">name</span> <span class="o">==</span> <span class="s">&#34;-help&#34;</span> <span class="o">||</span> <span class="nx">name</span> <span class="o">==</span> <span class="s">&#34;help&#34;</span> <span class="o">||</span> <span class="nx">name</span> <span class="o">==</span> <span class="s">&#34;h&#34;</span> <span class="p">{</span> 
+		<span class="nx">f</span><span class="p">.</span><span class="nf">usage</span><span class="p">()</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">ErrHelp</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;-&#39;</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">f</span><span class="p">.</span><span class="nf">failf</span><span class="p">(</span><span class="s">&#34;flag provided but not defined: -%s&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">ErrRetry</span>
+<span class="p">}</span>
+
+
+</code></pre></td></tr></table>
+</div>
+</div><p>前面提到过<code>CommandLine</code>的<code>errorHandling</code>是<code>ErrorOnExit</code>，碰到错误会直接退出。如
+果没有在<code>formal</code>表中找到相应的记录,有三种情况，一种是需要查看帮助信息，
+系统就在打印好帮助信息后退出，另一种是程序不支持的参数，打印错误信息退出。最后一
+种是短参数写在了一起，比如<code>-dD</code>,代表<code>--daemon --debug</code>,这种情况需要返回上层继续
+处理，我们也可以看到在<code>Parse</code>函数中对<code>ErrRetry</code>作了单独处理,将参数字符串分割为单
+个字母，然后分别解析。</p>
+<p>之后需要对<code>bool</code>类型的参数做特殊处理，原因前已详述:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">fv</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">flag</span><span class="p">.</span><span class="nx">Value</span><span class="p">.(</span><span class="nx">boolFlag</span><span class="p">);</span> <span class="nx">ok</span> <span class="o">&amp;&amp;</span> <span class="nx">fv</span><span class="p">.</span><span class="nf">IsBoolFlag</span><span class="p">()</span> <span class="p">{</span> 
+	<span class="k">if</span> <span class="nx">has_value</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">fv</span><span class="p">.</span><span class="nf">Set</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">f</span><span class="p">.</span><span class="nf">failf</span><span class="p">(</span><span class="s">&#34;invalid boolean value %q for  -%s: %v&#34;</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="nx">fv</span><span class="p">.</span><span class="nf">Set</span><span class="p">(</span><span class="s">&#34;true&#34;</span><span class="p">)</span> <span class="c1">//默认为 true
+</span><span class="c1"></span>	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>对于其他的类型，则必须解析到其值:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">else</span> <span class="p">{</span>
+	<span class="c1">// It must have a value, which might be the next argument.
+</span><span class="c1"></span>	<span class="k">if</span> <span class="p">!</span><span class="nx">has_value</span> <span class="o">&amp;&amp;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">args</span><span class="p">)</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="c1">// value is the next arg
+</span><span class="c1"></span>		<span class="nx">has_value</span> <span class="p">=</span> <span class="kc">true</span>
+		<span class="nx">value</span><span class="p">,</span> <span class="nx">f</span><span class="p">.</span><span class="nx">args</span> <span class="p">=</span> <span class="nx">f</span><span class="p">.</span><span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">f</span><span class="p">.</span><span class="nx">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="p">!</span><span class="nx">has_value</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">f</span><span class="p">.</span><span class="nf">failf</span><span class="p">(</span><span class="s">&#34;flag needs an argument: -%s&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">flag</span><span class="p">.</span><span class="nx">Value</span><span class="p">.</span><span class="nf">Set</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">f</span><span class="p">.</span><span class="nf">failf</span><span class="p">(</span><span class="s">&#34;invalid value %q for flag -%s: %v&#34;</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>一般情况下都是以<code>args</code>列表中的下一个字符串为其值。至此，一个参数解析流程将结束，
+后面只要不断重复此过程即可，除了需要对将要废弃的参数打印一些警告信息。当处理结束
+时,<code>CommandLine</code>的<code>formal</code>映射表中包含了所有预设的参数及更新的值，<code>actual</code>表中只
+包含了程序运行时实际使用的参数及其信息。</p>
+<h1 id="后续设定">后续设定</h1>
+<p>除了参数解析，整个<code>main</code>函数的其他部分就是比较简单地用解析到的值设置各个组件，理解了前者之后，后面的部分就没有什么难点了。</p>
+<h2 id="版本号">版本号</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="o">*</span><span class="nx">flVersion</span> <span class="p">{</span>
+	<span class="nf">showVersion</span><span class="p">()</span>
+	<span class="k">return</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>代码其实没什么好说的，这里主要想提及的是<code>docker</code>里设置版本号的方式。在<code>docker</code>根
+目录下会有一个<code>VERSION</code>文件，里面记录了程序的版本号，然后在编译脚本中会读取其内
+容来进行设置:</p>
+<p><code>github.com/docker/docker/hack/make.sh</code> :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">VERSION</span><span class="o">=</span><span class="k">$(</span>cat ./VERSION<span class="k">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="日志级别">日志级别</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="o">*</span><span class="nx">flLogLevel</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+	<span class="nx">lvl</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">log</span><span class="p">.</span><span class="nf">ParseLevel</span><span class="p">(</span><span class="o">*</span><span class="nx">flLogLevel</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatalf</span><span class="p">(</span><span class="s">&#34;Unable to parse logging level: %s&#34;</span><span class="p">,</span> <span class="o">*</span><span class="nx">flLogLevel</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nf">initLogging</span><span class="p">(</span><span class="nx">lvl</span><span class="p">)</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+	<span class="nf">initLogging</span><span class="p">(</span><span class="nx">log</span><span class="p">.</span><span class="nx">InfoLevel</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="o">*</span><span class="nx">flDebug</span> <span class="p">{</span>
+	<span class="nx">os</span><span class="p">.</span><span class="nf">Setenv</span><span class="p">(</span><span class="s">&#34;DEBUG&#34;</span><span class="p">,</span> <span class="s">&#34;1&#34;</span><span class="p">)</span>
+	<span class="nf">initLogging</span><span class="p">(</span><span class="nx">log</span><span class="p">.</span><span class="nx">DebugLevel</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>有两个设置日志的参数 : <code>--log-level</code> 和 <code>--debug</code>，后者只是为了方便使用，且优先级更高。</p>
+<h2 id="sockets">sockets</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">flHosts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+	<span class="nx">defaultHost</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Getenv</span><span class="p">(</span><span class="s">&#34;DOCKER_HOST&#34;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">defaultHost</span> <span class="o">==</span> <span class="s">&#34;&#34;</span> <span class="o">||</span> <span class="o">*</span><span class="nx">flDaemon</span> <span class="p">{</span>
+		<span class="c1">// If we do not have a host, default to unix socket
+</span><span class="c1"></span>		<span class="nx">defaultHost</span> <span class="p">=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;unix://%s&#34;</span><span class="p">,</span> <span class="nx">api</span><span class="p">.</span><span class="nx">DEFAULTUNIXSOCKET</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">defaultHost</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">ValidateHost</span><span class="p">(</span><span class="nx">defaultHost</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">flHosts</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">flHosts</span><span class="p">,</span> <span class="nx">defaultHost</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>docker daemon</code>可以监听三种类型的<code>socket</code> :</p>
+<ol>
+<li>
+<p>unix</p>
+<p>由上面代码可知，这是默认的形式 ，位于 <code>/var/run/docker.sock</code>。</p>
+</li>
+<li>
+<p>tcp</p>
+<p>远程访问(<code>web api</code>)需要开启<code>tcp socket</code>,默认是不加密和无需认证的。如果需要监
+听所有<code>interface</code>,可以设为<code>-H tcp://0.0.0.0:2375</code>,或者可以自己指定特定的 IP。</p>
+</li>
+<li>
+<p>fd</p>
+<p>基于<code>systemd</code>的系统可以用到，便于其他服务通过<code>systemd socket activation</code>与
+<code>docker daemon</code>交互。详见:<a href="http://0pointer.de/blog/projects/socket-activation.html">sockert activation</a>。</p>
+</li>
+</ol>
+<p><code>flHosts</code>是一个列表，可以多次指定<code>-H</code>参数。</p>
+<h2 id="daemon">daemon</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="o">*</span><span class="nx">flDaemon</span> <span class="p">{</span>
+	<span class="nf">mainDaemon</span><span class="p">()</span>
+	<span class="k">return</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>docker</code>并不像<code>redis</code>等程序那样分为<code>server</code>和<code>client</code>程序，区别即在这里。如果有<code>-d</code>参
+数，就以<code>daemon</code>方式启动，没有，就当做是<code>client.</code>,然后继续解析子命令及其参数进行
+处理。后面介绍的流程就是只针对<code>client</code>而言。</p>
+<h2 id="tls-认证">TLS 认证</h2>
+<p>即使对 TLS 的原理不是很了解，通过下面的代码，也很容易理解<code>docker</code>的认证过程:</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-2/tls.png" alt="tls"></p>
+<p>与此相关的主要有四个参数 :</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-2/tls-args.png" alt="tls-args"></p>
+<p>如果<code>--tlsverify</code>或者<code>--tls</code>为<code>true</code>,则启用 TLS 认证。通过指定的三个 PEM 文件，生成
+一个<code>tls.Config</code>,用于后面的<code>docker client</code>与<code>docker daemon</code>的连接。</p>
+<h2 id="dockercli">DockerCli</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go">
+<span class="nx">protoAddrParts</span> <span class="o">:=</span> <span class="nx">strings</span><span class="p">.</span><span class="nf">SplitN</span><span class="p">(</span><span class="nx">flHosts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#34;://&#34;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="o">*</span><span class="nx">flTls</span> <span class="o">||</span> <span class="o">*</span><span class="nx">flTlsVerify</span> <span class="p">{</span>
+	<span class="nx">cli</span> <span class="p">=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">NewDockerCli</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Stdin</span><span class="p">,</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Stdout</span><span class="p">,</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Stderr</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">protoAddrParts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">protoAddrParts</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">&amp;</span><span class="nx">tlsConfig</span><span class="p">)</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+	<span class="nx">cli</span> <span class="p">=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">NewDockerCli</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Stdin</span><span class="p">,</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Stdout</span><span class="p">,</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Stderr</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">protoAddrParts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">protoAddrParts</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="kc">nil</span><span class="p">)</span>
+<span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="子命令">子命令</h2>
+<p>最后一部分便是<code>docker client</code>子命令的解析与执行，比如<code>doker ps</code>,<code>docker stop &lt;id&gt;</code>等等。具体细节就留待以后解析了。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">cli</span><span class="p">.</span><span class="nf">Cmd</span><span class="p">(</span><span class="nx">flag</span><span class="p">.</span><span class="nf">Args</span><span class="p">()</span><span class="o">...</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nx">sterr</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">err</span><span class="p">.(</span><span class="o">*</span><span class="nx">utils</span><span class="p">.</span><span class="nx">StatusError</span><span class="p">);</span> <span class="nx">ok</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">sterr</span><span class="p">.</span><span class="nx">Status</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+			<span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">sterr</span><span class="p">.</span><span class="nx">Status</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="nx">sterr</span><span class="p">.</span><span class="nx">StatusCode</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2015-01-30
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/docker/">docker</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2015-02-04-iops/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">IOPS 介绍</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2015-01-30-modern-dev-tools/">
+            <span class="next-text nav-default">现代化的开发人员实用工具</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

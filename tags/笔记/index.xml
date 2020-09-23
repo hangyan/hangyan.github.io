@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>笔记 on 工业革命</title>
+    <link>http://yanhang.me/tags/%E7%AC%94%E8%AE%B0/</link>
+    <description>Recent content in 笔记 on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 24 Jul 2019 17:22:10 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/%E7%AC%94%E8%AE%B0/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Sinfonia: a new paradigm for building scalable distributed systems</title>
+      <link>http://yanhang.me/post/2019-07-24-sinfonia-paper/</link>
+      <pubDate>Wed, 24 Jul 2019 17:22:10 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-07-24-sinfonia-paper/</guid>
+      <description>论文链接: Sinfonia: a new paradigm for building scalable distributed systems Sinfornia 像是一个构建分布式系统的 SDK 。目前的市面上分布式系统已经非常多了，比如 etcd, zookeeper, ceph 等等。但他们都是分别实现的，彼此之间</description>
+    </item>
+    
+  </channel>
+</rss>

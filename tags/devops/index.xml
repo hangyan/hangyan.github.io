@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>DevOps on 工业革命</title>
+    <link>http://yanhang.me/tags/devops/</link>
+    <description>Recent content in DevOps on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 11 Sep 2019 16:44:26 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/devops/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>GitOps</title>
+      <link>http://yanhang.me/post/2019-09-11-gitops/</link>
+      <pubDate>Wed, 11 Sep 2019 16:44:26 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-09-11-gitops/</guid>
+      <description>Kubernetes 确定了统治地位之后，Service Mesh 和 GitOps 也渐渐火热起来。Service Mesh 领域内 , Istio 已经逐渐占了上风，但 GitOps 扔未有统治性的工具出现，尚处于早期</description>
+    </item>
+    
+  </channel>
+</rss>

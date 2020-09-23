@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Linux 桌面的失败 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="之所以说它失败，是指从功利的角度来看。不管是市场占有率，还是软件的可用性，用户友好性，以及生态上，都是失败的。直到2020的今天，以 Ubuntu 为代表" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2020-04-04-linux-desktop/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Linux 桌面的失败" />
+<meta property="og:description" content="之所以说它失败，是指从功利的角度来看。不管是市场占有率，还是软件的可用性，用户友好性，以及生态上，都是失败的。直到2020的今天，以 Ubuntu 为代表" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2020-04-04-linux-desktop/" />
+<meta property="article:published_time" content="2020-04-04T21:29:54+00:00" />
+<meta property="article:modified_time" content="2020-04-04T21:29:54+00:00" />
+<meta itemprop="name" content="Linux 桌面的失败">
+<meta itemprop="description" content="之所以说它失败，是指从功利的角度来看。不管是市场占有率，还是软件的可用性，用户友好性，以及生态上，都是失败的。直到2020的今天，以 Ubuntu 为代表">
+<meta itemprop="datePublished" content="2020-04-04T21:29:54+00:00" />
+<meta itemprop="dateModified" content="2020-04-04T21:29:54+00:00" />
+<meta itemprop="wordCount" content="1504">
+
+
+
+<meta itemprop="keywords" content="社会," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Linux 桌面的失败"/>
+<meta name="twitter:description" content="之所以说它失败，是指从功利的角度来看。不管是市场占有率，还是软件的可用性，用户友好性，以及生态上，都是失败的。直到2020的今天，以 Ubuntu 为代表"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Linux 桌面的失败</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-04-04 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 1504 字 </span>
+          <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents"></nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>之所以说它失败，是指从功利的角度来看。不管是市场占有率，还是软件的可用性，用户友好性，以及生态上，都是失败的。直到2020的今天，以 Ubuntu 为代表的厂商在不断地向竞争对手学习，但仍然不足以和后者相提并论。当然，从自由以及民主的角度来看，它是有成功之处的，开源软件的流行，对于用户隐私以及自由的尊重，这一切的努力都值得我们敬重。</p>
+<p>从表面上看，如果我们细数其失败的现象，很容易列出以下几点:</p>
+<ol>
+<li>生态太差，没有多少厂商愿意开发 Linux 平台的软件。而进一步的原因则是用户基数少，以及开源社区天然对商业软件的不支持态度</li>
+<li>用户不友好。偏技术化，普通用户难以方便地使用。</li>
+</ol>
+<p>造成这种现状的原因很多，不一而足。其中人和制度自然是重点因素。</p>
+<p>从 Linux 桌面的相关开发人员来看，有相当一部分人是满足于现状，并且不愿意 Linux 桌面朝着 Mac OSX 和 Windows 的方面演进，因为它是 Linux, 是自由软件的核心，似乎不应该走那样的路。这一部分人满足于目前 Linux 的生态，并沉迷于从技术角度去使用和解读 Linux，同时和普通用户区分开来。另一部分人，在努力地丰富 Linux 应用的生态，但却走入了一个怪圈。到今天，我们有几百个发行版，几十个桌面系统，几十个文件管理器，Terminal应用，音乐播放器，数种不同的 GUI SDK 框架。他们共享了一个 Kernel, 使用起来功能也大同小异，一样的不如商业软件好用。但所有人都似乎相信自己所选择的框架/方向是对的，至少相对于其他选择是有一定优势的。假设这些精力能集中起来，会不会更好？</p>
+<p>没有假设，因为没有这个可能。与当世的民主制度一样，开源软件的开发流程大体上遵循了同样的模式，也遵循了同样的制度性缺陷。它防止了最大的恶(隐私，对自由的侵犯)，但却受制于其极低的效率。作为一个开发人员，你发现了一个应用的 BUG，或者有了一个新的 Idea 或者非常好的 Feature 想要合并进去，可能目前这个项目的 Owner 太慢了没时间处理，或者暂时不认可你的想法，那么你要么搁置你的 idea 或者 bugfix, 要么狠心下来自己 fork 一个新的版本。或者你直接掠过沟通这一步，直接开始自己的新项目。这就是 Linux 应用生态的开源项目的常态。</p>
+<p>这个怪圈有没有逃出的方法，有，而且很成功。只是，他的价值观显的不那么普世罢了。这样的例子很多。GNU/Linux 二者的创始人便是。可惜的是，后面的一票人都走偏了。这个方式现在有一个专业的词汇，叫终身仁慈独裁者(Benevolent Dictator For Life).</p>
+<p>我们很熟悉日常新闻上的 Linux 本人，经常骂这个骂那个，言辞粗暴，但其地位和声誉却未受影响。因为:</p>
+<ol>
+<li>他本身水平之高有目共睹，是 Linux Kernel 和 Git 的创始人.</li>
+<li>他领导下的 Linux Kernel 项目发展顺利，效率高，质量好</li>
+</ol>
+<p>就这，就足够了。就是这个仁慈独裁者，能保证一个产品拥有稳定的内部结构，统一的 interface, 和高效率的产出节奏。而 Linux 应用层恰恰缺少这么一个人，来决定大方向和开发流程，造成了现在的局面。</p>
+<p>当然，应用层本身的特点也不太可能推选出一位仁慈独裁者。这时候，开源世界历史上最为成功的项目之一&ndash;Kubernetes(它的仁慈独裁者是 Google) 所采用的 SIG GROUP 方式就值得借鉴了。在应用层划分若干个领域，每个领域再推选领导。由他来决定开发方向和领导开发流程。这样，才能防止应用层的开发力量进一步分化，而陷入无休止的 fork 和重复造轮子中。</p>
+<p>当然，文化对人的思维定性影响之大，除非经历重大的变革，这样的改变是不太可能发生的。甚至曾经有过这样的惨烈教训: systemd. 它让作者收到了很多死亡恐吓信，让 Debian 的领导层因此产生了分裂。一个远远优秀于 Linux 现存各种 init 系统的替代品，其面临的如此遭遇充分昭示了开源项目本身所面临的非技术层面的文化问题。</p>
+<p>如此看来，UOS 反倒有可能成为一个强有力的改变。结果如何，不得而知，但就方式而言，相较于过去的发行版，或许真的可以拿各国的抗疫政策以及结果来做对比。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2020-04-04
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E7%A4%BE%E4%BC%9A/">社会</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2020-04-09-ming/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">故国有明</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2020-01-03-kubernetes-in-2020/">
+            <span class="next-text nav-default">Kubernetes in 2020: Let&#39;s Forget About Kubernetes</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

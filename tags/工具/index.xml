@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>工具 on 工业革命</title>
+    <link>http://yanhang.me/tags/%E5%B7%A5%E5%85%B7/</link>
+    <description>Recent content in 工具 on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 07 May 2019 23:23:52 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/%E5%B7%A5%E5%85%B7/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>在 Gitlab 中使用 Danger</title>
+      <link>http://yanhang.me/post/2019-05-07-gitlab-danger/</link>
+      <pubDate>Tue, 07 May 2019 23:23:52 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-05-07-gitlab-danger/</guid>
+      <description>Gitlab 社区版的 CI 功能非常好用，能够很方便的地做到代码的 lint/build/test/等等。不过社区版在多人协作上(比如 Merge Request)上阉割</description>
+    </item>
+    
+    <item>
+      <title>现代化的开发人员实用工具</title>
+      <link>http://yanhang.me/post/2015-01-30-modern-dev-tools/</link>
+      <pubDate>Fri, 30 Jan 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-01-30-modern-dev-tools/</guid>
+      <description>&lt;p&gt;常年混迹于 linux，对命令行程序情有独钟，平时也喜欢搜集各种实用的小工具。&lt;code&gt;github&lt;/code&gt;流行以来，越来越多的新的实用的开
+发工具开源出来，有的可以用来替代一些老的工具，有的则是全新的。本文整理一些实用的
+工具，希望大家能在实际开发中用到。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

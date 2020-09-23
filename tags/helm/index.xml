@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>helm on 工业革命</title>
+    <link>http://yanhang.me/tags/helm/</link>
+    <description>Recent content in helm on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 03 Aug 2019 11:26:30 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/helm/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>What is Helm Doing Wrong and How a Helm3 Controller Can Fix It</title>
+      <link>http://yanhang.me/post/2019-08-03-helm-controller/</link>
+      <pubDate>Sat, 03 Aug 2019 11:26:30 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-08-03-helm-controller/</guid>
+      <description>Helm is big success for sure, it&amp;rsquo;s nearly the standard application package format in kubernetes.You only need to provide some metadata about your application&amp;rsquo;s name, version, description….Helm can help you package up and upload to a central or custom chart repo.Just like npm,rpm,docker image, or whatever other package management system. About a year ago,</description>
+    </item>
+    
+  </channel>
+</rss>

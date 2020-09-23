@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Gitlab on 工业革命</title>
+    <link>http://yanhang.me/tags/gitlab/</link>
+    <description>Recent content in Gitlab on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 08 May 2019 13:36:33 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/gitlab/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>在 Kubernetes 中安装 Gitlab</title>
+      <link>http://yanhang.me/post/2019-05-08-install-gitlab/</link>
+      <pubDate>Wed, 08 May 2019 13:36:33 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-05-08-install-gitlab/</guid>
+      <description>现在很少写这种安装类的博客了。之前在公司部署了一个 Gitlab 作为日常使用，因为步骤比较繁琐。在此把零零散散的资料汇聚一下，记录一个比较完整的安装过程</description>
+    </item>
+    
+    <item>
+      <title>在 Gitlab 中使用 Danger</title>
+      <link>http://yanhang.me/post/2019-05-07-gitlab-danger/</link>
+      <pubDate>Tue, 07 May 2019 23:23:52 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-05-07-gitlab-danger/</guid>
+      <description>Gitlab 社区版的 CI 功能非常好用，能够很方便的地做到代码的 lint/build/test/等等。不过社区版在多人协作上(比如 Merge Request)上阉割</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Scala 笔记: 函数和闭包 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="Local functions 在函数式语言里，函数是最基本的功能块。通常为了模块清晰起见，我们需要很多 Help Function，但是这些辅助函数很容易有名字冲突，暴露给外部" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2015-08-31-scala-notes-function-and-closures/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Scala 笔记: 函数和闭包" />
+<meta property="og:description" content="Local functions 在函数式语言里，函数是最基本的功能块。通常为了模块清晰起见，我们需要很多 Help Function，但是这些辅助函数很容易有名字冲突，暴露给外部" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2015-08-31-scala-notes-function-and-closures/" />
+<meta property="article:published_time" content="2015-08-31T21:37:39+08:00" />
+<meta property="article:modified_time" content="2015-08-31T00:00:00+00:00" />
+<meta itemprop="name" content="Scala 笔记: 函数和闭包">
+<meta itemprop="description" content="Local functions 在函数式语言里，函数是最基本的功能块。通常为了模块清晰起见，我们需要很多 Help Function，但是这些辅助函数很容易有名字冲突，暴露给外部">
+<meta itemprop="datePublished" content="2015-08-31T21:37:39+08:00" />
+<meta itemprop="dateModified" content="2015-08-31T00:00:00+00:00" />
+<meta itemprop="wordCount" content="2143">
+
+
+
+<meta itemprop="keywords" content="language," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Scala 笔记: 函数和闭包"/>
+<meta name="twitter:description" content="Local functions 在函数式语言里，函数是最基本的功能块。通常为了模块清晰起见，我们需要很多 Help Function，但是这些辅助函数很容易有名字冲突，暴露给外部"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Scala 笔记: 函数和闭包</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2015-08-31 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 2143 字 </span>
+          <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#local-functions">Local functions</a></li>
+        <li><a href="#first-class-functions">First-class functions</a></li>
+        <li><a href="#语法糖">语法糖</a></li>
+        <li><a href="#placeholder">Placeholder</a></li>
+        <li><a href="#partially-applied-functions">Partially applied functions</a></li>
+        <li><a href="#closures">Closures</a></li>
+        <li><a href="#函数的特殊形式">函数的特殊形式</a>
+          <ul>
+            <li><a href="#repeated-parameters">Repeated parameters</a></li>
+            <li><a href="#named-arguments-and-default-parameter-values">Named arguments and Default parameter values</a></li>
+          </ul>
+        </li>
+        <li><a href="#尾递归">尾递归</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h2 id="local-functions">Local functions</h2>
+<p>在函数式语言里，函数是最基本的功能块。通常为了模块清晰起见，我们需要很多 <code>Help Function</code>，但是这些辅助函数很容易有名字冲突，暴露给外部的时候也容易引起很多问题。
+Java 的主要解决方式是通过<code>private method</code>,scala 也支持这种。但是 scala 也提供了函数
+式风格的解决方式: 在函数内部定义函数(<code>Local functions.</code>),就像局部变量一样,其作用
+域仅限于外部函数内部。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">import</span> <span class="nn">scala.io.Source</span>
+
+<span class="k">object</span> <span class="nc">LongLines</span> <span class="o">{</span>
+
+  <span class="k">def</span> <span class="n">processFile</span><span class="o">(</span><span class="n">filename</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">width</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{</span>
+
+    <span class="k">def</span> <span class="n">processLine</span><span class="o">(</span><span class="n">line</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">line</span><span class="o">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="n">width</span><span class="o">)</span>
+        <span class="n">print</span><span class="o">(</span><span class="n">filename</span> <span class="o">+</span><span class="s">&#34;: &#34;</span><span class="o">+</span> <span class="n">line</span><span class="o">)</span>
+    <span class="o">}</span>    
+
+    <span class="k">val</span> <span class="n">source</span> <span class="k">=</span> <span class="nc">Source</span><span class="o">.</span><span class="n">fromFile</span><span class="o">(</span><span class="n">filename</span><span class="o">)</span>
+    <span class="k">for</span> <span class="o">(</span><span class="n">line</span> <span class="k">&lt;-</span> <span class="n">source</span><span class="o">.</span><span class="n">getLines</span><span class="o">)</span>
+      <span class="n">processLine</span><span class="o">(</span><span class="n">line</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>内部函数的一个便利之处就是它可以直接访问外部函数的变量(参数)。</p>
+<h2 id="first-class-functions">First-class functions</h2>
+<p>函数式语言与命令式语言之间最大的区别之一便是其数据和代码的一致性。在 C/JAVA 这样
+的语言里,变量、类、函数、语句等时候严格区分的，但在 Lisp 这样的语言里，所有的表
+达式都有值，都是数据，都可以当做变量传给函数。</p>
+<p>scala 里有<code>function literal</code>和<code>function value</code>两个概念，有点像是<code>class</code>和
+<code>object</code>之间的区别，前者都是在代码层级上而言，后者是运行时的概念。例如:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这是一个<code>fucntion literal</code>。你可以把它赋给一个变量并且调用它:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="nx">increase</span> <span class="p">=</span> <span class="p">(</span><span class="nx">x</span><span class="p">:</span> <span class="nx">Int</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">x</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="nf">increase</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="nx">increase</span> <span class="p">=</span> <span class="p">(</span><span class="nx">x</span><span class="p">:</span> <span class="nx">Int</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">x</span> <span class="o">+</span> <span class="mi">9999</span>
+<span class="nf">increase</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>简单的函数一行即可描述，多行的用<code>{}</code>包起来即可。</p>
+<p>scala 标准库里有一个常用的<code>foreach</code>函数，它就是以一个函数为参数并且将其应用到
+<code>collections</code>的各个元素之上的:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">someNumbers</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(-</span><span class="mi">11</span><span class="o">,</span> <span class="o">-</span><span class="mi">10</span><span class="o">,</span> <span class="o">-</span><span class="mi">5</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">10</span><span class="o">)</span>
+<span class="n">someNumbers</span><span class="o">.</span><span class="n">foreach</span><span class="o">((</span><span class="n">x</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">x</span><span class="o">))</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>foreach</code>函数的参数即事一个<code>fcuntion literal</code></p>
+<h2 id="语法糖">语法糖</h2>
+<p>scala 代码看起来难懂就在于它提供了好多简化代码的方式，就拿常用于 collections 上的
+<code>filter</code>函数来说(用法与 foreach 类似),因为既然是作用于<code>collections</code>,scala 有能力
+自己推导出<code>function literal</code>的参数类型,比如在一个<code>List[String]</code>上操作，那么类型
+自然就是<code>String</code>。简化过后可以写作:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">someNumbers</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(-</span><span class="mi">11</span><span class="o">,</span> <span class="o">-</span><span class="mi">10</span><span class="o">,</span> <span class="o">-</span><span class="mi">5</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">10</span><span class="o">)</span>
+<span class="n">someNumbers</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(-</span><span class="mi">11</span><span class="o">,</span> <span class="o">-</span><span class="mi">10</span><span class="o">,</span> <span class="o">-</span><span class="mi">5</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">10</span><span class="o">)</span>
+<span class="n">scala</span><span class="o">&gt;</span> <span class="n">someNumbers</span><span class="o">.</span><span class="n">filter</span><span class="o">((</span><span class="n">x</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span>
+<span class="n">res5</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="mi">10</span><span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>再进一步，我们可以将参数外面的括号去掉，因为外面已经有一层括号了，里面这个就显得
+有点多余了:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">scala</span><span class="o">&gt;</span> <span class="n">someNumbers</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="n">x</span> <span class="k">=&gt;</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span>
+<span class="n">res6</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="mi">10</span><span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="placeholder">Placeholder</h2>
+<p>继续简化。上例中的<code>x</code>只用了一次，完全可以省略掉，只要能表示出有一个从 List 中取
+出的数来参与比较即可:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">scala</span><span class="o">&gt;</span> <span class="n">someNumbers</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="k">_</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span>
+<span class="n">res7</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="mi">10</span><span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这种占位符(<code>Placeholder</code>)语法在很多语言中都出现过，比如<code>python</code>。再看下面一个用
+法:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">someNumbers</span><span class="o">.</span><span class="n">foreach</span><span class="o">(</span><span class="n">println</span> <span class="k">_</span><span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>它和下面这种形式的含义完全一样:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">someNumbers</span><span class="o">.</span><span class="n">foreach</span><span class="o">(</span><span class="n">x</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">x</span><span class="o">))</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>注意在这里占位符其实代替了整个参数列表，因为它不会有引起任何混淆。</p>
+<h2 id="partially-applied-functions">Partially applied functions</h2>
+<p><code>Partially applied functions</code> 也是函数式编程中常见的一个概念,在 C++中也提供了一定
+的支持。以一个具有多个参数的函数来蓝本，我们可以通过提供不同数量的部分参数来创造
+出不同的函数。示例如下:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">scala</span><span class="o">&gt;</span> <span class="k">def</span> <span class="n">sum</span><span class="o">(</span><span class="n">a</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">b</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">c</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">+</span> <span class="n">c</span>
+<span class="n">sum</span><span class="k">:</span> <span class="o">(</span><span class="kt">a:</span> <span class="kt">Int</span><span class="o">,</span><span class="kt">b:</span> <span class="kt">Int</span><span class="o">,</span><span class="n">c</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="nc">Int</span>
+
+<span class="n">scala</span><span class="o">&gt;</span> <span class="n">sum</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span>
+<span class="n">res10</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">6</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这是正常函数的调用流程。如果我们提供给 sum 两个个参数，我们就创造出了一个只需要
+一个个参数的 sum 函数:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">b</span> <span class="k">=</span> <span class="n">sum</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="k">_:</span> <span class="kt">Int</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span>
+<span class="n">b</span><span class="k">:</span> <span class="o">(</span><span class="kt">Int</span><span class="o">)</span> <span class="o">=&gt;</span> <span class="nc">Int</span> <span class="k">=</span> <span class="o">&lt;</span><span class="n">function1</span><span class="o">&gt;</span>
+
+<span class="n">scala</span><span class="o">&gt;</span> <span class="n">b</span><span class="o">(</span><span class="mi">2</span><span class="o">)</span>
+<span class="n">res13</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">6</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="closures">Closures</h2>
+<p>闭包(Closures)的概念理解起来并不很难，但是你不把它放在函数式编程的范畴内就很难
+理解它的作用。在 C 这样的语言里，闭包看起来是没什么用的。但在函数式语言里，函数经
+常会表现的像一个变量，会被当做参数传来穿去。对于模块性非常好的函数——内部处理逻辑
+与外部无关，只与参数有关——我们很容易理解其逻辑。但是对于需要引用到外部变量的函数，
+就容易引起混淆了。这就是闭包的作用所在：它能将函数创建时的一部分环境封装起来，将
+函数所需要的外部变量和其绑定在一起，以便其内部使用。看一个例子:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">scala</span><span class="o">&gt;</span> <span class="k">var</span> <span class="n">more</span> <span class="k">=</span> <span class="mi">1</span>
+<span class="n">more</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">addMore</span> <span class="k">=</span> <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">x</span> <span class="o">+</span> <span class="n">more</span>
+<span class="n">addMore</span><span class="k">:</span> <span class="o">(</span><span class="kt">Int</span><span class="o">)</span> <span class="o">=&gt;</span> <span class="nc">Int</span> <span class="k">=</span> <span class="o">&lt;</span><span class="n">function1</span><span class="o">&gt;</span>
+<span class="n">scala</span><span class="o">&gt;</span> <span class="n">addMore</span><span class="o">(</span><span class="mi">10</span><span class="o">)</span>
+<span class="n">res17</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">11</span>
+<span class="n">scala</span><span class="o">&gt;</span> <span class="n">more</span> <span class="k">=</span> <span class="mi">9999</span>
+<span class="n">more</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">9999</span>
+<span class="n">scala</span><span class="o">&gt;</span> <span class="n">addMore</span><span class="o">(</span><span class="mi">10</span><span class="o">)</span>
+<span class="n">res18</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">10009</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>addMore</code> 的执行需要一个外部的<code>more</code>变量，它会自动在其外部环境里找到这个变量并使
+用。需要注意的是，<code>more</code>的值改变时，函数是可以感知到其变化的。</p>
+<h2 id="函数的特殊形式">函数的特殊形式</h2>
+<h3 id="repeated-parameters">Repeated parameters</h3>
+<p>直接看例子:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">scala</span><span class="o">&gt;</span> <span class="k">def</span> <span class="n">echo</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">String*</span><span class="o">)</span> <span class="k">=</span>
+         <span class="k">for</span> <span class="o">(</span><span class="n">arg</span> <span class="k">&lt;-</span> <span class="n">args</span><span class="o">)</span> <span class="n">println</span><span class="o">(</span><span class="n">arg</span><span class="o">)</span>
+<span class="n">echo</span><span class="k">:</span> <span class="o">(</span><span class="kt">args:</span> <span class="kt">String*</span><span class="o">)</span><span class="kt">Unit</span>
+<span class="n">scala</span><span class="o">&gt;</span> <span class="n">echo</span><span class="o">()</span>
+
+<span class="n">scala</span><span class="o">&gt;</span> <span class="n">echo</span><span class="o">(</span><span class="s">&#34;one&#34;</span><span class="o">)</span>
+<span class="n">one</span>
+
+<span class="n">scala</span><span class="o">&gt;</span> <span class="n">echo</span><span class="o">(</span><span class="s">&#34;hello&#34;</span><span class="o">,</span> <span class="s">&#34;world!&#34;</span><span class="o">)</span>
+<span class="n">hello</span>
+<span class="n">world</span><span class="o">!</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>函数的最后一个参数可以是变长的一个参数列表,使用时将其当做一个列表处理即可。需要
+注意的是，函数调用时不能直接传一个列表过去，必须是将列表中的元素一个一个传进去:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">arr</span> <span class="k">=</span> <span class="nc">Array</span><span class="o">(</span><span class="s">&#34;What&#39;s&#34;</span><span class="o">,</span> <span class="s">&#34;up&#34;</span><span class="o">,</span> <span class="s">&#34;doc?&#34;</span><span class="o">)</span>
+<span class="n">arr</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">java.lang.String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Array</span><span class="o">(</span><span class="nc">What</span>&#39;s<span class="o">,</span> <span class="n">up</span><span class="o">,</span> <span class="n">doc</span><span class="o">?)</span>
+
+<span class="n">scala</span><span class="o">&gt;</span> <span class="n">echo</span><span class="o">(</span><span class="n">arr</span><span class="o">)</span>
+<span class="o">&lt;</span><span class="n">console</span><span class="k">&gt;:</span><span class="mi">7</span><span class="k">:</span> <span class="kt">error:</span> <span class="k">type</span> <span class="kt">mismatch</span><span class="o">;</span>
+<span class="n">found</span>   <span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">java.lang.String</span><span class="o">]</span>
+<span class="n">required</span><span class="k">:</span> <span class="kt">String</span>
+      <span class="n">echo</span><span class="o">(</span><span class="n">arr</span><span class="o">)</span>
+
+<span class="n">scala</span><span class="o">&gt;</span> <span class="n">echo</span><span class="o">(</span><span class="n">arr</span><span class="k">:</span> <span class="k">_</span><span class="kt">*</span><span class="o">)</span>
+<span class="nc">What</span>&#39;s
+<span class="n">up</span>
+<span class="n">doc</span><span class="o">?</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="named-arguments-and-default-parameter-values">Named arguments and Default parameter values</h3>
+<p>很多语言里都有这些概念，使用命名参数可以不必按照参数声明的顺序来调用。与普通参数
+混用时要把普通的参数写在前面。</p>
+<p>默认参数和命名参数经常是结合起来使用的:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">printTime2</span><span class="o">(</span><span class="n">out</span><span class="k">:</span> <span class="kt">java.io.PrintStream</span> <span class="o">=</span> <span class="nc">Console</span><span class="o">.</span><span class="n">out</span><span class="o">,</span>
+                 <span class="n">divisor</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">1</span><span class="o">)</span> <span class="k">=</span>
+   <span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="o">(</span><span class="s">&#34;time = &#34;</span><span class="o">+</span> <span class="nc">System</span><span class="o">.</span><span class="n">currentTimeMillis</span><span class="o">()/</span><span class="n">divisor</span><span class="o">)</span>
+
+<span class="n">printTime2</span><span class="o">(</span><span class="n">out</span> <span class="k">=</span> <span class="nc">Console</span><span class="o">.</span><span class="n">err</span><span class="o">)</span>
+<span class="n">printTime2</span><span class="o">(</span><span class="n">divisor</span> <span class="k">=</span> <span class="mi">1000</span><span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果没有命名参数，想要在第一个参数为默认而第二个参数明确指定基本上是做不到的。</p>
+<h2 id="尾递归">尾递归</h2>
+<p>在命令式语言中，像<code>while</code>循环这种结构，在函数式语言里一般只能通过递归来实现。看
+起来更加优雅简单，但是会带来性能的损耗。尾递归便是对其的一种优化，使其能达到和
+<code>while</code>循环等类似结构同样的性能.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">approximate</span><span class="o">(</span><span class="n">guess</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span><span class="k">:</span> <span class="kt">Double</span> <span class="o">=</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">isGoodEnough</span><span class="o">(</span><span class="n">guess</span><span class="o">))</span> <span class="n">guess</span>
+  <span class="k">else</span> <span class="n">approximate</span><span class="o">(</span><span class="n">improve</span><span class="o">(</span><span class="n">guess</span><span class="o">))</span>
+
+<span class="k">def</span> <span class="n">approximateLoop</span><span class="o">(</span><span class="n">initialGuess</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span><span class="k">:</span> <span class="kt">Double</span> <span class="o">=</span> <span class="o">{</span>
+  <span class="k">var</span> <span class="n">guess</span> <span class="k">=</span> <span class="n">initialGuess</span>
+  <span class="k">while</span> <span class="o">(!</span><span class="n">isGoodEnough</span><span class="o">(</span><span class="n">guess</span><span class="o">))</span>
+    <span class="n">guess</span> <span class="k">=</span> <span class="n">improve</span><span class="o">(</span><span class="n">guess</span><span class="o">)</span>
+  <span class="n">guess</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>注意上面的递归函数是在函数的最后一行调用自身，编译器可以将这种调用直接跳回到函数
+开始处（更新参数后），省去存储各层函数堆栈的麻烦。最终编译器会对两种形式生成同样
+的底层代码。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2015-08-31
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/language/">language</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2015-11-10-python-experience/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">一点 python 的经验</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2015-08-17-wu-lian-de/">
+            <span class="next-text nav-default">国士无双者</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

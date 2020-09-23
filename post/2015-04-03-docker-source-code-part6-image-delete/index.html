@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>docker 源码分析(6) -- 镜像删除 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="本篇的主要内容是关于如何删除镜像的.听起来是挺简单的一件事,但是docker本身的删除 策略定义并不清除，而且在实际的使用过程中,似乎总是与我们预计的结果不符,比如磁盘空间并没有被释放.所以在此单列一篇,详细解析镜 像删除的过程.
+" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2015-04-03-docker-source-code-part6-image-delete/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="docker 源码分析(6) -- 镜像删除" />
+<meta property="og:description" content="本篇的主要内容是关于如何删除镜像的.听起来是挺简单的一件事,但是docker本身的删除
+策略定义并不清除，而且在实际的使用过程中,似乎总是与我们预计的结果不符,比如磁盘空间并没有被释放.所以在此单列一篇,详细解析镜
+像删除的过程." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2015-04-03-docker-source-code-part6-image-delete/" />
+<meta property="article:published_time" content="2015-04-03T21:37:39+08:00" />
+<meta property="article:modified_time" content="2015-04-03T21:37:39+08:00" />
+<meta itemprop="name" content="docker 源码分析(6) -- 镜像删除">
+<meta itemprop="description" content="本篇的主要内容是关于如何删除镜像的.听起来是挺简单的一件事,但是docker本身的删除
+策略定义并不清除，而且在实际的使用过程中,似乎总是与我们预计的结果不符,比如磁盘空间并没有被释放.所以在此单列一篇,详细解析镜
+像删除的过程.">
+<meta itemprop="datePublished" content="2015-04-03T21:37:39+08:00" />
+<meta itemprop="dateModified" content="2015-04-03T21:37:39+08:00" />
+<meta itemprop="wordCount" content="3134">
+
+
+
+<meta itemprop="keywords" content="docker," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="docker 源码分析(6) -- 镜像删除"/>
+<meta name="twitter:description" content="本篇的主要内容是关于如何删除镜像的.听起来是挺简单的一件事,但是docker本身的删除
+策略定义并不清除，而且在实际的使用过程中,似乎总是与我们预计的结果不符,比如磁盘空间并没有被释放.所以在此单列一篇,详细解析镜
+像删除的过程."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">docker 源码分析(6) -- 镜像删除</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2015-04-03 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 3134 字 </span>
+          <span class="more-meta"> 预计阅读 7 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#简介">简介</a></li>
+        <li><a href="#子命令执行">子命令执行</a></li>
+        <li><a href="#请求处理">请求处理</a></li>
+        <li><a href="#镜像删除">镜像删除</a>
+          <ul>
+            <li><a href="#镜像查找">镜像查找</a></li>
+            <li><a href="#父子关系查找">父子关系查找</a></li>
+            <li><a href="#镜像名称与-id-关系">镜像名称与 ID 关系</a></li>
+            <li><a href="#删除">删除</a></li>
+          </ul>
+        </li>
+        <li><a href="#总结">总结</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>本篇的主要内容是关于如何删除镜像的.听起来是挺简单的一件事,但是<code>docker</code>本身的删除
+策略定义并不清除，而且在实际的使用过程中,似乎总是与我们预计的结果不符,比如磁盘空间并没有被释放.所以在此单列一篇,详细解析镜
+像删除的过程.</p>
+<h2 id="简介">简介</h2>
+<p><a href="http://hangyan.github.io/docker/docker-source-code-part5-images/">上篇</a>已经介绍过
+很多关于镜像相关的源码,本篇就不在重复,着重分析与删除相关的部分</p>
+<h2 id="子命令执行">子命令执行</h2>
+<p>首先仍然是<code>subcommand</code>的执行部分,镜像删除的子命令式<code>rmi</code>,与之对应的函数便是
+<code>CmdRmi</code>.</p>
+<p><code>docker rmi</code>接受两个参数:</p>
+<p><code>github.com/docker/docker/api/client/commands.go#CmdRmi</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="p">(</span>
+    <span class="nx">cmd</span>     <span class="p">=</span> <span class="nx">cli</span><span class="p">.</span><span class="nf">Subcmd</span><span class="p">(</span><span class="s">&#34;rmi&#34;</span><span class="p">,</span> <span class="s">&#34;IMAGE [IMAGE...]&#34;</span><span class="p">,</span> <span class="s">&#34;Remove one or more images&#34;</span><span class="p">)</span>
+    <span class="nx">force</span>   <span class="p">=</span> <span class="nx">cmd</span><span class="p">.</span><span class="nf">Bool</span><span class="p">([]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;f&#34;</span><span class="p">,</span> <span class="s">&#34;-force&#34;</span><span class="p">},</span> <span class="kc">false</span><span class="p">,</span> <span class="s">&#34;Force removal of the image&#34;</span><span class="p">)</span>
+    <span class="nx">noprune</span> <span class="p">=</span> <span class="nx">cmd</span><span class="p">.</span><span class="nf">Bool</span><span class="p">([]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;-no-prune&#34;</span><span class="p">},</span> <span class="kc">false</span><span class="p">,</span> <span class="s">&#34;Do not delete untagged parents&#34;</span><span class="p">)</span>
+<span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>force</code>用来决定是否在有容器使用了此镜像时(非运行状态)强制删除,<code>noprune</code>指定不删
+除没有<code>tag</code>的<code>parent layers</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">name</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">cmd</span><span class="p">.</span><span class="nf">Args</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">body</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">readBody</span><span class="p">(</span><span class="nx">cli</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="s">&#34;DELETE&#34;</span><span class="p">,</span> <span class="s">&#34;/images/&#34;</span><span class="o">+</span><span class="nx">name</span><span class="o">+</span><span class="s">&#34;?&#34;</span><span class="o">+</span><span class="nx">v</span><span class="p">.</span><span class="nf">Encode</span><span class="p">(),</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">false</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintf</span><span class="p">(</span><span class="nx">cli</span><span class="p">.</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;%s\n&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+        <span class="nx">encounteredError</span> <span class="p">=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Error: failed to remove one or more images&#34;</span><span class="p">)</span>
+    <span class="p">}</span> 
+</code></pre></td></tr></table>
+</div>
+</div><p><code>docker rmi</code>可以接受多个参数,可以从上面代码看到,实际执行时是对每一个<code>image</code>都执
+行一个<code>DELETE</code>请求并处理返回结果.</p>
+<p>服务端的<code>handler</code>为:</p>
+<p><code>github.com/docker/docker/api/server/server.go#createRouter</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="s">&#34;DELETE&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">&#34;/containers/{name:.*}&#34;</span><span class="p">:</span> <span class="nx">deleteContainers</span><span class="p">,</span>
+    <span class="s">&#34;/images/{name:.*}&#34;</span><span class="p">:</span>     <span class="nx">deleteImages</span><span class="p">,</span>
+<span class="p">},</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="请求处理">请求处理</h2>
+<p><code>deleteImages</code>的主要工作仍是<code>job</code>环境的设置以及参数的传递:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">deleteImages</span><span class="p">(</span><span class="nx">eng</span> <span class="o">*</span><span class="nx">engine</span><span class="p">.</span><span class="nx">Engine</span><span class="p">,</span> <span class="nx">version</span> <span class="nx">version</span><span class="p">.</span><span class="nx">Version</span><span class="p">,</span> <span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">,</span> <span class="nx">vars</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">parseForm</span><span class="p">(</span><span class="nx">r</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">err</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="nx">vars</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Missing parameter&#34;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nx">job</span> <span class="p">=</span> <span class="nx">eng</span><span class="p">.</span><span class="nf">Job</span><span class="p">(</span><span class="s">&#34;image_delete&#34;</span><span class="p">,</span> <span class="nx">vars</span><span class="p">[</span><span class="s">&#34;name&#34;</span><span class="p">])</span>
+    <span class="nf">streamJSON</span><span class="p">(</span><span class="nx">job</span><span class="p">,</span> <span class="nx">w</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span>
+    <span class="nx">job</span><span class="p">.</span><span class="nf">Setenv</span><span class="p">(</span><span class="s">&#34;force&#34;</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Form</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="s">&#34;force&#34;</span><span class="p">))</span>
+    <span class="nx">job</span><span class="p">.</span><span class="nf">Setenv</span><span class="p">(</span><span class="s">&#34;noprune&#34;</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Form</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="s">&#34;noprune&#34;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="nx">job</span><span class="p">.</span><span class="nf">Run</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>image_delete</code>对应的<code>handler</code>暂时定义在<code>daemon</code>包中,后续可能也会移到<code>graph</code>包中:</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-6/handler-name.png" alt=" " title="handler-name"></p>
+<h2 id="镜像删除">镜像删除</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">daemon</span> <span class="o">*</span><span class="nx">Daemon</span><span class="p">)</span> <span class="nf">ImageDelete</span><span class="p">(</span><span class="nx">job</span> <span class="o">*</span><span class="nx">engine</span><span class="p">.</span><span class="nx">Job</span><span class="p">)</span> <span class="nx">engine</span><span class="p">.</span><span class="nx">Status</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">n</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">job</span><span class="p">.</span><span class="nx">Args</span><span class="p">);</span> <span class="nx">n</span> <span class="o">!=</span> <span class="mi">1</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">job</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Usage: %s IMAGE&#34;</span><span class="p">,</span> <span class="nx">job</span><span class="p">.</span><span class="nx">Name</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">imgs</span> <span class="o">:=</span> <span class="nx">engine</span><span class="p">.</span><span class="nf">NewTable</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">daemon</span><span class="p">.</span><span class="nf">DeleteImage</span><span class="p">(</span><span class="nx">job</span><span class="p">.</span><span class="nx">Eng</span><span class="p">,</span> <span class="nx">job</span><span class="p">.</span><span class="nx">Args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">imgs</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">job</span><span class="p">.</span><span class="nf">GetenvBool</span><span class="p">(</span><span class="s">&#34;force&#34;</span><span class="p">),</span> <span class="nx">job</span><span class="p">.</span><span class="nf">GetenvBool</span><span class="p">(</span><span class="s">&#34;noprune&#34;</span><span class="p">));</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">job</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">imgs</span><span class="p">.</span><span class="nx">Data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">job</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Conflict, %s wasn&#39;t deleted&#34;</span><span class="p">,</span> <span class="nx">job</span><span class="p">.</span><span class="nx">Args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">imgs</span><span class="p">.</span><span class="nf">WriteListTo</span><span class="p">(</span><span class="nx">job</span><span class="p">.</span><span class="nx">Stdout</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">job</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">engine</span><span class="p">.</span><span class="nx">StatusOK</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看到，主要的删除是通过<code>daemon.DeleteImage</code>函数进行，而<code>Table</code>结构体则是用来
+记录删除的结果:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Table</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Data</span>    <span class="p">[]</span><span class="o">*</span><span class="nx">Env</span>
+    <span class="nx">sortKey</span> <span class="kt">string</span>
+    <span class="nx">Chan</span>    <span class="kd">chan</span> <span class="o">*</span><span class="nx">Env</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">NewTable</span><span class="p">(</span><span class="nx">sortKey</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">sizeHint</span> <span class="kt">int</span><span class="p">)</span> <span class="o">*</span><span class="nx">Table</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="nx">Table</span><span class="p">{</span>
+        <span class="nb">make</span><span class="p">([]</span><span class="o">*</span><span class="nx">Env</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">sizeHint</span><span class="p">),</span>
+        <span class="nx">sortKey</span><span class="p">,</span>
+        <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="o">*</span><span class="nx">Env</span><span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="镜像查找">镜像查找</h3>
+<p>要删除镜像，就要先获取到关于这个镜像的一些详细信息：名称，<code>tag</code>,父子关系等。而输
+入既可能是镜像 ID，也可能是名字:</p>
+<p><code>github.com/docker/docker/daemon/image_delete.go#DeleteImage</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// 解析名字和 tag.repoName 有可能是镜像 ID
+</span><span class="c1"></span><span class="nx">repoName</span><span class="p">,</span> <span class="nx">tag</span> <span class="p">=</span> <span class="nx">parsers</span><span class="p">.</span><span class="nf">ParseRepositoryTag</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">tag</span> <span class="o">==</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+    <span class="nx">tag</span> <span class="p">=</span> <span class="nx">graph</span><span class="p">.</span><span class="nx">DEFAULTTAG</span>
+<span class="p">}</span>
+
+<span class="c1">// 查找镜像，先从 TagStore 里面找，找不到就当成镜像 ID 从 Graph 中找.`Get(repoName)`似乎
+</span><span class="c1">// 显得有点多余，因为 LookupImage 里面已经包含了所有步骤。
+</span><span class="c1"></span><span class="nx">img</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">daemon</span><span class="p">.</span><span class="nf">Repositories</span><span class="p">().</span><span class="nf">LookupImage</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">r</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">daemon</span><span class="p">.</span><span class="nf">Repositories</span><span class="p">().</span><span class="nf">Get</span><span class="p">(</span><span class="nx">repoName</span><span class="p">);</span> <span class="nx">r</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;No such image: %s:%s&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="p">,</span> <span class="nx">tag</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;No such image: %s&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// 如果输入的是镜像 ID，repoName 和 tag 置为空.
+</span><span class="c1"></span><span class="k">if</span> <span class="nx">strings</span><span class="p">.</span><span class="nf">Contains</span><span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">repoName</span> <span class="p">=</span> <span class="s">&#34;&#34;</span>
+    <span class="nx">tag</span> <span class="p">=</span> <span class="s">&#34;&#34;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="父子关系查找">父子关系查找</h3>
+<p>docker 的镜像存储是一个树形结构，每个镜像只有一个父节点（镜像），但可以有多个子节
+点（镜像）。<code>Graph</code>并没有提供多少相应的数据结构来进行节点查找，所以只能是遍历查
+询：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">byParents</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">daemon</span><span class="p">.</span><span class="nf">Graph</span><span class="p">().</span><span class="nf">ByParent</span><span class="p">()</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>ByParent</code>返回了所有镜像与其子镜像(可为多个)之间的映射关系.</p>
+<p><code>github.com/docker/docker/graph/graph.go</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">graph</span> <span class="o">*</span><span class="nx">Graph</span><span class="p">)</span> <span class="nf">ByParent</span><span class="p">()</span> <span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">][]</span><span class="o">*</span><span class="nx">image</span><span class="p">.</span><span class="nx">Image</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">byParent</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">][]</span><span class="o">*</span><span class="nx">image</span><span class="p">.</span><span class="nx">Image</span><span class="p">)</span>
+    <span class="nx">err</span> <span class="o">:=</span> <span class="nx">graph</span><span class="p">.</span><span class="nf">walkAll</span><span class="p">(</span><span class="kd">func</span><span class="p">(</span><span class="nx">img</span> <span class="o">*</span><span class="nx">image</span><span class="p">.</span><span class="nx">Image</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">parent</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">graph</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">Parent</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="k">return</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="nx">children</span><span class="p">,</span> <span class="nx">exists</span> <span class="o">:=</span> <span class="nx">byParent</span><span class="p">[</span><span class="nx">parent</span><span class="p">.</span><span class="nx">ID</span><span class="p">];</span> <span class="nx">exists</span> <span class="p">{</span>
+            <span class="nx">byParent</span><span class="p">[</span><span class="nx">parent</span><span class="p">.</span><span class="nx">ID</span><span class="p">]</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">children</span><span class="p">,</span> <span class="nx">img</span><span class="p">)</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">byParent</span><span class="p">[</span><span class="nx">parent</span><span class="p">.</span><span class="nx">ID</span><span class="p">]</span> <span class="p">=</span> <span class="p">[]</span><span class="o">*</span><span class="nx">image</span><span class="p">.</span><span class="nx">Image</span><span class="p">{</span><span class="nx">img</span><span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">})</span>
+    <span class="k">return</span> <span class="nx">byParent</span><span class="p">,</span> <span class="nx">err</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="镜像名称与-id-关系">镜像名称与 ID 关系</h3>
+<p>镜像 ID 与名称并不是一一映射的关系。比如说我们用<code>docker tag</code>命令给一个镜像赋予了一
+个新的名字，旧的名字是不会被取代的.所以经常会发现不同的镜像名称对应的 ID 都是同一
+个:</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-6/multi-names.png" alt=" " title="multi-names"></p>
+<p>当我们删除镜像时，不管是指定名字还是 ID，这样的映射关系也需要提前找出来:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">repos</span> <span class="o">:=</span> <span class="nx">daemon</span><span class="p">.</span><span class="nf">Repositories</span><span class="p">().</span><span class="nf">ByID</span><span class="p">()[</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>github.com/docker/docker/graph/tags.go</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">store</span> <span class="o">*</span><span class="nx">TagStore</span><span class="p">)</span> <span class="nf">LookupImage</span><span class="p">(</span><span class="nx">name</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">image</span><span class="p">.</span><span class="nx">Image</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// FIXME: standardize on returning nil when the image doesn&#39;t exist, and err for everything else
+</span><span class="c1"></span>    <span class="c1">// (so we can pass all errors here)
+</span><span class="c1"></span>    <span class="nx">repos</span><span class="p">,</span> <span class="nx">tag</span> <span class="o">:=</span> <span class="nx">parsers</span><span class="p">.</span><span class="nf">ParseRepositoryTag</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">tag</span> <span class="o">==</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+        <span class="nx">tag</span> <span class="p">=</span> <span class="nx">DEFAULTTAG</span>
+    <span class="p">}</span>
+    <span class="nx">img</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">store</span><span class="p">.</span><span class="nf">GetImage</span><span class="p">(</span><span class="nx">repos</span><span class="p">,</span> <span class="nx">tag</span><span class="p">)</span>
+    <span class="nx">store</span><span class="p">.</span><span class="nf">Lock</span><span class="p">()</span>
+    <span class="k">defer</span> <span class="nx">store</span><span class="p">.</span><span class="nf">Unlock</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">img</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="nx">img</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">store</span><span class="p">.</span><span class="nx">graph</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">img</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>最终<code>repos</code>的值就是一个 名称:tag 列表.</p>
+<p>如果<code>repos</code>是多个，那么删除的情况就比较复杂.综述如下:</p>
+<p>首先有两个基本原则:</p>
+<ul>
+<li>要删除的镜像必须没有子节点（没有被别的镜像使用） ,不然最多只会去掉<code>tag</code>信息,不
+会删除实际数据</li>
+<li>删除是沿着镜像的树形结构向上删除，会删除所有没有被使用的所有父节点,直到找到一
+个正在被别的镜像使用的镜像为止.</li>
+</ul>
+<p>有点类似于 Linux 上的各种包管理软件对依赖关系的处理.具体的情况如下:</p>
+<ol>
+<li>
+<p><code>docker rmi &lt;image id&gt;</code></p>
+<ul>
+<li>对应单个<code>name:tag</code> 最简单情况，直接删除,</li>
+<li>对应同一个<code>name</code>,多个<code>tag</code> 直接删除</li>
+<li>对应多个<code>name</code>，不加<code>force</code>参数会报错，加上之后会将第一个<code>name</code>对应的<code>tag</code>
+信息都删掉,但镜像不会删除</li>
+</ul>
+</li>
+<li>
+<p><code>docker rmi name:[tag]</code></p>
+<ul>
+<li>与<code>image id</code>一一对应  直接删除</li>
+<li>与其他的<code>tag</code>(<code>name</code>相同)对应同一个<code>image id</code> 只会去掉这个<code>name:[tag]</code>信息,
+不删除数据</li>
+<li>与不同的<code>name:[tag]</code>共享一个<code>image id</code> 只会去掉这个<code>name:[tag]</code>信息，不删除
+实际数据</li>
+</ul>
+</li>
+</ol>
+<p>情况复杂，但是分析起来，其实都是很容易理解的。</p>
+<p><code>github.com/docker/docker/daemon/image_delete.go#DeleteImage</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">repoName</span> <span class="o">==</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">repoAndTag</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">repos</span> <span class="p">{</span>
+        <span class="nx">parsedRepo</span><span class="p">,</span> <span class="nx">parsedTag</span> <span class="o">:=</span> <span class="nx">parsers</span><span class="p">.</span><span class="nf">ParseRepositoryTag</span><span class="p">(</span><span class="nx">repoAndTag</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">repoName</span> <span class="o">==</span> <span class="s">&#34;&#34;</span> <span class="o">||</span> <span class="nx">repoName</span> <span class="o">==</span> <span class="nx">parsedRepo</span> <span class="p">{</span>
+            <span class="nx">repoName</span> <span class="p">=</span> <span class="nx">parsedRepo</span>
+            <span class="k">if</span> <span class="nx">parsedTag</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+                <span class="nx">tags</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">tags</span><span class="p">,</span> <span class="nx">parsedTag</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">repoName</span> <span class="o">!=</span> <span class="nx">parsedRepo</span> <span class="o">&amp;&amp;</span> <span class="p">!</span><span class="nx">force</span> <span class="p">{</span>
+            <span class="c1">// the id belongs to multiple repos, like base:latest and user:test,
+</span><span class="c1"></span>            <span class="c1">// in that case return conflict
+</span><span class="c1"></span>            <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Conflict, cannot delete image %s because it is tagged in multiple repositories, use -f to force&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nx">tags</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">tags</span><span class="p">,</span> <span class="nx">tag</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>从上面代码可以看到，当输入为<code>image id</code>时,如果<code>name:[tag]</code>有多个，只会将第一个的信息清除掉,
+其他的都跳过了，未做处理。</p>
+<h3 id="删除">删除</h3>
+<p>真正在删除镜像之前，还需要考虑容器。如果要删除的镜像还有容器在使用(不论是否正在
+运行)它，则不能删除.从上面总结的种种情况来看,真正会删除实际数据的情况不多，所以
+只用考虑这几种情况即可:</p>
+<p><code>github.com/docker/docker/daemon/image_delete.go#DeleteImage</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">repos</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">daemon</span><span class="p">.</span><span class="nf">canDeleteImage</span><span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">force</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">err</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">daemon</span> <span class="o">*</span><span class="nx">Daemon</span><span class="p">)</span> <span class="nf">canDeleteImage</span><span class="p">(</span><span class="nx">imgID</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">force</span> <span class="kt">bool</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="c1">// 返回容器列表
+</span><span class="c1"></span>    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">container</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">daemon</span><span class="p">.</span><span class="nf">List</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">parent</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">daemon</span><span class="p">.</span><span class="nf">Repositories</span><span class="p">().</span><span class="nf">LookupImage</span><span class="p">(</span><span class="nx">container</span><span class="p">.</span><span class="nx">ImageID</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="nx">daemon</span><span class="p">.</span><span class="nf">Graph</span><span class="p">().</span><span class="nf">IsNotExist</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">container</span><span class="p">.</span><span class="nx">ImageID</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="kc">nil</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="nx">err</span>
+        <span class="p">}</span>
+        
+        <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">parent</span><span class="p">.</span><span class="nf">WalkHistory</span><span class="p">(</span><span class="kd">func</span><span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">image</span><span class="p">.</span><span class="nx">Image</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="nx">imgID</span> <span class="o">==</span> <span class="nx">p</span><span class="p">.</span><span class="nx">ID</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="nx">container</span><span class="p">.</span><span class="nf">IsRunning</span><span class="p">()</span> <span class="p">{</span>
+                    <span class="k">if</span> <span class="nx">force</span> <span class="p">{</span>
+                        <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Conflict, cannot force delete %s because the running container %s is using it, stop it and retry&#34;</span><span class="p">,</span> <span class="nx">stringid</span><span class="p">.</span><span class="nf">TruncateID</span><span class="p">(</span><span class="nx">imgID</span><span class="p">),</span> <span class="nx">stringid</span><span class="p">.</span><span class="nf">TruncateID</span><span class="p">(</span><span class="nx">container</span><span class="p">.</span><span class="nx">ID</span><span class="p">))</span>
+                    <span class="p">}</span>
+                    <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Conflict, cannot delete %s because the running container %s is using it, stop it and use -f to force&#34;</span><span class="p">,</span> <span class="nx">stringid</span><span class="p">.</span><span class="nf">TruncateID</span><span class="p">(</span><span class="nx">imgID</span><span class="p">),</span> <span class="nx">stringid</span><span class="p">.</span><span class="nf">TruncateID</span><span class="p">(</span><span class="nx">container</span><span class="p">.</span><span class="nx">ID</span><span class="p">))</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">!</span><span class="nx">force</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Conflict, cannot delete %s because the container %s is using it, use -f to force&#34;</span><span class="p">,</span> <span class="nx">stringid</span><span class="p">.</span><span class="nf">TruncateID</span><span class="p">(</span><span class="nx">imgID</span><span class="p">),</span> <span class="nx">stringid</span><span class="p">.</span><span class="nf">TruncateID</span><span class="p">(</span><span class="nx">container</span><span class="p">.</span><span class="nx">ID</span><span class="p">))</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="kc">nil</span>
+        <span class="p">});</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">err</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>从上面也可以看到<code>force</code>参数的作用:当有容器在使用这个镜像但并未运行时，<code>force</code>可
+以强制删除镜像。</p>
+<p>需要注意的上，上面对<code>repos</code>长度的判断并未覆盖全部的情况：当一个镜像 ID 对应对个一
+个<code>name</code>的多个<code>tag</code>时，此时用<code>docker rmi &lt;iamge id&gt;</code>就绕过了与容器相关的检查,
+详见<a href="https://github.com/docker/docker/issues/12135">issue 12135</a>.</p>
+<p>真正的删除分两步。第一步：<code>untag</code>,删除相关<code>tag</code>信息:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">tag</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">tags</span> <span class="p">{</span>
+    <span class="nx">tagDeleted</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">daemon</span><span class="p">.</span><span class="nf">Repositories</span><span class="p">().</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">repoName</span><span class="p">,</span> <span class="nx">tag</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">err</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="nx">tagDeleted</span> <span class="p">{</span>
+        <span class="nx">out</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">engine</span><span class="p">.</span><span class="nx">Env</span><span class="p">{}</span>
+        <span class="nx">out</span><span class="p">.</span><span class="nf">Set</span><span class="p">(</span><span class="s">&#34;Untagged&#34;</span><span class="p">,</span> <span class="nx">repoName</span><span class="o">+</span><span class="s">&#34;:&#34;</span><span class="o">+</span><span class="nx">tag</span><span class="p">)</span>
+        <span class="nx">imgs</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="nx">out</span><span class="p">)</span>
+        <span class="nx">eng</span><span class="p">.</span><span class="nf">Job</span><span class="p">(</span><span class="s">&#34;log&#34;</span><span class="p">,</span> <span class="s">&#34;untag&#34;</span><span class="p">,</span> <span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">).</span><span class="nf">Run</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>daemon.Repositories().Delete</code>即是从<code>TagStore</code>中删除相关信息.</p>
+<p>第二步： 删除实际镜像数据，这一步并不一定会执行。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">tags</span> <span class="p">=</span> <span class="nx">daemon</span><span class="p">.</span><span class="nf">Repositories</span><span class="p">().</span><span class="nf">ByID</span><span class="p">()[</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">]</span>
+<span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nx">tags</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">repoName</span> <span class="o">==</span> <span class="s">&#34;&#34;</span><span class="p">)</span> <span class="o">||</span> <span class="nb">len</span><span class="p">(</span><span class="nx">tags</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">byParents</span><span class="p">[</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">daemon</span><span class="p">.</span><span class="nf">Repositories</span><span class="p">().</span><span class="nf">DeleteAll</span><span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">err</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">daemon</span><span class="p">.</span><span class="nf">Graph</span><span class="p">().</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">err</span>
+        <span class="p">}</span>
+        <span class="nx">out</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">engine</span><span class="p">.</span><span class="nx">Env</span><span class="p">{}</span>
+        <span class="nx">out</span><span class="p">.</span><span class="nf">Set</span><span class="p">(</span><span class="s">&#34;Deleted&#34;</span><span class="p">,</span> <span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span>
+        <span class="nx">imgs</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="nx">out</span><span class="p">)</span>
+        <span class="nx">eng</span><span class="p">.</span><span class="nf">Job</span><span class="p">(</span><span class="s">&#34;log&#34;</span><span class="p">,</span> <span class="s">&#34;delete&#34;</span><span class="p">,</span> <span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">).</span><span class="nf">Run</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nx">img</span><span class="p">.</span><span class="nx">Parent</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="o">&amp;&amp;</span> <span class="p">!</span><span class="nx">noprune</span> <span class="p">{</span>
+            <span class="nx">err</span> <span class="o">:=</span> <span class="nx">daemon</span><span class="p">.</span><span class="nf">DeleteImage</span><span class="p">(</span><span class="nx">eng</span><span class="p">,</span> <span class="nx">img</span><span class="p">.</span><span class="nx">Parent</span><span class="p">,</span> <span class="nx">imgs</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">force</span><span class="p">,</span> <span class="nx">noprune</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nx">first</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nx">err</span>
+            <span class="p">}</span>
+
+        <span class="p">}</span>
+
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这时候的<code>tags</code>已经是清楚过一个<code>repo</code>之后的了，有可能为空，也有可能有其他的值（这
+时候就不能删除镜像数据）。<code>len(tags) &lt;= 1 &amp;&amp; repoName == &quot;&quot;</code>是应对原本就没有
+<code>tag</code>的镜像，比如我们在用<code>docker build</code>时生成的很多中间镜像。</p>
+<p>真正的数据删除是在<code>daemon.Graph().Delete()</code>:</p>
+<p><code>github.com/docker/docker/graph/graph.go</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">graph</span> <span class="o">*</span><span class="nx">Graph</span><span class="p">)</span> <span class="nf">Delete</span><span class="p">(</span><span class="nx">name</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="nx">id</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">graph</span><span class="p">.</span><span class="nx">idIndex</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">err</span>
+    <span class="p">}</span>
+    <span class="nx">tmp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">graph</span><span class="p">.</span><span class="nf">Mktemp</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">)</span>
+    <span class="nx">graph</span><span class="p">.</span><span class="nx">idIndex</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">err</span> <span class="p">=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Rename</span><span class="p">(</span><span class="nx">graph</span><span class="p">.</span><span class="nf">ImageRoot</span><span class="p">(</span><span class="nx">id</span><span class="p">),</span> <span class="nx">tmp</span><span class="p">)</span>
+        <span class="c1">// On err make tmp point to old dir and cleanup unused tmp dir
+</span><span class="c1"></span>        <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="nx">os</span><span class="p">.</span><span class="nf">RemoveAll</span><span class="p">(</span><span class="nx">tmp</span><span class="p">)</span>
+            <span class="nx">tmp</span> <span class="p">=</span> <span class="nx">graph</span><span class="p">.</span><span class="nf">ImageRoot</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c1">// On err make tmp point to old dir for cleanup
+</span><span class="c1"></span>        <span class="nx">tmp</span> <span class="p">=</span> <span class="nx">graph</span><span class="p">.</span><span class="nf">ImageRoot</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="c1">// Remove rootfs data from the driver
+</span><span class="c1"></span>    <span class="nx">graph</span><span class="p">.</span><span class="nx">driver</span><span class="p">.</span><span class="nf">Remove</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span>
+    <span class="c1">// Remove the trashed image directory
+</span><span class="c1"></span>    <span class="k">return</span> <span class="nx">os</span><span class="p">.</span><span class="nf">RemoveAll</span><span class="p">(</span><span class="nx">tmp</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>/var/lib/docker/graph</code>和<code>/var/lib/docker/aufs/</code>下的相关目录都会被清除.</p>
+<h2 id="总结">总结</h2>
+<p>在明晰了镜像删除的原理之后，自己如果确实想要释放磁盘空间，可以人工对相应目录里的
+数据进行删除。</p>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2015-04-03
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/docker/">docker</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2015-04-16-some-concepts-of-docker-containers/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">docker 容器的一些概念辨析</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2015-03-30-docker-source-code-part5-images/">
+            <span class="next-text nav-default">docker 源码分析(5) -- 镜像拉取及存储</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

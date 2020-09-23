@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>技术随笔 on 工业革命</title>
+    <link>http://yanhang.me/tags/%E6%8A%80%E6%9C%AF%E9%9A%8F%E7%AC%94/</link>
+    <description>Recent content in 技术随笔 on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 01 May 2019 19:03:04 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/%E6%8A%80%E6%9C%AF%E9%9A%8F%E7%AC%94/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>如何防止代码变成 SHIT</title>
+      <link>http://yanhang.me/post/2019-05-01-great-code/</link>
+      <pubDate>Wed, 01 May 2019 19:03:04 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-05-01-great-code/</guid>
+      <description>最近发现之前写过的很多项目，不管是 python/go/cpp 的，最终回看起来代码都变的很难看，尤其是多人合作的时候。 这是一个很头疼的问题。自己平时很在意这个，但是代</description>
+    </item>
+    
+    <item>
+      <title>Google 的经验</title>
+      <link>http://yanhang.me/post/2019-04-14-google/</link>
+      <pubDate>Sun, 14 Apr 2019 11:30:07 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-04-14-google/</guid>
+      <description>看了一篇讲谷歌公司内部的软件管理的论文，虽然对很多东西已经很熟悉了，但还是觉得有了一些新的启发。 业内对 Google 其实大多数都是一种追随者的态度。单说</description>
+    </item>
+    
+    <item>
+      <title>Github 与编程语言</title>
+      <link>http://yanhang.me/post/2019-04-12-github-language/</link>
+      <pubDate>Fri, 12 Apr 2019 15:22:54 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-04-12-github-language/</guid>
+      <description>一个语言的流行程度与多种因素相关,语法的简易性，package 的数量，性能，适用的场景等等。Perl 因为语法的怪异而逐渐无人问津，ROR因性</description>
+    </item>
+    
+    <item>
+      <title>Emacs is drugs</title>
+      <link>http://yanhang.me/post/2019-03-28-emacs-is-drugs/</link>
+      <pubDate>Thu, 28 Mar 2019 21:06:19 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-03-28-emacs-is-drugs/</guid>
+      <description>每个程序员都会遇到这一天，他要做一个决定，vim 还是 emacs,还是 IDE。 近来一直主要用 Golang, 早已不再年轻的我自然是选择功能强大的 Goland, 日常工作无</description>
+    </item>
+    
+    <item>
+      <title>istio</title>
+      <link>http://yanhang.me/post/2019-03-25-istio/</link>
+      <pubDate>Mon, 25 Mar 2019 19:16:44 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-03-25-istio/</guid>
+      <description>整个容器化浪潮诞生了三个胜利者,分别是 docker, kubernetes, istio。 一个额外的胜利者是 golang。 Docker docker 的作用是： 用标准语法描述出一个服务的静态/运行时环</description>
+    </item>
+    
+  </channel>
+</rss>

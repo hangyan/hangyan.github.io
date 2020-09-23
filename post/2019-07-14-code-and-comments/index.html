@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>代码与注释 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="代码应该拥有良好的注释一直是业界共识，毕竟，在可预见的未来里，阅读代码的主要还是人。所有的语言都支持注释，有的拥有额外的注释提取工具及格式规" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2019-07-14-code-and-comments/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="代码与注释" />
+<meta property="og:description" content="代码应该拥有良好的注释一直是业界共识，毕竟，在可预见的未来里，阅读代码的主要还是人。所有的语言都支持注释，有的拥有额外的注释提取工具及格式规" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2019-07-14-code-and-comments/" />
+<meta property="article:published_time" content="2019-07-14T21:14:49+00:00" />
+<meta property="article:modified_time" content="2019-07-14T21:14:49+00:00" />
+<meta itemprop="name" content="代码与注释">
+<meta itemprop="description" content="代码应该拥有良好的注释一直是业界共识，毕竟，在可预见的未来里，阅读代码的主要还是人。所有的语言都支持注释，有的拥有额外的注释提取工具及格式规">
+<meta itemprop="datePublished" content="2019-07-14T21:14:49+00:00" />
+<meta itemprop="dateModified" content="2019-07-14T21:14:49+00:00" />
+<meta itemprop="wordCount" content="1103">
+
+
+
+<meta itemprop="keywords" content="编程," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="代码与注释"/>
+<meta name="twitter:description" content="代码应该拥有良好的注释一直是业界共识，毕竟，在可预见的未来里，阅读代码的主要还是人。所有的语言都支持注释，有的拥有额外的注释提取工具及格式规"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">代码与注释</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-07-14 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 1103 字 </span>
+          <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents"></nav>
+  </div>
+</div>
+    <div class="post-content">
+      <!-- toc -->
+<p>代码应该拥有良好的注释一直是业界共识，毕竟，在可预见的未来里，阅读代码的主要还是人。所有的语言都支持注释，有的拥有额外的注释提取工具及格式规范。但总体来说，大部分语言在这块做的都比较一般。Python有一些约定俗称的规范以及 Sphinx 这样的工具， Golang 的规范比较简单，但内置了 godoc 工具。Lisp 算是做的比较好的，示例如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-lisp" data-lang="lisp"><span class="p">(</span><span class="nb">defun</span> <span class="nv">small-prime-number-p</span> <span class="p">(</span><span class="nv">n</span><span class="p">)</span>
+  <span class="s">&#34;Return T if N, an integer, is a prime number. Otherwise, return NIL.&#34;</span>
+  <span class="p">(</span><span class="nb">cond</span> <span class="p">((</span><span class="nb">or</span> <span class="p">(</span><span class="nf">&lt;</span> <span class="nv">n</span> <span class="mi">2</span><span class="p">))</span>
+         <span class="no">nil</span><span class="p">)</span>
+        <span class="p">((</span><span class="nf">=</span> <span class="nv">n</span> <span class="mi">2</span><span class="p">)</span>
+         <span class="no">t</span><span class="p">)</span>
+        <span class="p">((</span><span class="nv">divisorp</span> <span class="mi">2</span> <span class="nv">n</span><span class="p">)</span>
+         <span class="no">nil</span><span class="p">)</span>
+        <span class="p">(</span><span class="no">t</span>
+         <span class="p">(</span><span class="nb">loop</span> <span class="nv">for</span> <span class="nv">i</span> <span class="nv">from</span> <span class="mi">3</span> <span class="nv">upto</span> <span class="p">(</span><span class="nf">sqrt</span> <span class="nv">n</span><span class="p">)</span> <span class="nv">by</span> <span class="mi">2</span>
+               <span class="nv">never</span> <span class="p">(</span><span class="nv">divisorp</span> <span class="nv">i</span> <span class="nv">n</span><span class="p">)))))</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其独特之处在于，不同于一般语言注释位于函数体之外，而是将其放置于函数 body 开始处。这样开发者更容易将其当作函数定义的一部分，也有助于养成良好的注释习惯。</p>
+<p>Golang 虽然 在注释方面做的普通，但是在官方 library 以及最佳实践方面成功地鼓励了人们尽可能地写非常详细的注释，具体到一个 struct 的各个字段上。尤其是在 kubernetes 社区里面,  其<a href="https://news.ycombinator.com/item?id=18772873">Space Shuttle style</a> 的 Code 对于社区的蓬勃发展可以说是一个极大的背后功臣，从如下的代码便可一窥其风格：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Adapts a ConfigMap into a projected volume.
+</span><span class="c1">//
+</span><span class="c1">// The contents of the target ConfigMap&#39;s Data field will be presented in a
+</span><span class="c1">// projected volume as files using the keys in the Data field as the file names,
+</span><span class="c1">// unless the items element is populated with specific mappings of keys to paths.
+</span><span class="c1">// Note that this is identical to a configmap volume source without the default
+</span><span class="c1">// mode.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">ConfigMapProjection</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">LocalObjectReference</span>
+	<span class="c1">// If unspecified, each key-value pair in the Data field of the referenced
+</span><span class="c1"></span>	<span class="c1">// ConfigMap will be projected into the volume as a file whose name is the
+</span><span class="c1"></span>	<span class="c1">// key and content is the value. If specified, the listed keys will be
+</span><span class="c1"></span>	<span class="c1">// projected into the specified paths, and unlisted keys will not be
+</span><span class="c1"></span>	<span class="c1">// present. If a key is specified which is not present in the ConfigMap,
+</span><span class="c1"></span>	<span class="c1">// the volume setup will error unless it is marked optional. Paths must be
+</span><span class="c1"></span>	<span class="c1">// relative and may not contain the &#39;..&#39; path or start with &#39;..&#39;.
+</span><span class="c1"></span>	<span class="c1">// +optional
+</span><span class="c1"></span>	<span class="nx">Items</span> <span class="p">[]</span><span class="nx">KeyToPath</span>
+	<span class="c1">// Specify whether the ConfigMap or it&#39;s keys must be defined
+</span><span class="c1"></span>	<span class="c1">// +optional
+</span><span class="c1"></span>	<span class="nx">Optional</span> <span class="o">*</span><span class="kt">bool</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可读性越好的代码越容易流行。Golang 在这方面做的很好。</p>
+<p>Knuth 曾经发明过一种将注释发挥到极致的语言风格: <code>Literate Programming</code>。结构很类似于 Tex 和 Markdown, 代码穿插于文档之中，工具可以分别提取出其中的文档与源代码。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="se">\s</span>ection<span class="o">{</span>Hello world<span class="o">}</span>
+
+Today I awoke and decided to write
+some code, so I started to write Hello World in <span class="se">\t</span>extsf C.
+
+<span class="s">&lt;&lt;hello.c&gt;&gt;=
+</span><span class="s">/*
+</span><span class="s">  &lt;&lt;license&gt;&gt;
+</span><span class="s">*/
+</span><span class="s">#include &lt;stdio.h&gt;
+</span><span class="s">
+</span><span class="s">int main(int argc, char *argv[]) {
+</span><span class="s">  printf(&#34;Hello World!\n&#34;);
+</span><span class="s">  return 0;
+</span><span class="s">}
+</span><span class="s">@
+</span><span class="s">\noindent \ldots then I did the same in PHP.
+</span><span class="s">
+</span><span class="s">&lt;&lt;hello</span>.php&gt;&gt;<span class="o">=</span>
+&lt;?php
+  /*
+  <span class="s">&lt;&lt;license&gt;&gt;
+</span><span class="s">  */
+</span><span class="s">  echo &#34;Hello world!\n&#34;;
+</span><span class="s">?&gt;
+</span><span class="s">@
+</span><span class="s">\section{License}
+</span><span class="s">Later the same day some lawyer reminded me about license</span>s.
+So, here it is:
+
+<span class="s">&lt;&lt;license&gt;&gt;=
+</span><span class="s">This work is placed in the public</span> domain.
+</code></pre></td></tr></table>
+</div>
+</div><p>虽然听起来跟普通语言差别不大，但是从如上的示例上看，其观感与普通的语言的差别非常之大。文档与代码拥有了同样的重要性。整个文件更像是作者一个思路的记录与阐释。这样的好处自然是在代码的可读性性上有一些独特的优势。但缺点也同样明显，已经有无数的人从各种角度对其进行了批评。最为显著的一个问题便是，作者选定了一种顺序方式来书写代码，但是人们阅读代码的顺序与习惯则是多种多样的。有的人想要完整地阅读代码，有的只想阅读某一个片段，不同的阅读顺序，频繁地跳转，都需要语言本身的支持。而 lierateing programming 并没有在这些方面有很好的方案。也许作为简短的代码说明是一个比较适合的场景。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-07-14
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E7%BC%96%E7%A8%8B/">编程</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2019-07-16-common-index/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Common Index</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2019-06-27-comedy-tv/">
+            <span class="next-text nav-default">喜剧</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

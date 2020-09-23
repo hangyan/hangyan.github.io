@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>BlueTrace与健康码 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="疫情之下，各国都在不断地调整自己的防疫政策。中国的模式已经证明了其可能是最有效的方式之一，但因为种种原因大部分国家难以效仿和接受。从技术层面" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2020-07-23-blue-trace/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="BlueTrace与健康码" />
+<meta property="og:description" content="疫情之下，各国都在不断地调整自己的防疫政策。中国的模式已经证明了其可能是最有效的方式之一，但因为种种原因大部分国家难以效仿和接受。从技术层面" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2020-07-23-blue-trace/" />
+<meta property="article:published_time" content="2020-07-23T16:32:10+00:00" />
+<meta property="article:modified_time" content="2020-07-23T16:32:10+00:00" />
+<meta itemprop="name" content="BlueTrace与健康码">
+<meta itemprop="description" content="疫情之下，各国都在不断地调整自己的防疫政策。中国的模式已经证明了其可能是最有效的方式之一，但因为种种原因大部分国家难以效仿和接受。从技术层面">
+<meta itemprop="datePublished" content="2020-07-23T16:32:10+00:00" />
+<meta itemprop="dateModified" content="2020-07-23T16:32:10+00:00" />
+<meta itemprop="wordCount" content="1120">
+
+
+
+<meta itemprop="keywords" content="社会," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="BlueTrace与健康码"/>
+<meta name="twitter:description" content="疫情之下，各国都在不断地调整自己的防疫政策。中国的模式已经证明了其可能是最有效的方式之一，但因为种种原因大部分国家难以效仿和接受。从技术层面"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">BlueTrace与健康码</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-07-23 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 1120 字 </span>
+          <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents"></nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>疫情之下，各国都在不断地调整自己的防疫政策。中国的模式已经证明了其可能是最有效的方式之一，但因为种种原因大部分国家难以效仿和接受。从技术层面来讲，基于支付宝/微信等国民APP之上的健康码模式也是如此:有效，但是别国难以效仿。新加坡最开始使用<code>BlueTrace</code>协议并开发出了相应App让国民下载使用,部分其他国家也开始效仿，甚至有望能成为一种国际通用的防疫标准。</p>
+<p>隐私保护是 BlueTrace 所考虑的最主要特点之一。其手段包括如下方面:</p>
+<ul>
+<li>尽可能少的收集用户信息，卫生部门唯一收集的信息是手机号</li>
+<li>本地存储用户接触记录，只有当被感染者愿意分享此数据时卫生部分才能获取</li>
+<li>第三方无法通过此协议一直追踪用户。因为相关标识ID会一直更换</li>
+<li>&hellip;</li>
+</ul>
+<p>所以在对用户的标识方面，主要是通过算法生成的 UserID 和 TempID 来进行。当用户用手机号进行注册时,后台服务会生成一个 UserID, 而用户在互相接触需要通过蓝牙交换信息时，则通过 TempID 进行。TempID的 大概结构如下:</p>
+<p><img src="/images/posts/bluetrace/tempid.png" alt=""></p>
+<p>可以看到其有如下特点:</p>
+<ol>
+<li>加密。只有卫生部门才有密钥能解密数据</li>
+<li>过期时间。TempID有过期时间，一般在15m左右.这样可以尽量减少恶意攻击或者伪造假数据</li>
+</ol>
+<p>TempID的生成需要联网(加密啥的)，所以为了考虑到用户不联网的情况，所以TempID可以一次性尽量生成多个，在联网的时候一次性发给用户以备用。</p>
+<p>当装有相应APP的用户相遇时，设备会通过 Bluetooth Low Energy (BLE)协议进行通信并交换信息，其数据流程如图所示:</p>
+<p><img src="/images/posts/bluetrace/ble-handshake.png" alt=""></p>
+<p>这里面两个 Device 分别有一个角色定位，一个叫 Central ，一个叫 Peripheral。Central 主动扫描 Peripheral 并读取其信息，然后返回一些额外信息。一个手机一般是按一定时间比率轮换在两个角色之间切换。其交换的数据大概如下所示:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">{
+	&#34;id&#34;: &#34;FmFISm9nq3PgpLdxxYpTx5tF3ML3Va1wqqgY9DGDz1utPbw+Iz8tqAdpbxR1 nSvr+ILXPG==&#34;, // TempID
+	&#34;md&#34;: &#34;iPhone X&#34;, // Device model
+	&#34;rc&#34;: -60, // Signal strength
+	&#34;o&#34;: &#34;IJ_HAI&#34;, // Health authority identifier
+	&#34;v&#34;: 2 // Protocol version
+}
+</code></pre></td></tr></table>
+</div>
+</div><p>这里面需要注意的是:</p>
+<ol>
+<li><code>rc</code>. 信号强度，用来评估距离之类的。由 Central 发送给 Peripheral</li>
+<li><code>o</code>: 本国卫生部门。 <code>_</code> 前面是国别，后面是部门简称。这样支持不同国家之间，一个国家不同部门之间的数据互通。</li>
+</ol>
+<p>但有人感染时，这时候就需要人力介入，通过手机存储的相关数据分析，结合对被感染者的询问来综合筛选可能受感染的人群。所以整体来看，这是一个半人工的解决方案。对很多国家来说，可能综合来看是一个比较好的方案。但对于人流密集的大城市或者像美国这样目前处于大规模感染的国家，这样的APP估计能起的作用也非常有限。</p>
+<p>外界对于健康码的担忧也不无道理，毕竟是一个未公开的技术方案。网上也很难找到有用的技术背景信息介绍。从长远来看，这次疫情会促使我们思考，如果再遇到下一次类似的灾难，我们如何通过技术手段来自救？不止是瘟疫， 甚至于地震，洪涝灾害之类的。我们可能需要一个针对于灾难的公开的技术 protocol, 利用现存的各种信号传输方式来筛查，帮助其他人。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2020-07-23
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E7%A4%BE%E4%BC%9A/">社会</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2020-09-07-docker-registry-gc/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Docker 私有 Registry 的镜像 GC 问题</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2020-04-29-linux-lens-icon/">
+            <span class="next-text nav-default">给 Kubernetes Lens AppImage 添加 Desktop Entry</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

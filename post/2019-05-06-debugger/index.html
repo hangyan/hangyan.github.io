@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>少有人用的 debugger - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="不知道别人是怎么认为的，我之前一直认为，Debugger 应该是一个正统的解决软件问题的方式。我们应该尽力地去多用这种方式，通过各种其他的 print 等" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2019-05-06-debugger/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="少有人用的 debugger" />
+<meta property="og:description" content="不知道别人是怎么认为的，我之前一直认为，Debugger 应该是一个正统的解决软件问题的方式。我们应该尽力地去多用这种方式，通过各种其他的 print 等" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2019-05-06-debugger/" />
+<meta property="article:published_time" content="2019-05-06T11:32:22+00:00" />
+<meta property="article:modified_time" content="2019-05-06T11:32:22+00:00" />
+<meta itemprop="name" content="少有人用的 debugger">
+<meta itemprop="description" content="不知道别人是怎么认为的，我之前一直认为，Debugger 应该是一个正统的解决软件问题的方式。我们应该尽力地去多用这种方式，通过各种其他的 print 等">
+<meta itemprop="datePublished" content="2019-05-06T11:32:22+00:00" />
+<meta itemprop="dateModified" content="2019-05-06T11:32:22+00:00" />
+<meta itemprop="wordCount" content="1014">
+
+
+
+<meta itemprop="keywords" content="架构," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="少有人用的 debugger"/>
+<meta name="twitter:description" content="不知道别人是怎么认为的，我之前一直认为，Debugger 应该是一个正统的解决软件问题的方式。我们应该尽力地去多用这种方式，通过各种其他的 print 等"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">少有人用的 debugger</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-05-06 </span>
+        
+          <span class="more-meta"> 约 1014 字 </span>
+          <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#links">Links</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>不知道别人是怎么认为的，我之前一直认为，Debugger 应该是一个正统的解决软件问题的方式。我们应该尽力地去多用这种方式，通过各种其他的 print 等方式是一种原始的，偷懒的，笨拙的方法。</p>
+<p>我也总是去尝试学习各种 debugger 以及在工作中去使用它们，但都是很难进行下去。真实的工作场景中也鲜有人用 debugger。是大家都在逃避问题，投机取巧吗？</p>
+<p>今天看的几篇文章让我明白了，debugger 并不是什么正统，而是一种适用范围非常狭窄，应该尽量少用的方式。用 print 之类的<code>笨办法</code>是应该的，值得推荐的。</p>
+<p>Linux 在邮件列表里表达的对于在内核开发中使用 debugger 的看法也很适用于通用软件的场景:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">It&#39;s partly &#34;source vs binary&#34;, but it&#39;s more than that. It&#39;s not that you
+have to look at the sources (of course you have to - and any good debugger
+will make that _easy_). It&#39;s that you have to look at the level _above_
+sources. At the meaning of things. Without a debugger, you basically have
+to go the next step: understand what the program does. Not just that
+particular line.
+</code></pre></td></tr></table>
+</div>
+</div><p>相对来说，debugger 本身更像是对问题的逃避，我们放弃对于问题以及代码更为细致的观察与思索，直接交给程序来一行一行校验代码的正确性。而在没有 debugger 的场景下，我们需要花费更多的时间来思考整个程序的设计，自上而下地考量整个问题以及解决的方式对不对，最终的困惑可以通过 print/system tools 等工具结合起来去校验。通过这种方式，最终对问题的解决可能并不是对于现有某些代码的修改，而是对于代码整体的重构与调整。</p>
+<p>从开发的趋势来看，软件会变得越来越复杂，多线程、多核，分布式、微服务等等架构会越来越占据主流。这些新的软件架构在出现问题时所要求的 debug 工具是多种多样的，从最基本的代码加 print，利用监控系统, 生成火焰图等等。我们需要的是一种福尔摩斯式的纯思维逻辑的推理: 问题在哪？有哪些可能的地方引起的? 怎么去验证每一个可能？用什么工具最合适？在解决完错误之后，我们需要额外地去思考: 软件的设计是否合理？是否需要加更多的 trace 信息? 日志够不够？等等。而 debugger 在这其中扮演的角色只会越来越狭窄, 因为它在这些方面几乎没有可扩展性。</p>
+<p>另一个问题在于语言本身。对于 C/CPP 社区来说，有 GDB 这样强大的工具可用。而对于像 Python/Golang 以及其他新兴的语言来说，并没有如此强大的 debugger。即使已经开发出了不少新的替代品，但他们无法在程序员心中有同样的地位。任何功能的缺失都无法让开发者信任这样的软件。</p>
+<p>对于开发者来说，我觉得可以忘掉有 debugger 这个东西存在，除了本身的逻辑思维能力以及经验累积等方面的提升之外，我觉得可以关注以下的工具:</p>
+<ol>
+<li>service mesh</li>
+<li>监控系统</li>
+<li>日志系统</li>
+<li>系统工具的组合利用</li>
+<li>火焰图</li>
+<li>opentrace</li>
+<li>&hellip;</li>
+</ol>
+<h2 id="links">Links</h2>
+<ol>
+<li><a href="https://lemire.me/blog/2016/06/21/i-do-not-use-a-debugger/">I do not use a debugger</a></li>
+<li><a href="https://www.artima.com/weblogs/viewpost.jsp?thread=23476">Debuggers are a wasteful Timesink</a></li>
+<li><a href="https://lwn.net/2000/0914/a/lt-debugger.php3">Linux talk about debuggers</a></li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-05-06
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E6%9E%B6%E6%9E%84/">架构</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2019-05-07-gitlab-danger/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">在 Gitlab 中使用 Danger</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2019-05-05-jekyll/">
+            <span class="next-text nav-default">jekyll 的问题</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

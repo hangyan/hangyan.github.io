@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>如何防止代码变成 SHIT - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="最近发现之前写过的很多项目，不管是 python/go/cpp 的，最终回看起来代码都变的很难看，尤其是多人合作的时候。 这是一个很头疼的问题。自己平时很在意这个，但是代" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2019-05-01-great-code/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="如何防止代码变成 SHIT" />
+<meta property="og:description" content="最近发现之前写过的很多项目，不管是 python/go/cpp 的，最终回看起来代码都变的很难看，尤其是多人合作的时候。 这是一个很头疼的问题。自己平时很在意这个，但是代" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2019-05-01-great-code/" />
+<meta property="article:published_time" content="2019-05-01T19:03:04+00:00" />
+<meta property="article:modified_time" content="2019-05-01T19:03:04+00:00" />
+<meta itemprop="name" content="如何防止代码变成 SHIT">
+<meta itemprop="description" content="最近发现之前写过的很多项目，不管是 python/go/cpp 的，最终回看起来代码都变的很难看，尤其是多人合作的时候。 这是一个很头疼的问题。自己平时很在意这个，但是代">
+<meta itemprop="datePublished" content="2019-05-01T19:03:04+00:00" />
+<meta itemprop="dateModified" content="2019-05-01T19:03:04+00:00" />
+<meta itemprop="wordCount" content="1810">
+
+
+
+<meta itemprop="keywords" content="技术随笔," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="如何防止代码变成 SHIT"/>
+<meta name="twitter:description" content="最近发现之前写过的很多项目，不管是 python/go/cpp 的，最终回看起来代码都变的很难看，尤其是多人合作的时候。 这是一个很头疼的问题。自己平时很在意这个，但是代"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">如何防止代码变成 SHIT</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-05-01 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 1810 字 </span>
+          <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#问题">问题</a></li>
+        <li><a href="#解决方法">解决方法</a>
+          <ul>
+            <li><a href="#cicd">CI/CD</a></li>
+            <li><a href="#静态分析">静态分析</a></li>
+            <li><a href="#code-review">Code Review</a></li>
+            <li><a href="#单元测试">单元测试</a></li>
+          </ul>
+        </li>
+        <li><a href="#人的因素">人的因素</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <!-- toc -->
+<p>最近发现之前写过的很多项目，不管是 python/go/cpp 的，最终回看起来代码都变的很难看，尤其是多人合作的时候。
+这是一个很头疼的问题。自己平时很在意这个，但是代码最终确都变成了 shit。</p>
+<h2 id="问题">问题</h2>
+<p>当一个人开发的时候，问题主要在于一个人的自律性不够强，不管是代码注释等都是随意写的，即使偶尔意识到了问题，但也难以保证能一直坚持下去。
+而当人多的时候，问题经常处在多人风格的不同上。如果没有<code>工具</code>来强制大家遵守一定的规则，那么大家每个人自己的风格放在一起的时候，就成了垃圾代码。
+避免代码变成 shit 的唯一方法，就是让大家写的代码<code>看起来都一个样</code>。而这个工作除了由开发人员的 Code Review 之外，还需要工具来约束。</p>
+<h2 id="解决方法">解决方法</h2>
+<h3 id="cicd">CI/CD</h3>
+<p>最开始接触 CI/CD，我只是认为它主要是用于部署方面的一个工具。现在发现，它对于代码质量的改进也是意义巨大的。所有代码通用规范上的约束，静态分析，复杂度分析等都可以通过自动化工具来执行。
+一方面，我们可以组合尽可能多的代码静态分析工具，来约束提交代码的错误，提供代码改进的建议，形成统一的代码风格。另一方面，最于 Code Review 来说，不再需要关注基本的代码风格以及基础部分，而只用关注于具体的业务以及代码架构层面的问题。</p>
+<h3 id="静态分析">静态分析</h3>
+<p>Python 这样的代码，在多人合作的大型项目上，如果没有非常严格的代码约束，最终出来的项目时非常难以维护的。可能经常部署出来的代码连跑都跑不起来。相对来说，静态类型语言在这方面的优势是巨大的，编译器在编译代码阶段能发现大多数比较明显的问题，最终线上的问题一般都是需要人来参与分析的。</p>
+<p>代码的静态分析是一个非常古老但是重视程度不够的技术。静态类型语言的代码分析技术能够极大地减少代码中可能存在的 bug,并给出很多的建议。以 Golang 为例，目前已经有几十款静态分析工具。
+而像<a href="https://github.com/golangci/golangci-lint">golangci-lint</a>这样的工具，可以将多种分析工具结合起来，在各个层面给出代码改进的建议。比如：</p>
+<ol>
+<li>代码的简化写法</li>
+<li>可能的 bug</li>
+<li>Dead Code</li>
+<li>未使用的或者被覆盖的变量</li>
+<li>&hellip;</li>
+</ol>
+<p>SonarQube 其实是类似的产品，只不过是 Client/Server 的架构，提供了诸如复杂度分析，单元测试覆盖率等指标。良好的 UI，以及插件式的架构，与普通的 cli 工具结合起来之后，对于代码质量的提高是非常有益的。</p>
+<p>总之，工具能处理的事情越多，人的精力就更多的能去关注更上的层面和业务层面。</p>
+<h3 id="code-review">Code Review</h3>
+<p>Code Review 虽然成为一个共识，但真正的效率确实难以保证的。莫名其妙的改动，形式化的 approve,现有工具的局限等等问题都造成了参与的人在这方面的低效率。所以总是需要有各种规范来指导人们如何进行 Code Review。一般来讲，我们可以将代码的改动拆分为三个问题</p>
+<ol>
+<li>Why? 为什么要做这个改动</li>
+<li>How? 怎么做这个改动</li>
+<li>What? 具体做了哪些改动。</li>
+</ol>
+<p>这几个问题，工具能参与的只是<code>What</code>的一部分。其他的部分都需要人来 review。一般的 Code Review 提交的模板也都要求提交 PR 的人尽量说清楚 Why,通过文档 link 或者文字等形式。具体的 How 以及 What，则需要具体的人来参与 review。</p>
+<h3 id="单元测试">单元测试</h3>
+<p>曾经我对于单元测试是非常反感的,现在的仍然觉得它的作用有限，只是我们没有其他选择，只能继续用它。
+它的作用主要在于：当我们添加代码时，能保证我们的代码不 break 已有的逻辑。为了这个目标，付出的代码是巨大的，庞大的单元测试框架以及体系，高昂的维护成本，以及可能对现有代码的侵入性，换来的是一种非常被动的 protection。</p>
+<p>当然单元测试对于代码的反向的结构优化也是有意义的。在让代码结构变得可<code>单元测试</code>的过程中，代码也变得更加易维护以及模块化。希望以后有更简单的方式来达成这个目的而不用承受目前单元测试框架的沉重负担。</p>
+<h2 id="人的因素">人的因素</h2>
+<p>上面说了那么多，其实都只是为了保证代码的烂有一个下限，但代码仍然可能是 shit。问题的核心，不是技术，而是政治学(说的通俗点的就是管理问题。)
+代码质量好的项目，这么几十年来，经验告诉我们，只有两种: 仁慈的独裁者(比如 Guido)和骂人的独裁者(比如 Linux)。这样最终多人的协作问题最终就变成了一个 leader 自身的品味问题。品味好的人虽然很少，但不是没有。</p>
+<p>Linux 的<code>脾气</code>以及 RMS 的<code>偏执</code>，初看起来都很不近人情，但他们都在维护问题的核心:代码的质量以及软件的自由，任何其他的因素不管听起来多么冠冕堂皇，都是次要的，不应凌驾于核心之上。</p>
+<p>这很像民主制度一样面临的问题。它防止了最坏的恶，但因为没法保证每个人都是<code>精英</code>，所以在协作的产出上总是低效和质量差的。而专制制度在牺牲了大多数的<code>自由</code>之后，如果有一个<code>良好</code>的领导者，则是目前已知的最有效的政治制度。毕竟，结果最重要。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-05-01
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E6%8A%80%E6%9C%AF%E9%9A%8F%E7%AC%94/">技术随笔</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2019-05-05-jekyll/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">jekyll 的问题</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2019-04-27-liuhai/">
+            <span class="next-text nav-default">手机的刘海</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

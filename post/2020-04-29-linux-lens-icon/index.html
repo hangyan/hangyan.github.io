@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>给 Kubernetes Lens AppImage 添加 Desktop Entry - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="本文记录如何为 Kuberntes Lens 的 Linux 版本的 AppImage 手动创建一个 Desktop Entry 以及生成 Icon 手动创建 Desktop Entry 创建一个 desktop 文件，任意位置均可。假设名字为 lens.desktop: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 [Desktop" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2020-04-29-linux-lens-icon/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="给 Kubernetes Lens AppImage 添加 Desktop Entry" />
+<meta property="og:description" content="本文记录如何为 Kuberntes Lens 的 Linux 版本的 AppImage 手动创建一个 Desktop Entry 以及生成 Icon 手动创建 Desktop Entry 创建一个 desktop 文件，任意位置均可。假设名字为 lens.desktop: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 [Desktop" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2020-04-29-linux-lens-icon/" />
+<meta property="article:published_time" content="2020-04-29T22:13:02+00:00" />
+<meta property="article:modified_time" content="2020-04-29T22:13:02+00:00" />
+<meta itemprop="name" content="给 Kubernetes Lens AppImage 添加 Desktop Entry">
+<meta itemprop="description" content="本文记录如何为 Kuberntes Lens 的 Linux 版本的 AppImage 手动创建一个 Desktop Entry 以及生成 Icon 手动创建 Desktop Entry 创建一个 desktop 文件，任意位置均可。假设名字为 lens.desktop: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 [Desktop">
+<meta itemprop="datePublished" content="2020-04-29T22:13:02+00:00" />
+<meta itemprop="dateModified" content="2020-04-29T22:13:02+00:00" />
+<meta itemprop="wordCount" content="315">
+
+
+
+<meta itemprop="keywords" content="Linux," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="给 Kubernetes Lens AppImage 添加 Desktop Entry"/>
+<meta name="twitter:description" content="本文记录如何为 Kuberntes Lens 的 Linux 版本的 AppImage 手动创建一个 Desktop Entry 以及生成 Icon 手动创建 Desktop Entry 创建一个 desktop 文件，任意位置均可。假设名字为 lens.desktop: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 [Desktop"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">给 Kubernetes Lens AppImage 添加 Desktop Entry</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-04-29 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 315 字 </span>
+          <span class="more-meta"> 预计阅读 1 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#手动创建-desktop-entry">手动创建 Desktop Entry</a></li>
+        <li><a href="#生成-icon">生成 ICON</a></li>
+        <li><a href="#安装-desktop-entry">安装 Desktop Entry</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <!-- toc -->
+<p>本文记录如何为 Kuberntes Lens 的 Linux 版本的 AppImage 手动创建一个 Desktop Entry 以及生成 Icon</p>
+<h2 id="手动创建-desktop-entry">手动创建 Desktop Entry</h2>
+<p>创建一个 <code>desktop</code> 文件，任意位置均可。假设名字为 <code>lens.desktop</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-ini" data-lang="ini"><span class="k">[Desktop Entry]</span>
+<span class="na">Name</span><span class="o">=</span><span class="s">Lens</span>
+<span class="na">Comment</span><span class="o">=</span><span class="s">A full-featured Kubernetes IDE</span>
+<span class="na">Exec</span><span class="o">=</span><span class="s">&#34;/home/yayu/Soft/AppImage/Lens-3.3.1.AppImage&#34; %U</span>
+<span class="na">Terminal</span><span class="o">=</span><span class="s">false</span>
+<span class="na">Type</span><span class="o">=</span><span class="s">Application</span>
+<span class="na">Icon</span><span class="o">=</span><span class="s">kube-lens</span>
+<span class="na">StartupWMClass</span><span class="o">=</span><span class="s">Lens</span>
+<span class="na">X-AppImage-Version</span><span class="o">=</span><span class="s">1.4.1.271</span>
+<span class="na">Categories</span><span class="o">=</span><span class="s">Network;</span>
+<span class="na">X-AppImage-BuildId</span><span class="o">=</span><span class="s">1N3OgzauYTeCvM55WzKgL7MIQe0</span>
+<span class="na">X-Desktop-File-Install-Version</span><span class="o">=</span><span class="s">0.24</span>
+<span class="na">X-AppImage-Comment</span><span class="o">=</span><span class="s">Create By HangYan</span>
+<span class="na">TryExec</span><span class="o">=</span><span class="s">/home/yayu/Soft/AppImage/Lens-3.3.1.AppImage</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其中 <code>Exec</code> 以及 <code>TryExec</code> 是 AppImage 的位置，应相应更改</p>
+<h2 id="生成-icon">生成 ICON</h2>
+<p>这里我下载了一个黑色的 Kubernetes ICON, 背景透明，webp 格式</p>
+<p><img src="/images/kube/kube.png" alt=""></p>
+<p>这里我已经转为 png 格式，转换命令为:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">dwebp &lt;origin&gt;.webp -o kube.png
+</code></pre></td></tr></table>
+</div>
+</div><p>然后，生成相应的 Icon, 并安装到系统中</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">xdg-icon-resource install --theme Moka --size <span class="m">48</span> kube.png kube-lens
+</code></pre></td></tr></table>
+</div>
+</div><p>安装的 icon 可以在 <code>~/.icons</code> 目录中看到。</p>
+<p>其中:</p>
+<ul>
+<li><code>theme</code>: 即将此 icon 安装到哪个 themes 中. Linux Desktop 基本上都有可以设置 icon themes 的地方</li>
+<li><code>size</code>: 一般是 panel 上 icon 的 size, 这个在一般的 panel 的设置里也能看到</li>
+<li><code>kube-lens</code>: 即最终生成的 icon 的名字，也就是上面 desktop 文件中引用的 icon 名字</li>
+</ul>
+<h2 id="安装-desktop-entry">安装 Desktop Entry</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># 先做一下校验</span>
+desktop-file-validate lens.desktop
+
+desktop-file-install lens.desktop --dir<span class="o">=</span>~/.local/share/applications
+
+<span class="c1"># 更新 desktop entry</span>
+update-desktop-database ~/.local/share/applications
+</code></pre></td></tr></table>
+</div>
+</div><p>最终效果如图:</p>
+<p><img src="/images/shot/lens.png" alt=""></p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2020-04-29
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/linux/">Linux</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2020-07-23-blue-trace/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">BlueTrace与健康码</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2020-04-09-ming/">
+            <span class="next-text nav-default">故国有明</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

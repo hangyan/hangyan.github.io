@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>社会 on 工业革命</title>
+    <link>http://yanhang.me/tags/%E7%A4%BE%E4%BC%9A/</link>
+    <description>Recent content in 社会 on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 23 Jul 2020 16:32:10 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/%E7%A4%BE%E4%BC%9A/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>BlueTrace与健康码</title>
+      <link>http://yanhang.me/post/2020-07-23-blue-trace/</link>
+      <pubDate>Thu, 23 Jul 2020 16:32:10 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-07-23-blue-trace/</guid>
+      <description>疫情之下，各国都在不断地调整自己的防疫政策。中国的模式已经证明了其可能是最有效的方式之一，但因为种种原因大部分国家难以效仿和接受。从技术层面</description>
+    </item>
+    
+    <item>
+      <title>Linux 桌面的失败</title>
+      <link>http://yanhang.me/post/2020-04-04-linux-desktop/</link>
+      <pubDate>Sat, 04 Apr 2020 21:29:54 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-04-04-linux-desktop/</guid>
+      <description>之所以说它失败，是指从功利的角度来看。不管是市场占有率，还是软件的可用性，用户友好性，以及生态上，都是失败的。直到2020的今天，以 Ubuntu 为代表</description>
+    </item>
+    
+    <item>
+      <title>小城市的公共空间</title>
+      <link>http://yanhang.me/post/2019-11-17-public-city/</link>
+      <pubDate>Sun, 17 Nov 2019 17:41:58 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-11-17-public-city/</guid>
+      <description>每次从老家的小城市准备坐飞机离开，我都会先去找一个咖啡馆呆着消磨时间。小城市咖啡馆数量并不多，比较有格调的更少，我发现有一个咖啡馆无论是在规</description>
+    </item>
+    
+  </channel>
+</rss>

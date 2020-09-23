@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>网络 on 工业革命</title>
+    <link>http://yanhang.me/tags/%E7%BD%91%E7%BB%9C/</link>
+    <description>Recent content in 网络 on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 04 Apr 2019 20:56:03 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/%E7%BD%91%E7%BB%9C/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>更安全的 DNS</title>
+      <link>http://yanhang.me/post/2019-04-04-more-secure-dns/</link>
+      <pubDate>Thu, 04 Apr 2019 20:56:03 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-04-04-more-secure-dns/</guid>
+      <description>主要问题 解决方法 使用受信任的 DNS 解析服务器 DoH QNAME minimization 其他问题 Links HTTPS 已经越来越普及了，包括 Github Pages 都可以很方便的集成。浏览器也开始通过各种手段来促进网站都</description>
+    </item>
+    
+  </channel>
+</rss>

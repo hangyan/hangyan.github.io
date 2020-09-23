@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Linux on 工业革命</title>
+    <link>http://yanhang.me/tags/linux/</link>
+    <description>Recent content in Linux on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 10 Sep 2020 16:01:54 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>统信 UOS 究竟咋样</title>
+      <link>http://yanhang.me/post/2020-09-10-uos/</link>
+      <pubDate>Thu, 10 Sep 2020 16:01:54 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-09-10-uos/</guid>
+      <description>统信 UOS 是今年国产化浪潮中比较出风头的一个做国产操作系统的公司。这几天换掉了我的 Manjaro 装上了 UOS 体验了一下。总体来说，可以打七八十分吧。 单说这个分数</description>
+    </item>
+    
+    <item>
+      <title>给 Kubernetes Lens AppImage 添加 Desktop Entry</title>
+      <link>http://yanhang.me/post/2020-04-29-linux-lens-icon/</link>
+      <pubDate>Wed, 29 Apr 2020 22:13:02 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-04-29-linux-lens-icon/</guid>
+      <description>本文记录如何为 Kuberntes Lens 的 Linux 版本的 AppImage 手动创建一个 Desktop Entry 以及生成 Icon 手动创建 Desktop Entry 创建一个 desktop 文件，任意位置均可。假设名字为 lens.desktop: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 [Desktop</description>
+    </item>
+    
+  </channel>
+</rss>

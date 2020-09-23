@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>docker 源码分析(5) -- 镜像拉取及存储 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="docker images pulling and store" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2015-03-30-docker-source-code-part5-images/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="docker 源码分析(5) -- 镜像拉取及存储" />
+<meta property="og:description" content="docker images pulling and store" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2015-03-30-docker-source-code-part5-images/" />
+<meta property="article:published_time" content="2015-03-30T21:37:39+08:00" />
+<meta property="article:modified_time" content="2015-03-30T21:37:39+08:00" />
+<meta itemprop="name" content="docker 源码分析(5) -- 镜像拉取及存储">
+<meta itemprop="description" content="docker images pulling and store">
+<meta itemprop="datePublished" content="2015-03-30T21:37:39+08:00" />
+<meta itemprop="dateModified" content="2015-03-30T21:37:39+08:00" />
+<meta itemprop="wordCount" content="7598">
+
+
+
+<meta itemprop="keywords" content="docker," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="docker 源码分析(5) -- 镜像拉取及存储"/>
+<meta name="twitter:description" content="docker images pulling and store"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">docker 源码分析(5) -- 镜像拉取及存储</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2015-03-30 </span>
+        
+          <span class="more-meta"> 约 7598 字 </span>
+          <span class="more-meta"> 预计阅读 16 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#简介">简介</a></li>
+        <li><a href="#子命令执行">子命令执行</a></li>
+        <li><a href="#发送请求">发送请求</a></li>
+        <li><a href="#请求处理">请求处理</a></li>
+        <li><a href="#镜像拉取">镜像拉取</a>
+          <ul>
+            <li><a href="#冲突检测">冲突检测</a></li>
+            <li><a href="#名称解析">名称解析</a></li>
+            <li><a href="#registry-api-版本">Registry API 版本</a></li>
+            <li><a href="#tag-处理">Tag 处理</a></li>
+            <li><a href="#manifest">Manifest</a></li>
+            <li><a href="#下载">下载</a></li>
+          </ul>
+        </li>
+        <li><a href="#镜像存储">镜像存储</a>
+          <ul>
+            <li><a href="#graph">Graph</a></li>
+            <li><a href="#register">Register</a></li>
+            <li><a href="#tagstore">TagStore</a></li>
+          </ul>
+        </li>
+        <li><a href="#总结">总结</a></li>
+        <li><a href="#参考链接">参考链接</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>本篇的内容主要是关于<code>docker</code>镜像的。在我们安装好<code>docker</code>之后，要想使用它，第
+一步就是要下载一些镜像。本文将依据此流程分析<code>docker</code>中镜像的拉取、存储等相关内容。</p>
+<h2 id="简介">简介</h2>
+<p><code>docker</code>中几乎所有的操作都是通过<code>WEB API</code>的方式执行的，所以当我们在命令行下敲下
+<code>docker pull</code>或者通过<code>Docker Remote API</code>来拉取镜像时，<code>docker</code>便准备好各项参数，
+开始向内部的<code>web server</code>发送<code>http</code>请求，最终由提前注册好的<code>Handlers</code>来执行相关
+操作。我们将按照这个步骤来逐步分析与镜像拉取,存储相关的源码。</p>
+<h2 id="子命令执行">子命令执行</h2>
+<p>我们仍从<code>docker</code>的<code>main</code>函数入口处开始。在
+<a href="http://hangyan.github.io/docker/docker-source-code-part2-start-and-args/">docker 主程序分析</a>
+中里面我已经提到，如果没有<code>-d</code>参数，最终便当作<code>client</code>对待并且将参数当作子命令来
+解析执行,代码如下:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">cli</span><span class="p">.</span><span class="nf">Cmd</span><span class="p">(</span><span class="nx">flag</span><span class="p">.</span><span class="nf">Args</span><span class="p">()</span><span class="o">...</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">sterr</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">err</span><span class="p">.(</span><span class="o">*</span><span class="nx">utils</span><span class="p">.</span><span class="nx">StatusError</span><span class="p">);</span> <span class="nx">ok</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="nx">sterr</span><span class="p">.</span><span class="nx">Status</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+	        <span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">sterr</span><span class="p">.</span><span class="nx">Status</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="nx">sterr</span><span class="p">.</span><span class="nx">StatusCode</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>比如我在命令行下敲下<code>docker pull ubuntu</code>这个命令，那么在<code>Cmd</code>函数中，首先要做的
+便是找到与<code>pull</code>相对应的<code>handler</code>.在这里并不是像一般的做法那样通过提前注册好的
+<code>map</code>来查找，而是直接进行一些字符串转换，比如<code>pull</code>对应的叫<code>CmdPull</code>,<code>push</code>对应
+的叫<code>CmdPush</code>,规则就是首字母大写并且加上一个<code>Cmd</code>前缀.</p>
+<p><code>github.com/docker/docker/api/client/cli.go</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">cli</span> <span class="o">*</span><span class="nx">DockerCli</span><span class="p">)</span> <span class="nf">getMethod</span><span class="p">(</span><span class="nx">args</span> <span class="o">...</span><span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="kd">func</span><span class="p">(</span><span class="o">...</span><span class="kt">string</span><span class="p">)</span> <span class="kt">error</span><span class="p">,</span> <span class="kt">bool</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">camelArgs</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">string</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">args</span><span class="p">))</span>
+    <span class="k">for</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">s</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">args</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">false</span>
+        <span class="p">}</span>
+        <span class="nx">camelArgs</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">=</span> <span class="nx">strings</span><span class="p">.</span><span class="nf">ToUpper</span><span class="p">(</span><span class="nx">s</span><span class="p">[:</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="nx">strings</span><span class="p">.</span><span class="nf">ToLower</span><span class="p">(</span><span class="nx">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="p">}</span>
+    <span class="nx">methodName</span> <span class="o">:=</span> <span class="s">&#34;Cmd&#34;</span> <span class="o">+</span> <span class="nx">strings</span><span class="p">.</span><span class="nf">Join</span><span class="p">(</span><span class="nx">camelArgs</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">)</span>
+    <span class="nx">method</span> <span class="o">:=</span> <span class="nx">reflect</span><span class="p">.</span><span class="nf">ValueOf</span><span class="p">(</span><span class="nx">cli</span><span class="p">).</span><span class="nf">MethodByName</span><span class="p">(</span><span class="nx">methodName</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">!</span><span class="nx">method</span><span class="p">.</span><span class="nf">IsValid</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">false</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">method</span><span class="p">.</span><span class="nf">Interface</span><span class="p">().(</span><span class="kd">func</span><span class="p">(</span><span class="o">...</span><span class="kt">string</span><span class="p">)</span> <span class="kt">error</span><span class="p">),</span> <span class="kc">true</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>所以我们可以在<code>github.com/docker/docker/api/client/commands.go</code>文件中见到很多个
+这样的函数:</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-5/commands.png" alt=" " title="commands"></p>
+<h2 id="发送请求">发送请求</h2>
+<p>找到了执行函数，下面就是将其他参数传进去并开始执行，我们来看下<code>CmdPull</code>的流程:</p>
+<p>我们在拉取镜像时,参数中的<code>image name</code>可以是多种多样的，有以下几类：</p>
+<ol>
+<li>只有名字 比如<code>ubuntu</code></li>
+<li>名字和 tag 比如<code>ubuntu:14.04</code></li>
+<li>命名空间,名字,(tag) 比如<code>tutum/redis</code>或者后面加个<code>tag</code></li>
+<li>前面有私有仓库地址 比如 <code>127.0.0.1:5000/ubuntu:14.04</code>
+&hellip;</li>
+</ol>
+<p>所以我们既要检测参数中是否包含非法字符，也要对这各种情况解析出正确的<code>host</code>地址
+和<code>name</code>,<code>tag</code>.不过了解了其结构之后，解析的代码就显得简单多了，不再具
+体分析.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">taglessRemote</span><span class="p">,</span> <span class="nx">tag</span> <span class="o">:=</span> <span class="nx">parsers</span><span class="p">.</span><span class="nf">ParseRepositoryTag</span><span class="p">(</span><span class="nx">remote</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">tag</span> <span class="o">==</span> <span class="s">&#34;&#34;</span> <span class="o">&amp;&amp;</span> <span class="p">!</span><span class="o">*</span><span class="nx">allTags</span> <span class="p">{</span>
+    <span class="nx">newRemote</span> <span class="p">=</span> <span class="nx">taglessRemote</span> <span class="o">+</span> <span class="s">&#34;:&#34;</span> <span class="o">+</span> <span class="nx">graph</span><span class="p">.</span><span class="nx">DEFAULTTAG</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="nx">tag</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="o">&amp;&amp;</span> <span class="o">*</span><span class="nx">allTags</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;tag can&#39;t be used with --all-tags/-a&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>注意其中的<code>DEFAULTTAG</code>，其值为<code>latest</code>,所以如果我们<code>pull</code>镜像时没有指定<code>tag</code>并且
+<code>--all-tags</code>为<code>false</code>，则只会拉取<code>tag</code>为<code>latest</code>的镜像。</p>
+<p>参数中的<code>hostname</code>部分需要单独解析出来，因为有安全认证的考虑.需要读取相关的配置
+文件，并解析参数，最终要作为<code>http header</code>中的参数发送出去.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">hostname</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">registry</span><span class="p">.</span><span class="nf">ResolveRepositoryName</span><span class="p">(</span><span class="nx">taglessRemote</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+
+<span class="nx">cli</span><span class="p">.</span><span class="nf">LoadConfigFile</span><span class="p">()</span>
+
+<span class="nx">authConfig</span> <span class="o">:=</span> <span class="nx">cli</span><span class="p">.</span><span class="nx">configFile</span><span class="p">.</span><span class="nf">ResolveAuthConfig</span><span class="p">(</span><span class="nx">hostname</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>需要注意的是,如果参数中没有指定<code>hostname</code>，则默认是从官方仓库拉取镜像,其值由变量
+<code>INDEXSERVER</code>定义: <code>https://index.docker.io/v1/</code>。</p>
+<p>参数解析好之后，便可以执行<code>http</code>请求了。<code>docker pull</code>所发起的是<code>POST</code>请求,地址为
+<code>/iamges/create</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">v</span>  <span class="p">=</span> <span class="nx">url</span><span class="p">.</span><span class="nx">Values</span><span class="p">{}</span>
+
+<span class="nx">v</span><span class="p">.</span><span class="nf">Set</span><span class="p">(</span><span class="s">&#34;fromImage&#34;</span><span class="p">,</span> <span class="nx">newRemote</span><span class="p">)</span>
+
+<span class="nx">pull</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">(</span><span class="nx">authConfig</span> <span class="nx">registry</span><span class="p">.</span><span class="nx">AuthConfig</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="nx">buf</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Marshal</span><span class="p">(</span><span class="nx">authConfig</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">err</span>
+    <span class="p">}</span>
+    <span class="nx">registryAuthHeader</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span>
+        <span class="nx">base64</span><span class="p">.</span><span class="nx">URLEncoding</span><span class="p">.</span><span class="nf">EncodeToString</span><span class="p">(</span><span class="nx">buf</span><span class="p">),</span>
+    <span class="p">}</span>
+        
+    <span class="k">return</span> <span class="nx">cli</span><span class="p">.</span><span class="nf">stream</span><span class="p">(</span><span class="s">&#34;POST&#34;</span><span class="p">,</span> <span class="s">&#34;/images/create?&#34;</span><span class="o">+</span><span class="nx">v</span><span class="p">.</span><span class="nf">Encode</span><span class="p">(),</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">cli</span><span class="p">.</span><span class="nx">out</span><span class="p">,</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">][]</span><span class="kt">string</span><span class="p">{</span>
+        <span class="s">&#34;X-Registry-Auth&#34;</span><span class="p">:</span> <span class="nx">registryAuthHeader</span><span class="p">,</span>
+    <span class="p">})</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">pull</span><span class="p">(</span><span class="nx">authConfig</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="o">...</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在<code>web server</code>端，我们可以查到<code>/images/create</code>所对应的<code>handler</code>名称。</p>
+<p><code>github.com/docker/docker/api/server/server.go</code> :</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-5/server-handlers.png" alt=" " title="server-handlers"></p>
+<p>所以下面我们就开始分析<code>postImageCreate</code>的执行流程.</p>
+<h2 id="请求处理">请求处理</h2>
+<p>之前提到过，<code>daemon</code>将各种操作统一为<code>job</code>的形式，镜像的创建也不例外。所以<code>postImageCreate</code>
+的主要工作即是进行<code>job</code>的相关环境的设定：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">image</span> <span class="p">=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Form</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="s">&#34;fromImage&#34;</span><span class="p">)</span>
+<span class="nx">repo</span>  <span class="p">=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Form</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="s">&#34;repo&#34;</span><span class="p">)</span>
+<span class="nx">tag</span>   <span class="p">=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Form</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="s">&#34;tag&#34;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="nx">image</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="p">{</span> <span class="c1">//pull
+</span><span class="c1"></span>    <span class="k">if</span> <span class="nx">tag</span> <span class="o">==</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+        <span class="nx">image</span><span class="p">,</span> <span class="nx">tag</span> <span class="p">=</span> <span class="nx">parsers</span><span class="p">.</span><span class="nf">ParseRepositoryTag</span><span class="p">(</span><span class="nx">image</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">metaHeaders</span> <span class="o">:=</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">][]</span><span class="kt">string</span><span class="p">{}</span>
+    <span class="k">for</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Header</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="nx">strings</span><span class="p">.</span><span class="nf">HasPrefix</span><span class="p">(</span><span class="nx">k</span><span class="p">,</span> <span class="s">&#34;X-Meta-&#34;</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">metaHeaders</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span> <span class="p">=</span> <span class="nx">v</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="nx">job</span> <span class="p">=</span> <span class="nx">eng</span><span class="p">.</span><span class="nf">Job</span><span class="p">(</span><span class="s">&#34;pull&#34;</span><span class="p">,</span> <span class="nx">image</span><span class="p">,</span> <span class="nx">tag</span><span class="p">)</span>
+    <span class="nx">job</span><span class="p">.</span><span class="nf">SetenvBool</span><span class="p">(</span><span class="s">&#34;parallel&#34;</span><span class="p">,</span> <span class="nx">version</span><span class="p">.</span><span class="nf">GreaterThan</span><span class="p">(</span><span class="s">&#34;1.3&#34;</span><span class="p">))</span>
+    <span class="nx">job</span><span class="p">.</span><span class="nf">SetenvJson</span><span class="p">(</span><span class="s">&#34;metaHeaders&#34;</span><span class="p">,</span> <span class="nx">metaHeaders</span><span class="p">)</span>
+    <span class="nx">job</span><span class="p">.</span><span class="nf">SetenvJson</span><span class="p">(</span><span class="s">&#34;authConfig&#34;</span><span class="p">,</span> <span class="nx">authConfig</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>需要注意的是,<code>postImageCreate</code>对应了两个<code>subcommand</code>，分别是<code>pull</code>和<code>import</code>,都
+是用来创建镜像的，所以它们<code>post</code>的地址一样。二者通过传递不同的参数来区分创建不同
+的<code>job</code>,具体就是<code>fromImage</code>这个参数.在<code>CmdPull</code>中，我们设置了这个参数，但是在<code>CmdImport</code>
+中，则设置了其他的参数,二者流程类似，所以本文只对<code>pull</code>的流程做深入解析.</p>
+<p>我们可以从<code>github.com/docker/docker/graph/service.go</code>文件中查到名字为<code>pull</code>的
+<code>job</code>对应的<code>handler</code>:</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-5/image-handlers.png" alt=" " title="image-handlers"></p>
+<p>到了这个<code>CmdPull</code>（不要与前面的<code>CmdPull</code>搞混),才真正开始镜像拉取的过程。</p>
+<h2 id="镜像拉取">镜像拉取</h2>
+<h3 id="冲突检测">冲突检测</h3>
+<p>大家可能有过这样的经验，在一个终端下执行<code>docker pull</code>,时间太长，也不确定是不是成
+功了，就<code>Ctrl-C</code>掉,然后重开一个终端重新执行，这时候就会提示已经有一个<code>client</code>在
+拉取了，需要等待。这就是<code>CmdPull</code>最开始做的事情：确保只有一个<code>client</code>在拉取同一
+个镜像:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">c</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">poolAdd</span><span class="p">(</span><span class="s">&#34;pull&#34;</span><span class="p">,</span> <span class="nx">localName</span><span class="o">+</span><span class="s">&#34;:&#34;</span><span class="o">+</span><span class="nx">tag</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">c</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">job</span><span class="p">.</span><span class="nx">Stdout</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="nx">sf</span><span class="p">.</span><span class="nf">FormatStatus</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;Repository %s already being pulled by another client. Waiting.&#34;</span><span class="p">,</span> <span class="nx">localName</span><span class="p">))</span>
+        <span class="o">&lt;-</span><span class="nx">c</span>
+        <span class="k">return</span> <span class="nx">engine</span><span class="p">.</span><span class="nx">StatusOK</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">job</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="k">defer</span> <span class="nx">s</span><span class="p">.</span><span class="nf">poolRemove</span><span class="p">(</span><span class="s">&#34;pull&#34;</span><span class="p">,</span> <span class="nx">localName</span><span class="o">+</span><span class="s">&#34;:&#34;</span><span class="o">+</span><span class="nx">tag</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>pollAdd</code>可以对<code>pull</code>和<code>push</code>两个过程进行检测(通过第一个参数),然后通过一个<code>map</code>
+确认是否已经有<code>client</code>在拉取第二个参数标识的镜像。</p>
+<h3 id="名称解析">名称解析</h3>
+<p><code>CmdPull</code>传入的参数有两个:<code>image</code>和<code>tag</code>。<code>image</code>是包含仓库地址的，我们需要在拉取
+之前将其解析出来，建立连接,并对镜像名做进一步规范化处理:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">hostname</span><span class="p">,</span> <span class="nx">remoteName</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">registry</span><span class="p">.</span><span class="nf">ResolveRepositoryName</span><span class="p">(</span><span class="nx">localName</span><span class="p">)</span>
+
+<span class="nx">endpoint</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">registry</span><span class="p">.</span><span class="nf">NewEndpoint</span><span class="p">(</span><span class="nx">hostname</span><span class="p">,</span> <span class="nx">s</span><span class="p">.</span><span class="nx">insecureRegistries</span><span class="p">)</span>
+
+<span class="nx">r</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">registry</span><span class="p">.</span><span class="nf">NewSession</span><span class="p">(</span><span class="nx">authConfig</span><span class="p">,</span> <span class="nx">registry</span><span class="p">.</span><span class="nf">HTTPRequestFactory</span><span class="p">(</span><span class="nx">metaHeaders</span><span class="p">),</span> <span class="nx">endpoint</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="nx">endpoint</span><span class="p">.</span><span class="nf">VersionString</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="nx">registry</span><span class="p">.</span><span class="nf">IndexServerAddress</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">localName</span> <span class="p">=</span> <span class="nx">remoteName</span>
+
+    <span class="nx">isOfficial</span> <span class="p">=</span> <span class="nf">isOfficialName</span><span class="p">(</span><span class="nx">remoteName</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">isOfficial</span> <span class="o">&amp;&amp;</span> <span class="nx">strings</span><span class="p">.</span><span class="nf">IndexRune</span><span class="p">(</span><span class="nx">remoteName</span><span class="p">,</span> <span class="sc">&#39;/&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="p">{</span>
+        <span class="nx">remoteName</span> <span class="p">=</span> <span class="s">&#34;library/&#34;</span> <span class="o">+</span> <span class="nx">remoteName</span>
+    <span class="p">}</span>
+
+    <span class="nx">mirrors</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">mirrors</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>注意<code>remoteName</code>和<code>localName</code>的区别。我们在拉取镜像时会发现有的镜像没有命名空间,
+其实它是有一个默认值<code>library</code>。<code>remote</code>就是带了命名空间的规范化镜像名称.</p>
+<h3 id="registry-api-版本">Registry API 版本</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">mirrors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">isOfficial</span> <span class="o">||</span> <span class="nx">endpoint</span><span class="p">.</span><span class="nx">Version</span> <span class="o">==</span> <span class="nx">registry</span><span class="p">.</span><span class="nx">APIVersion2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">j</span> <span class="o">:=</span> <span class="nx">job</span><span class="p">.</span><span class="nx">Eng</span><span class="p">.</span><span class="nf">Job</span><span class="p">(</span><span class="s">&#34;trust_update_base&#34;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">j</span><span class="p">.</span><span class="nf">Run</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">job</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;error updating trust base graph: %s&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">pullV2Repository</span><span class="p">(</span><span class="nx">job</span><span class="p">.</span><span class="nx">Eng</span><span class="p">,</span> <span class="nx">r</span><span class="p">,</span> <span class="nx">job</span><span class="p">.</span><span class="nx">Stdout</span><span class="p">,</span> <span class="nx">localName</span><span class="p">,</span> <span class="nx">remoteName</span><span class="p">,</span> <span class="nx">tag</span><span class="p">,</span> <span class="nx">sf</span><span class="p">,</span> <span class="nx">job</span><span class="p">.</span><span class="nf">GetenvBool</span><span class="p">(</span><span class="s">&#34;parallel&#34;</span><span class="p">));</span> <span class="nx">err</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">job</span><span class="p">.</span><span class="nx">Eng</span><span class="p">.</span><span class="nf">Job</span><span class="p">(</span><span class="s">&#34;log&#34;</span><span class="p">,</span> <span class="s">&#34;pull&#34;</span><span class="p">,</span> <span class="nx">logName</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">).</span><span class="nf">Run</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="nx">log</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Error logging event &#39;pull&#39; for %s: %s&#34;</span><span class="p">,</span> <span class="nx">logName</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">engine</span><span class="p">.</span><span class="nx">StatusOK</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="nx">registry</span><span class="p">.</span><span class="nx">ErrDoesNotExist</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Error from V2 registry: %s&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">pullRepository</span><span class="p">(</span><span class="nx">r</span><span class="p">,</span> <span class="nx">job</span><span class="p">.</span><span class="nx">Stdout</span><span class="p">,</span> <span class="nx">localName</span><span class="p">,</span> <span class="nx">remoteName</span><span class="p">,</span> <span class="nx">tag</span><span class="p">,</span> <span class="nx">sf</span><span class="p">,</span> <span class="nx">job</span><span class="p">.</span><span class="nf">GetenvBool</span><span class="p">(</span><span class="s">&#34;parallel&#34;</span><span class="p">),</span> <span class="nx">mirrors</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">job</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>从代码中可以看到有两种拉取，分别对应于仓库的两个 API（V1 和 V2)版本。V2 是一种较新的架构，改
+动较大,具体可见本文后面的链接。下面简要介绍一下官方仓库的拉取流程(示例):</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-5/docker_pull_chart.png" alt=" " title="docker_pull_chart"></p>
+<ol>
+<li>
+<p><code>docker client</code>从官方 Index(&ldquo;index.docker.io/v1&rdquo;)查询镜像(&ldquo;samalba/busybox&rdquo;)的
+位置</p>
+</li>
+<li>
+<p>Index 回复:</p>
+<ul>
+<li><code>samalba/busybox</code>在<code>Registry A</code>上</li>
+<li><code>samalba/busybox</code>的校验码</li>
+<li>token</li>
+</ul>
+</li>
+<li>
+<p><code>docker client</code> 连接<code>Registry A</code>表示自己要获取<code>samalba/busybox</code></p>
+</li>
+<li>
+<p><code>Registry A</code> 询问<code>Index</code> 这个客户端(<code>token/user</code>)是否有权限下载镜像</p>
+</li>
+<li>
+<p><code>Index</code>回复是否可以下载</p>
+</li>
+<li>
+<p>下载镜像的所有<code>layers</code></p>
+</li>
+</ol>
+<p>V1 和 V2 的区分即是再<code>registry</code>这一层。我们使用私有仓库的时候，都要在拉取的时候指定
+仓库的 URL,这时候的流程与官方相比就少了<code>Index</code>服务这一层，所以安全性就不高。而且
+因为没有了校验码，即使镜像损坏，也无法检测到。V2 的设计就是想统一各个仓库之间的不
+一致,规范其安全性和可靠性等。</p>
+<p>具体再使用上,两者的区分现在主要是在官方镜像和非官方镜像之间(<code>isOfficial</code>参数),如果是官方镜像
+(<code>ubuntun</code>,<code>library/ubuntu</code>),则是从<code>V2</code>拉取,否则是从<code>v1</code>拉取。下面就以 V2 为中心分
+析拉取流程。</p>
+<p>在拉取之前,有一个叫<code>trust_update_base</code>的<code>job</code>先执行了，从名字上便知是与安全相关
+的，也是 V2 引入的安全机制之一。<code>docker</code>为此创建了一个新的
+<a href="https://github.com/docker/libtrust">libtrust</a>项目,感兴趣的可以自行参考一下。
+<code>trust_update_base</code>对应的<code>job</code>在<code>github.com/docker/docker/trust</code>包中,不再详述。</p>
+<h3 id="tag-处理">Tag 处理</h3>
+<p>镜像拉取首先要确定的是<code>tag</code>,分两种情况,一种是指定了<code>--all-tags</code>，需要获取所有
+<code>tag</code>的信息,另外就是单个的<code>tag</code>，不管是自己指定的还是默认的<code>latest</code>。</p>
+<p><code>github.com/docker/docker/graph/pull.go#pullV2Repository</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">tags</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">GetV2RemoteTags</span><span class="p">(</span><span class="nx">remoteName</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">t</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">tags</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">downloaded</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">pullV2Tag</span><span class="p">(</span><span class="nx">eng</span><span class="p">,</span> <span class="nx">r</span><span class="p">,</span> <span class="nx">out</span><span class="p">,</span> <span class="nx">localName</span><span class="p">,</span> <span class="nx">remoteName</span><span class="p">,</span> <span class="nx">t</span><span class="p">,</span> <span class="nx">sf</span><span class="p">,</span> <span class="nx">parallel</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">err</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">downloaded</span> <span class="p">{</span>
+        <span class="nx">layersDownloaded</span> <span class="p">=</span> <span class="kc">true</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>上面代码展示的便是要拉取所有<code>tag</code>的情况，用的仍是标准的<code>REST API</code>,<code>GetV2RemoteTags</code>便是一个标准的 go 语言的<code>GET</code>方法实现，不在详述。
+我们可以直接从日志中查看到相关信息(<code>docker pull -a centos</code>):</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-5/tags.png" alt=" " title="tags"></p>
+<p>也可以自己再命令行下用<code>curl</code>或<code>httpie</code>工具直接获取:</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-5/tags-http.png" alt=" " title="tags-http"></p>
+<p>返回的结果就是一个<code>tags</code>的<code>string</code>列表。有了<code>tags</code>列表，下面要做的就是遍历列表一
+个一个地下载。</p>
+<h3 id="manifest">Manifest</h3>
+<p>要下载一个镜像，我们要先知道它的一些关键信息，比如校验码，层级,各层的联系以及其
+他各种细节。所以首先要下载的便是这些<code>manifest</code>数据:</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-5/centos-5-manifest.png" alt=" " title="centos-5-manifest"></p>
+<p>先看下<code>MainfestData</code>的定义:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">ManifestData</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Name</span>          <span class="kt">string</span>             <span class="s">`json:&#34;name&#34;`</span>
+    <span class="nx">Tag</span>           <span class="kt">string</span>             <span class="s">`json:&#34;tag&#34;`</span>
+    <span class="nx">Architecture</span>  <span class="kt">string</span>             <span class="s">`json:&#34;architecture&#34;`</span>
+    <span class="nx">FSLayers</span>      <span class="p">[]</span><span class="o">*</span><span class="nx">FSLayer</span>         <span class="s">`json:&#34;fsLayers&#34;`</span>
+    <span class="nx">History</span>       <span class="p">[]</span><span class="o">*</span><span class="nx">ManifestHistory</span> <span class="s">`json:&#34;history&#34;`</span>
+    <span class="nx">SchemaVersion</span> <span class="kt">int</span>                <span class="s">`json:&#34;schemaVersion&#34;`</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在命令行下之下用<code>httpie</code>获取<code>centos:5</code>的<code>manifest</code>信息如下:</p>
+<p>(1). fslayers</p>
+<p>各层的<code>checksum</code>信息</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-5/fslayers.png" alt=" " title="fslayers"></p>
+<p>(2). History</p>
+<p>各层的详细信息,<code>json</code>格式:</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-5/history.png" alt=" " title="history"></p>
+<p>(3). 签名及其他</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-5/sigs.png" alt=" " title="sigs"></p>
+<p><code>github.com/docker/docker/graph/pull.go#pullV2Tag</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">log</span><span class="p">.</span><span class="nf">Debugf</span><span class="p">(</span><span class="s">&#34;Pulling tag from V2 registry: %q&#34;</span><span class="p">,</span> <span class="nx">tag</span><span class="p">)</span>
+<span class="nx">manifestBytes</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">GetV2ImageManifest</span><span class="p">(</span><span class="nx">remoteName</span><span class="p">,</span> <span class="nx">tag</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+<span class="c1">// 验证各项信息是否正确
+</span><span class="c1"></span><span class="nx">manifest</span><span class="p">,</span> <span class="nx">verified</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">verifyManifest</span><span class="p">(</span><span class="nx">eng</span><span class="p">,</span> <span class="nx">manifestBytes</span><span class="p">)</span>
+
+<span class="nx">downloads</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="nx">downloadInfo</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">manifest</span><span class="p">.</span><span class="nx">FSLayers</span><span class="p">))</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">downloadInfo</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">imgJSON</span>    <span class="p">[]</span><span class="kt">byte</span>
+    <span class="nx">img</span>        <span class="o">*</span><span class="nx">image</span><span class="p">.</span><span class="nx">Image</span>
+    <span class="nx">tmpFile</span>    <span class="o">*</span><span class="nx">os</span><span class="p">.</span><span class="nx">File</span>
+    <span class="nx">length</span>     <span class="kt">int64</span>
+    <span class="nx">downloaded</span> <span class="kt">bool</span>
+    <span class="nx">err</span>        <span class="kd">chan</span> <span class="kt">error</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>downloadInfo</code>里最主要的信息便是镜像的<code>json</code>描述文件,也是从<code>ManifestData</code>中获取
+的。<code>tmpFile</code>的类型为<code>*os.File</code>,表明真正的下载要开始了。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">manifest</span><span class="p">.</span><span class="nx">FSLayers</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">--</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="p">(</span>
+        <span class="nx">sumStr</span>  <span class="p">=</span> <span class="nx">manifest</span><span class="p">.</span><span class="nx">FSLayers</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">BlobSum</span>
+        <span class="nx">imgJSON</span> <span class="p">=</span> <span class="p">[]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">manifest</span><span class="p">.</span><span class="nx">History</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">V1Compatibility</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="nx">img</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">image</span><span class="p">.</span><span class="nf">NewImgJSON</span><span class="p">(</span><span class="nx">imgJSON</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to parse json: %s&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">downloads</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">img</span> <span class="p">=</span> <span class="nx">img</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="下载">下载</h3>
+<p>整个下载流程大概分为以下几步:</p>
+<p>(1). 确认此镜像(<code>layer</code>)的<code>ID</code>是否已经存在:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">graph</span><span class="p">.</span><span class="nf">Exists</span><span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Debugf</span><span class="p">(</span><span class="s">&#34;Image already exists: %s&#34;</span><span class="p">,</span> <span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span>
+    <span class="k">continue</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果已经存在，表示本地已有此镜像，跳过。</p>
+<p>(2). 冲突检测
+之前提到过在镜像拉取之前有冲突检测，那个是针对指定的镜像名的(比如<code>ubuntu</code>),而此
+处的冲突主要是针对指定镜像名的各个<code>layer</code>之间的。我们知道很多镜像底层的<code>layer</code>都
+是共享的，所以如果我们同时在拉取两个不同的镜像，其各自的<code>layers</code>可能会有重叠的部
+分，所以在每层<code>layer</code>拉取之前都要检测:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">c</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">poolAdd</span><span class="p">(</span><span class="s">&#34;pull&#34;</span><span class="p">,</span> <span class="s">&#34;img:&#34;</span><span class="o">+</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">c</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">out</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="nx">sf</span><span class="p">.</span><span class="nf">FormatProgress</span><span class="p">(</span><span class="nx">utils</span><span class="p">.</span><span class="nf">TruncateID</span><span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">),</span> <span class="s">&#34;Layer already being pulled by another client. Waiting.&#34;</span><span class="p">,</span> <span class="kc">nil</span><span class="p">))</span>
+        <span class="o">&lt;-</span><span class="nx">c</span>
+        <span class="nx">out</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="nx">sf</span><span class="p">.</span><span class="nf">FormatProgress</span><span class="p">(</span><span class="nx">utils</span><span class="p">.</span><span class="nf">TruncateID</span><span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">),</span> <span class="s">&#34;Download complete&#34;</span><span class="p">,</span> <span class="kc">nil</span><span class="p">))</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nf">Debugf</span><span class="p">(</span><span class="s">&#34;Image (id: %s) pull is already running, skipping: %v&#34;</span><span class="p">,</span> <span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span> 
+</code></pre></td></tr></table>
+</div>
+</div><p>(3). 下载</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// 本地文件名
+</span><span class="c1"></span><span class="nx">tmpFile</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ioutil</span><span class="p">.</span><span class="nf">TempFile</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;GetV2ImageBlob&#34;</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+
+<span class="c1">// 下载
+</span><span class="c1"></span><span class="nx">r</span><span class="p">,</span> <span class="nx">l</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">GetV2ImageBlobReader</span><span class="p">(</span><span class="nx">remoteName</span><span class="p">,</span> <span class="nx">sumType</span><span class="p">,</span> <span class="nx">checksum</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+<span class="k">defer</span> <span class="nx">r</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
+<span class="nx">io</span><span class="p">.</span><span class="nf">Copy</span><span class="p">(</span><span class="nx">tmpFile</span><span class="p">,</span> <span class="nx">utils</span><span class="p">.</span><span class="nf">ProgressReader</span><span class="p">(</span><span class="nx">r</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nx">l</span><span class="p">),</span> <span class="nx">out</span><span class="p">,</span> <span class="nx">sf</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">utils</span><span class="p">.</span><span class="nf">TruncateID</span><span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">),</span> <span class="s">&#34;Downloading&#34;</span><span class="p">))</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>docker</code>有自己的临时目录，一般是<code>/var/lib/docker/tmp/</code>，里面都是这种
+<code>GetV2RemoteTags</code>开头的文件。<code>GetV2ImageBlobReader</code>仍是执行<code>GET</code>请求,我们可以从
+日志里看到其<code>URL</code>的格式:</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-5/pulling-blob.png" alt=" " title="pulling-blob"></p>
+<p>下载地址主要是由<code>Manifest</code>中的<code>blobSum</code>字段组成，在浏览器里粘贴就可以下载这个文
+件（最终重定向到 AWS)。</p>
+<p>在之前的<code>CmdPull</code> <code>job</code>中,有一个<code>parallel</code>的参数,它用来控制下载时各<code>layer</code>之间是否是并行下载:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">parallel</span> <span class="p">{</span>
+    <span class="nx">downloads</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">err</span> <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">error</span><span class="p">)</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">(</span><span class="nx">di</span> <span class="o">*</span><span class="nx">downloadInfo</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">di</span><span class="p">.</span><span class="nx">err</span> <span class="o">&lt;-</span> <span class="nf">downloadFunc</span><span class="p">(</span><span class="nx">di</span><span class="p">)</span>
+    <span class="p">}(</span><span class="o">&amp;</span><span class="nx">downloads</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nx">err</span> <span class="o">:=</span> <span class="nf">downloadFunc</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">downloads</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">err</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>docker</code>版本<code>1.3</code>以上的都是并行下载。</p>
+<h2 id="镜像存储">镜像存储</h2>
+<p>在<code>docker</code>的使用过程中,本地缓存的镜像会越来越多，我们需要有一个组件来管理这些镜
+像及其之间的关系，在
+<a href="http://hangyan.github.io/docker/docker-source-code-part3-daemon-start/#graphdriver">Daemon 启动流程</a>
+中我们提到的<code>graph</code>就是起这个作用。<code>daemon</code>启动时会创建一个<code>Graph</code>实例用来管理镜像,我们新下载的镜像也需要
+向其“报到”，以纳入整个镜像关系网(树)中。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">d</span><span class="p">.</span><span class="nx">tmpFile</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">err</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">graph</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">img</span><span class="p">,</span>
+        <span class="nx">utils</span><span class="p">.</span><span class="nf">ProgressReader</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">tmpFile</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">length</span><span class="p">),</span> <span class="nx">out</span><span class="p">,</span> <span class="nx">sf</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">utils</span><span class="p">.</span><span class="nf">TruncateID</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">),</span> <span class="s">&#34;Extracting&#34;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">err</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>所以我们需要先探究以下<code>Graph</code>的具体构造。</p>
+<h3 id="graph">Graph</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Graph</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Root</span>    <span class="kt">string</span>
+    <span class="nx">idIndex</span> <span class="o">*</span><span class="nx">truncindex</span><span class="p">.</span><span class="nx">TruncIndex</span>
+    <span class="nx">driver</span>  <span class="nx">graphdriver</span><span class="p">.</span><span class="nx">Driver</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>三个字段:根目录,索引,底层<code>driver</code>.<code>TruncIndex</code>的作用是使我们可以用长 ID 的前缀来检索镜像:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">TruncIndex</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">sync</span><span class="p">.</span><span class="nx">RWMutex</span>
+    <span class="nx">trie</span> <span class="o">*</span><span class="nx">patricia</span><span class="p">.</span><span class="nx">Trie</span>
+    <span class="nx">ids</span>  <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">struct</span><span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>patricia</code>是一个基数树的<code>golang</code>实现。具体可参见<a href="https://github.com/tchap/go-patricia">go-patricia</a>.</p>
+<p>Dirver 则定义了一组抽象的文件系统接口:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Driver</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nx">ProtoDriver</span>
+    <span class="c1">// Diff produces an archive of the changes between the specified
+</span><span class="c1"></span>    <span class="c1">// layer and its parent layer which may be &#34;&#34;.
+</span><span class="c1"></span>    <span class="nf">Diff</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">parent</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">archive</span><span class="p">.</span><span class="nx">Archive</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+    <span class="c1">// Changes produces a list of changes between the specified layer
+</span><span class="c1"></span>    <span class="c1">// and its parent layer. If parent is &#34;&#34;, then all changes will be ADD changes.
+</span><span class="c1"></span>    <span class="nf">Changes</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">parent</span> <span class="kt">string</span><span class="p">)</span> <span class="p">([]</span><span class="nx">archive</span><span class="p">.</span><span class="nx">Change</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+    <span class="c1">// ApplyDiff extracts the changeset from the given diff into the
+</span><span class="c1"></span>    <span class="c1">// layer with the specified id and parent, returning the size of the
+</span><span class="c1"></span>    <span class="c1">// new layer in bytes.
+</span><span class="c1"></span>    <span class="nf">ApplyDiff</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">parent</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">diff</span> <span class="nx">archive</span><span class="p">.</span><span class="nx">ArchiveReader</span><span class="p">)</span> <span class="p">(</span><span class="nx">bytes</span> <span class="kt">int64</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
+    <span class="c1">// DiffSize calculates the changes between the specified id
+</span><span class="c1"></span>    <span class="c1">// and its parent and returns the size in bytes of the changes
+</span><span class="c1"></span>    <span class="c1">// relative to its base filesystem directory.
+</span><span class="c1"></span>    <span class="nf">DiffSize</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">parent</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">bytes</span> <span class="kt">int64</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>PhotoDriver</code>则定义了一个<code>driver</code>的基本功能集：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">ProtoDriver</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="c1">// String returns a string representation of this driver.
+</span><span class="c1"></span>    <span class="nf">String</span><span class="p">()</span> <span class="kt">string</span>
+    <span class="c1">// Create creates a new, empty, filesystem layer with the
+</span><span class="c1"></span>    <span class="c1">// specified id and parent. Parent may be &#34;&#34;.
+</span><span class="c1"></span>    <span class="nf">Create</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">parent</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span>
+    <span class="c1">// Remove attempts to remove the filesystem layer with this id.
+</span><span class="c1"></span>    <span class="nf">Remove</span><span class="p">(</span><span class="nx">id</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span>
+    <span class="c1">// Get returns the mountpoint for the layered filesystem referred
+</span><span class="c1"></span>    <span class="c1">// to by this id. You can optionally specify a mountLabel or &#34;&#34;.
+</span><span class="c1"></span>    <span class="c1">// Returns the absolute path to the mounted layered filesystem.
+</span><span class="c1"></span>    <span class="nf">Get</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">mountLabel</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">dir</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
+    <span class="c1">// Put releases the system resources for the specified id,
+</span><span class="c1"></span>    <span class="c1">// e.g, unmounting layered filesystem.
+</span><span class="c1"></span>    <span class="nf">Put</span><span class="p">(</span><span class="nx">id</span> <span class="kt">string</span><span class="p">)</span>
+    <span class="c1">// Exists returns whether a filesystem layer with the specified
+</span><span class="c1"></span>    <span class="c1">// ID exists on this driver.
+</span><span class="c1"></span>    <span class="nf">Exists</span><span class="p">(</span><span class="nx">id</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">bool</span>
+    <span class="c1">// Status returns a set of key-value pairs which give low
+</span><span class="c1"></span>    <span class="c1">// level diagnostic status about this driver.
+</span><span class="c1"></span>    <span class="nf">Status</span><span class="p">()</span> <span class="p">[][</span><span class="mi">2</span><span class="p">]</span><span class="kt">string</span>
+    <span class="c1">// Cleanup performs necessary tasks to release resources
+</span><span class="c1"></span>    <span class="c1">// held by the driver, e.g., unmounting all layered filesystems
+</span><span class="c1"></span>    <span class="c1">// known to this driver.
+</span><span class="c1"></span>    <span class="nf">Cleanup</span><span class="p">()</span> <span class="kt">error</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在<code>daemon</code>启动时，调用了<code>NewGraph</code>接口，如果本身没有镜像的话，那么这个函数所做的
+基本上只是一些变量的初始化,如果本身已经有镜像存在，则需要重新读取并建立它们之间
+的联系。</p>
+<h3 id="register">Register</h3>
+<p>一个新的镜像(layer)向<code>Graph</code>注册主要有以下流程:</p>
+<h4 id="1-id-验证">1. ID 验证</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">utils</span><span class="p">.</span><span class="nf">ValidateID</span><span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>用正则表达式检验其是否包含非法字符,规则是只能包含英语字母和数字</p>
+<h4 id="2-检查是否已经存在">2. 检查是否已经存在</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">graph</span><span class="p">.</span><span class="nf">Exists</span><span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Image %s already exists&#34;</span><span class="p">,</span> <span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">RemoveAll</span><span class="p">(</span><span class="nx">graph</span><span class="p">.</span><span class="nf">ImageRoot</span><span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">));</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="o">&amp;&amp;</span> <span class="p">!</span><span class="nx">os</span><span class="p">.</span><span class="nf">IsNotExist</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+
+<span class="nx">graph</span><span class="p">.</span><span class="nx">driver</span><span class="p">.</span><span class="nf">Remove</span><span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>之所以要这么多步删除是为了应对一些特殊情况，比如切换<code>graph driver</code>等，这时候就可
+能信息不一致的地方。</p>
+<h4 id="3-创建image-rootfs">3. 创建<code>image rootfs</code></h4>
+<p>到这一步就牵扯到了具体的<code>graph driver</code>实现了，<code>ubuntu</code>上现在都是<code>aufs</code>,下面就以
+<code>aufs</code>为例探讨。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">graph</span><span class="p">.</span><span class="nx">driver</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">img</span><span class="p">.</span><span class="nx">Parent</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Driver %s failed to create image rootfs %s: %s&#34;</span><span class="p">,</span> <span class="nx">graph</span><span class="p">.</span><span class="nx">driver</span><span class="p">,</span> <span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>首先，创建<code>mnt</code>和<code>diff</code>两个目录(在<code>/var/lib/docker/aufs</code>下):</p>
+<p><code>github.com/docker/docker/daemon/graphdriver/aufs/aufs.go#Create</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">a</span><span class="p">.</span><span class="nf">createDirsFor</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>github.com/docker/docker/daemon/graphdriver/aufs/aufs.go#createDirsFor</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="o">*</span><span class="nx">Driver</span><span class="p">)</span> <span class="nf">createDirsFor</span><span class="p">(</span><span class="nx">id</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="nx">paths</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span>
+        <span class="s">&#34;mnt&#34;</span><span class="p">,</span>
+        <span class="s">&#34;diff&#34;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">p</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">paths</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">MkdirAll</span><span class="p">(</span><span class="nx">path</span><span class="p">.</span><span class="nf">Join</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nf">rootPath</span><span class="p">(),</span> <span class="nx">p</span><span class="p">,</span> <span class="nx">id</span><span class="p">),</span> <span class="mo">0755</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">err</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>然后，创建<code>layers</code>目录，里面记录了镜像之间的层级关系:</p>
+<p><code>github.com/docker/docker/daemon/graphdriver/aufs/aufs.go#Create</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">f</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">path</span><span class="p">.</span><span class="nf">Join</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nf">rootPath</span><span class="p">(),</span> <span class="s">&#34;layers&#34;</span><span class="p">,</span> <span class="nx">id</span><span class="p">))</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="nx">parent</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+    <span class="nx">ids</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">getParentIds</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nf">rootPath</span><span class="p">(),</span> <span class="nx">parent</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">err</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintln</span><span class="p">(</span><span class="nx">f</span><span class="p">,</span> <span class="nx">parent</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">err</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">i</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">ids</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintln</span><span class="p">(</span><span class="nx">f</span><span class="p">,</span> <span class="nx">i</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">err</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>我们可以在<code>/var/lib/docker/aufs/layers</code>目录下找一个文件看一下其中的内容:
+<img src="http://hangyan.github.io/images/posts/docker/source-5/layers.png" alt=" " title="layers"></p>
+<p>每一行代表一个镜像，每一行都是上一行的<code>parent</code>镜像。可以猜想大多数的最后一行都一
+样，即来自于同一个基本镜像
+<code>511136ea3c5a64f264b78b5433614aec563103b4d4702f3ba7d4d2698e22c158</code>。</p>
+<h4 id="4-解压数据计算-layersize">4. 解压数据,计算 layersize</h4>
+<p><code>github.com/docker/docker/graph/graph.go#Register</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">img</span><span class="p">.</span><span class="nf">SetGraph</span><span class="p">(</span><span class="nx">graph</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">image</span><span class="p">.</span><span class="nf">StoreImage</span><span class="p">(</span><span class="nx">img</span><span class="p">,</span> <span class="nx">layerData</span><span class="p">,</span> <span class="nx">tmp</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>tmp</code>即是<code>/var/lib/docker/graph/_tmp</code>，用来暂时存储数据。</p>
+<p>首先，解压数据，并存入<code>/var/lib/docker/diff</code>中:</p>
+<p><code>github.com/docker/docker/image/image.go#StoreImage</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">layerDataDecompressed</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">archive</span><span class="p">.</span><span class="nf">DecompressStream</span><span class="p">(</span><span class="nx">layerData</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="nx">layerTarSum</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">tarsum</span><span class="p">.</span><span class="nf">NewTarSum</span><span class="p">(</span><span class="nx">layerDataDecompressed</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">tarsum</span><span class="p">.</span><span class="nx">VersionDev</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="nx">size</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">driver</span><span class="p">.</span><span class="nf">ApplyDiff</span><span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">img</span><span class="p">.</span><span class="nx">Parent</span><span class="p">,</span> <span class="nx">layerTarSum</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>实际的数据解压存储实在<code>driver.ApplyDiff</code>中执行的,<code>aufs</code>的实现中是不需要<code>parent image id</code>的，所以较为简单,只用简单地解压数据并计算大小即可:</p>
+<p><code>github.com/docker/daemon/graphdriver/aufs/aufs.go</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="o">*</span><span class="nx">Driver</span><span class="p">)</span> <span class="nf">ApplyDiff</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">parent</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">diff</span> <span class="nx">archive</span><span class="p">.</span><span class="nx">ArchiveReader</span><span class="p">)</span> <span class="p">(</span><span class="nx">bytes</span> <span class="kt">int64</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// AUFS doesn&#39;t need the parent id to apply the diff.
+</span><span class="c1"></span>    <span class="k">if</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">a</span><span class="p">.</span><span class="nf">applyDiff</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">diff</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">a</span><span class="p">.</span><span class="nf">DiffSize</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">parent</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// 解压数据
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="o">*</span><span class="nx">Driver</span><span class="p">)</span> <span class="nf">applyDiff</span><span class="p">(</span><span class="nx">id</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">diff</span> <span class="nx">archive</span><span class="p">.</span><span class="nx">ArchiveReader</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">chrootarchive</span><span class="p">.</span><span class="nf">Untar</span><span class="p">(</span><span class="nx">diff</span><span class="p">,</span> <span class="nx">path</span><span class="p">.</span><span class="nf">Join</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nf">rootPath</span><span class="p">(),</span> <span class="s">&#34;diff&#34;</span><span class="p">,</span> <span class="nx">id</span><span class="p">),</span> <span class="kc">nil</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// 遍历目录计算大小
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="o">*</span><span class="nx">Driver</span><span class="p">)</span> <span class="nf">DiffSize</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">parent</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">bytes</span> <span class="kt">int64</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// AUFS doesn&#39;t need the parent layer to calculate the diff size.
+</span><span class="c1"></span>    <span class="k">return</span> <span class="nx">utils</span><span class="p">.</span><span class="nf">TreeSize</span><span class="p">(</span><span class="nx">path</span><span class="p">.</span><span class="nf">Join</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nf">rootPath</span><span class="p">(),</span> <span class="s">&#34;diff&#34;</span><span class="p">,</span> <span class="nx">id</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>计算好的大小会暂时存在<code>/var/lib/docker/graph/_tmp/&lt;ID&gt;/layersize</code>文件中:</p>
+<p><code>github.com/docker/docker/image/image.go#StoreImage</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">img</span><span class="p">.</span><span class="nx">Size</span> <span class="p">=</span> <span class="nx">size</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">img</span><span class="p">.</span><span class="nf">SaveSize</span><span class="p">(</span><span class="nx">root</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>同样的,<code>json</code>描述文件也会暂时存在<code>/var/lib/docker/graph/_tmp/&lt;ID&gt;/json</code>中:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">f</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">OpenFile</span><span class="p">(</span><span class="nf">jsonPath</span><span class="p">(</span><span class="nx">root</span><span class="p">),</span> <span class="nx">os</span><span class="p">.</span><span class="nx">O_CREATE</span><span class="p">|</span><span class="nx">os</span><span class="p">.</span><span class="nx">O_WRONLY</span><span class="p">|</span><span class="nx">os</span><span class="p">.</span><span class="nx">O_TRUNC</span><span class="p">,</span> <span class="nx">os</span><span class="p">.</span><span class="nf">FileMode</span><span class="p">(</span><span class="mo">0600</span><span class="p">))</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+
+<span class="k">defer</span> <span class="nx">f</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
+
+<span class="k">return</span> <span class="nx">json</span><span class="p">.</span><span class="nf">NewEncoder</span><span class="p">(</span><span class="nx">f</span><span class="p">).</span><span class="nf">Encode</span><span class="p">(</span><span class="nx">img</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在整个流程中也包含了校验码的对比验证:</p>
+<p><code>github.com/docker/docker/image/image.go#StoreImage</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">checksum</span> <span class="o">:=</span> <span class="nx">layerTarSum</span><span class="p">.</span><span class="nf">Sum</span><span class="p">(</span><span class="kc">nil</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="nx">img</span><span class="p">.</span><span class="nx">Checksum</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="o">&amp;&amp;</span> <span class="nx">img</span><span class="p">.</span><span class="nx">Checksum</span> <span class="o">!=</span> <span class="nx">checksum</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Warnf</span><span class="p">(</span><span class="s">&#34;image layer checksum mismatch: computed %q, expected %q&#34;</span><span class="p">,</span> <span class="nx">checksum</span><span class="p">,</span> <span class="nx">img</span><span class="p">.</span><span class="nx">Checksum</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>image.StoreImage</code>结束后，将<code>_tmp</code>下的数据移到正式的目录里面:</p>
+<p><code>github.com/docker/docker/graph/graph.go#Register</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Rename</span><span class="p">(</span><span class="nx">tmp</span><span class="p">,</span> <span class="nx">graph</span><span class="p">.</span><span class="nf">ImageRoot</span><span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">));</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="5-将镜像-id-加入索引">5. 将镜像 ID 加入索引</h4>
+<p><code>github.com/docker/docker/graph/graph.go#Register</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">graph</span><span class="p">.</span><span class="nx">idIndex</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>即前面所说的<code>TruncIndex</code>中。</p>
+<h3 id="tagstore">TagStore</h3>
+<p><code>Graph</code>结构存储了各个镜像的元数据及其之间的关系，但仍有一个维度的数据它没有建立
+关联：名字。我们需要一个能够将镜像名字和<code>tag</code>(<code>ubuntu：14.04</code>)与其镜像
+ID(<code>d0955f21bf24</code>)关联起来的数据结构，这就是<code>TagStore</code>：</p>
+<p><code>github.com/docker/docker/graph/tags.go</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">TagStore</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">path</span>               <span class="kt">string</span>
+    <span class="nx">graph</span>              <span class="o">*</span><span class="nx">Graph</span>
+    <span class="nx">mirrors</span>            <span class="p">[]</span><span class="kt">string</span>
+    <span class="nx">insecureRegistries</span> <span class="p">[]</span><span class="kt">string</span>
+    <span class="nx">Repositories</span>       <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="nx">Repository</span>
+    <span class="nx">sync</span><span class="p">.</span><span class="nx">Mutex</span>
+    <span class="c1">// FIXME: move push/pull-related fields
+</span><span class="c1"></span>    <span class="c1">// to a helper type
+</span><span class="c1"></span>    <span class="nx">pullingPool</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}</span>
+    <span class="nx">pushingPool</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">Repository</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>在<a href="http://hangyan.github.io/docker/docker-source-code-part3-daemon-start/">Daemon 启动流程中</a>
+中已经提到,<code>TagStore</code>的数据存在<code>/var/lib/docker/graph/repositories-&lt;driver-name&gt;</code>中，对<code>aufs</code>来说，就是
+<code>repositories-aufs</code>,里面记录了镜像名与镜像 ID 之间的映射：</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-3/repos.png" alt=" " title="repos"></p>
+<p>在镜像向<code>Graph</code>注册之后，我们也需要向<code>TagStore</code>注册:</p>
+<p><code>github.com/docker/docker/graph/pull.go#pullV2Tag</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nf">Set</span><span class="p">(</span><span class="nx">localName</span><span class="p">,</span> <span class="nx">tag</span><span class="p">,</span> <span class="nx">downloads</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">img</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">err</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>localname</code>是没有进行过命名空间规整的镜像名（即不会有额外的<code>library/</code>）。
+<code>downloadds[0].img.ID</code>即是与镜像名相关联的镜像 ID（在<code>Manifest</code>数据中的
+<code>History</code>列表中的第一位）。</p>
+<p>首先获取这个镜像的<code>Image</code>对象:</p>
+<p><code>github.com/docker/docker/graph/tags.go#Set</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">img</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">store</span><span class="p">.</span><span class="nf">LookupImage</span><span class="p">(</span><span class="nx">imageName</span><span class="p">)</span>
+<span class="nx">store</span><span class="p">.</span><span class="nf">Lock</span><span class="p">()</span>
+<span class="k">defer</span> <span class="nx">store</span><span class="p">.</span><span class="nf">Unlock</span><span class="p">()</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果在<code>TagStore</code>中找不到的话会到<code>Graph</code>中寻找:
+<code>github.com/docker/docker/graph/tags.go#LookupImage</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">img</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">store</span><span class="p">.</span><span class="nf">GetImage</span><span class="p">(</span><span class="nx">repos</span><span class="p">,</span> <span class="nx">tag</span><span class="p">)</span>
+<span class="nx">store</span><span class="p">.</span><span class="nf">Lock</span><span class="p">()</span>
+<span class="k">defer</span> <span class="nx">store</span><span class="p">.</span><span class="nf">Unlock</span><span class="p">()</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">img</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">img</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">store</span><span class="p">.</span><span class="nx">graph</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="k">return</span> <span class="nx">img</span><span class="p">,</span><span class="kc">nil</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>之后便是对<code>repoName</code>和<code>tag</code>的校验,最后将相关信息写入<code>TagStore</code>的
+<code>Repositories</code>(<code>map</code>)中。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">store</span><span class="p">.</span><span class="nf">reload</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+<span class="kd">var</span> <span class="nx">repo</span> <span class="nx">Repository</span>
+<span class="k">if</span> <span class="nx">r</span><span class="p">,</span> <span class="nx">exists</span> <span class="o">:=</span> <span class="nx">store</span><span class="p">.</span><span class="nx">Repositories</span><span class="p">[</span><span class="nx">repoName</span><span class="p">];</span> <span class="nx">exists</span> <span class="p">{</span>
+    <span class="nx">repo</span> <span class="p">=</span> <span class="nx">r</span>
+    <span class="k">if</span> <span class="nx">old</span><span class="p">,</span> <span class="nx">exists</span> <span class="o">:=</span> <span class="nx">store</span><span class="p">.</span><span class="nx">Repositories</span><span class="p">[</span><span class="nx">repoName</span><span class="p">][</span><span class="nx">tag</span><span class="p">];</span> <span class="nx">exists</span> <span class="o">&amp;&amp;</span> <span class="p">!</span><span class="nx">force</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Conflict: Tag %s is already set to image %s, if you want to replace it, please use -f option&#34;</span><span class="p">,</span> <span class="nx">tag</span><span class="p">,</span> <span class="nx">old</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nx">repo</span> <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="p">)</span>
+    <span class="nx">store</span><span class="p">.</span><span class="nx">Repositories</span><span class="p">[</span><span class="nx">repoName</span><span class="p">]</span> <span class="p">=</span> <span class="nx">repo</span>
+<span class="p">}</span>
+<span class="nx">repo</span><span class="p">[</span><span class="nx">tag</span><span class="p">]</span> <span class="p">=</span> <span class="nx">img</span><span class="p">.</span><span class="nx">ID</span>
+<span class="k">return</span> <span class="nx">store</span><span class="p">.</span><span class="nf">save</span><span class="p">()</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="总结">总结</h2>
+<p>镜像的拉取和存储主要与<code>/var/lib/docker/</code>下面的四个目录有关:</p>
+<ol>
+<li>./aufs 镜像实际数据,layer 关系</li>
+<li>./graph 镜像 json 描述文件,layersize</li>
+<li>./tmp 镜像临时下载目录</li>
+<li>./trust 认证相关</li>
+</ol>
+<p>所以能实际结合这几个目录下的数据来分析源码,一定会事半功倍.</p>
+<h2 id="参考链接">参考链接</h2>
+<ol>
+<li><a href="https://news.ycombinator.com/item?id=8789775">V2 Registry Talk</a></li>
+<li><a href="https://github.com/docker/docker-registry/issues/612">Registry next generation</a></li>
+<li><a href="https://github.com/docker/docker/issues/9015">Proposal: JSON Registry API V2.1</a></li>
+<li><a href="https://docs.docker.com/reference/api/hub_registry_spec/">The Docker Hub and the Registry spec</a></li>
+<li><a href="https://github.com/docker/docker/issues/9076">Proposal: Private registry name-spacing as part of V2 image names</a></li>
+<li><a href="https://github.com/docker/docker/issues/6805">Proposal: Self-describing images</a></li>
+<li><a href="https://github.com/docker/docker/issues/8093">Proposal: Provenance step 1 - Transform images for validation and verification</a></li>
+</ol>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2015-03-30
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/docker/">docker</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2015-04-03-docker-source-code-part6-image-delete/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">docker 源码分析(6) -- 镜像删除</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2015-02-16-docker-source-code-part4-network-settings/">
+            <span class="next-text nav-default">docker 源码分析(4) -- 网络设置</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

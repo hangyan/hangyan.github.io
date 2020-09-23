@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>language on 工业革命</title>
+    <link>http://yanhang.me/tags/language/</link>
+    <description>Recent content in language on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 27 May 2019 22:28:38 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/language/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Golang 1.9 Release Note</title>
+      <link>http://yanhang.me/post/2019-05-27-golang-release-note/</link>
+      <pubDate>Mon, 27 May 2019 22:28:38 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-05-27-golang-release-note/</guid>
+      <description>今天在翻存在 Pocket 里的文章，翻到一篇 Golang 1.9 的 Release Note。不得不说，Golang 在文档化上做的相当不错。对比其他语言来说，人们关注于每个版本的更新也</description>
+    </item>
+    
+    <item>
+      <title>一点 python 的经验</title>
+      <link>http://yanhang.me/post/2015-11-10-python-experience/</link>
+      <pubDate>Tue, 10 Nov 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-11-10-python-experience/</guid>
+      <description>可能已经过时了。</description>
+    </item>
+    
+    <item>
+      <title>Scala 笔记: 函数和闭包</title>
+      <link>http://yanhang.me/post/2015-08-31-scala-notes-function-and-closures/</link>
+      <pubDate>Mon, 31 Aug 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-08-31-scala-notes-function-and-closures/</guid>
+      <description>Local functions 在函数式语言里，函数是最基本的功能块。通常为了模块清晰起见，我们需要很多 Help Function，但是这些辅助函数很容易有名字冲突，暴露给外部</description>
+    </item>
+    
+  </channel>
+</rss>

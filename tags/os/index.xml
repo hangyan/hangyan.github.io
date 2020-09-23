@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>OS on 工业革命</title>
+    <link>http://yanhang.me/tags/os/</link>
+    <description>Recent content in OS on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 04 Sep 2019 21:25:35 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/os/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Oberon操作系统</title>
+      <link>http://yanhang.me/post/2019-09-04-oberon/</link>
+      <pubDate>Wed, 04 Sep 2019 21:25:35 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-09-04-oberon/</guid>
+      <description>文章链接: Oberon – The Overlooked Jewel 很多行业以及技术在早期都呈现出了一种百花争鸣的态势，然后到了成熟期一般都只是几家公司或者技术在互相竞争。操作系统也是如此</description>
+    </item>
+    
+    <item>
+      <title>数据库与操作系统</title>
+      <link>http://yanhang.me/post/2019-08-22-db-os/</link>
+      <pubDate>Thu, 22 Aug 2019 11:21:52 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-08-22-db-os/</guid>
+      <description>数据库一般认为是一种系统软件。而操作系统处于更底层的位置。这是一种通常的认知。 Unix 的一切皆文件的设计思想，从一定程度上来讲，表明了操作系统内部</description>
+    </item>
+    
+  </channel>
+</rss>

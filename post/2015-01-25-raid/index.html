@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>RAID 介绍 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="RAID 是一个我们经常能见到的名词。但却因为很少能在实际环境中体验,所以很难对其原理 能有很清楚的认识和掌握。本文将对 RAID 技术进行介绍和总结，以期能尽量阐明其概念。
+RAID 全称为独立磁盘冗余阵列(Redundant Array of Independent Disks),基本思想就是把 多个相对便宜的硬盘组合起来，成为一个硬盘阵列组，使性能达到甚至超过一个价格昂贵、 容量巨大的硬盘。RAID 通常被用在服务器电脑上，使用完全相同的硬盘组成一个逻辑扇区, 因此操作系统只会把它当做一个硬盘。
+RAID 分为不同的等级，各个不同的等级均在数据可靠性及读写性能上做了不同的权衡。 在实际应用中，可以依据自己的实际需求选择不同的 RAID 方案。
+" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2015-01-25-raid/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="RAID 介绍" />
+<meta property="og:description" content="RAID 是一个我们经常能见到的名词。但却因为很少能在实际环境中体验,所以很难对其原理
+能有很清楚的认识和掌握。本文将对 RAID 技术进行介绍和总结，以期能尽量阐明其概念。
+RAID 全称为独立磁盘冗余阵列(Redundant Array of Independent Disks),基本思想就是把
+多个相对便宜的硬盘组合起来，成为一个硬盘阵列组，使性能达到甚至超过一个价格昂贵、
+容量巨大的硬盘。RAID 通常被用在服务器电脑上，使用完全相同的硬盘组成一个逻辑扇区,
+因此操作系统只会把它当做一个硬盘。
+RAID 分为不同的等级，各个不同的等级均在数据可靠性及读写性能上做了不同的权衡。
+在实际应用中，可以依据自己的实际需求选择不同的 RAID 方案。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2015-01-25-raid/" />
+<meta property="article:published_time" content="2015-01-25T21:37:39+08:00" />
+<meta property="article:modified_time" content="2015-01-25T21:37:39+08:00" />
+<meta itemprop="name" content="RAID 介绍">
+<meta itemprop="description" content="RAID 是一个我们经常能见到的名词。但却因为很少能在实际环境中体验,所以很难对其原理
+能有很清楚的认识和掌握。本文将对 RAID 技术进行介绍和总结，以期能尽量阐明其概念。
+RAID 全称为独立磁盘冗余阵列(Redundant Array of Independent Disks),基本思想就是把
+多个相对便宜的硬盘组合起来，成为一个硬盘阵列组，使性能达到甚至超过一个价格昂贵、
+容量巨大的硬盘。RAID 通常被用在服务器电脑上，使用完全相同的硬盘组成一个逻辑扇区,
+因此操作系统只会把它当做一个硬盘。
+RAID 分为不同的等级，各个不同的等级均在数据可靠性及读写性能上做了不同的权衡。
+在实际应用中，可以依据自己的实际需求选择不同的 RAID 方案。">
+<meta itemprop="datePublished" content="2015-01-25T21:37:39+08:00" />
+<meta itemprop="dateModified" content="2015-01-25T21:37:39+08:00" />
+<meta itemprop="wordCount" content="3972">
+
+
+
+<meta itemprop="keywords" content="技术," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="RAID 介绍"/>
+<meta name="twitter:description" content="RAID 是一个我们经常能见到的名词。但却因为很少能在实际环境中体验,所以很难对其原理
+能有很清楚的认识和掌握。本文将对 RAID 技术进行介绍和总结，以期能尽量阐明其概念。
+RAID 全称为独立磁盘冗余阵列(Redundant Array of Independent Disks),基本思想就是把
+多个相对便宜的硬盘组合起来，成为一个硬盘阵列组，使性能达到甚至超过一个价格昂贵、
+容量巨大的硬盘。RAID 通常被用在服务器电脑上，使用完全相同的硬盘组成一个逻辑扇区,
+因此操作系统只会把它当做一个硬盘。
+RAID 分为不同的等级，各个不同的等级均在数据可靠性及读写性能上做了不同的权衡。
+在实际应用中，可以依据自己的实际需求选择不同的 RAID 方案。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">RAID 介绍</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2015-01-25 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 3972 字 </span>
+          <span class="more-meta"> 预计阅读 8 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#标准-raid">标准 RAID</a>
+      <ul>
+        <li><a href="#raid-0">RAID 0</a>
+          <ul>
+            <li><a href="#stripe-width">stripe width</a></li>
+            <li><a href="#stripe-size">stripe size</a></li>
+          </ul>
+        </li>
+        <li><a href="#raid-1">RAID 1</a></li>
+        <li><a href="#raid-2">RAID 2</a></li>
+        <li><a href="#raid-3">RAID 3</a></li>
+        <li><a href="#raid-4">RAID 4</a></li>
+        <li><a href="#raid-5">RAID 5</a></li>
+        <li><a href="#raid-6">RAID 6</a></li>
+      </ul>
+    </li>
+    <li><a href="#混合-raid">混合 RAID</a>
+      <ul>
+        <li><a href="#raid-01">RAID 01</a></li>
+        <li><a href="#raid-10">RAID 10</a></li>
+      </ul>
+    </li>
+    <li><a href="#非标准-raid">非标准 RAID</a>
+      <ul>
+        <li><a href="#drfs">DRFS</a></li>
+      </ul>
+    </li>
+    <li><a href="#实现">实现</a>
+      <ul>
+        <li><a href="#软件实现">软件实现</a></li>
+        <li><a href="#固件驱动实现">固件/驱动实现</a></li>
+      </ul>
+    </li>
+    <li><a href="#参考链接">参考链接</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>RAID 是一个我们经常能见到的名词。但却因为很少能在实际环境中体验,所以很难对其原理
+能有很清楚的认识和掌握。本文将对 RAID 技术进行介绍和总结，以期能尽量阐明其概念。</p>
+<p>RAID 全称为独立磁盘冗余阵列(Redundant Array of Independent Disks),基本思想就是把
+多个相对便宜的硬盘组合起来，成为一个硬盘阵列组，使性能达到甚至超过一个价格昂贵、
+容量巨大的硬盘。RAID 通常被用在服务器电脑上，使用完全相同的硬盘组成一个逻辑扇区,
+因此操作系统只会把它当做一个硬盘。</p>
+<p>RAID 分为不同的等级，各个不同的等级均在数据可靠性及读写性能上做了不同的权衡。
+在实际应用中，可以依据自己的实际需求选择不同的 RAID 方案。</p>
+<h1 id="标准-raid">标准 RAID</h1>
+<h2 id="raid-0">RAID 0</h2>
+<p>RAID0 称为条带化(Striping)存储,将数据分段存储于
+各个磁盘中，读写均可以并行处理。因此其读写速率为单个磁盘的 N 倍(N 为组成 RAID0 的磁盘个数)，但是却没有数
+据冗余，单个磁盘的损坏会导致数据的不可修复。</p>
+<p><img src="http://hangyan.github.io/images/posts/raid/RAID0.jpg" alt=" " title="RAID0"></p>
+<p>大多数<code>striping</code>的实现允许管理者通过调节两个关键的参数来定义数据分段及写入磁盘的
+方式,这两个参数对 RAID0 的性能有很重要的影响。</p>
+<h3 id="stripe-width">stripe width</h3>
+<p><code>stripe width</code>是指可被并行写入的 stripe 的个数,即等于磁盘阵列中磁盘的个数。</p>
+<h3 id="stripe-size">stripe size</h3>
+<p>也可称为 <code>block size</code>(<code>chunk size</code>,<code>stripe length</code>,<code>granularity</code>)，指写入每个磁
+盘的数据块大小。以块分段的 RAID 通常可允许选择的块大小从 2KB 到 512KB 不等，也有更
+高的，但一定要是 2 的指数倍。以字节分段的(比如 RAID3)一般的<code>stripe size</code>为 1 字节或者
+512 字节，并且用户不能调整。</p>
+<p><code>stripe size</code>对性能的影响是很难简单估量的，最好在实际应用中依自己需求多多调整并
+观察其影响。通常来说，减少<code>stripe size</code>,文件会被分成更小的块，传输数据会更快，但
+是却需要更多的磁盘来保存,增加<code>positioning performance</code>,反之则相反。应该说，没有
+一个理论上的最优的值。很多时候，也要考虑磁盘控制器的策略,比如有的磁盘控制器会等
+等到一定数据量才开始往磁盘写入。</p>
+<h2 id="raid-1">RAID 1</h2>
+<p>镜像存储(mirroring)，没有数据校验。数据被同等地写入两个或多个磁盘中，可想而知，写入速度会比较
+慢，但读取速度会比较快。读取速度可以接近所有磁盘吞吐量的总和,写入速度受限于最慢
+的磁盘。</p>
+<p>RAID1 也是磁盘利用率最低的一个。如果用两个不同大小的磁盘建立 RAID1,可以用空间较小
+的那一个，较大的磁盘多出来的部分可以作他用，不会浪费。</p>
+<p><img src="http://hangyan.github.io/images/posts/raid/RAID1.jpg" alt=" " title="RAID1"></p>
+<h2 id="raid-2">RAID 2</h2>
+<p>RAID0 的改良版，加入了汉明码(<code>Hanmming Code</code>)错误校验。</p>
+<p><img src="http://hangyan.github.io/images/posts/raid/RAID2.jpg" alt=" " title="RAID2"></p>
+<p>汉明码能够检测最多两个同时发生的比特错误，并且能够更正单一比特的错误。汉明码的位
+数与数据的位数有一个不等式关系，即:</p>
+<pre><code>2^P ≥ P + D +1
+</code></pre>
+<p>P 代表汉明码的个数，D 代表数据位的个数,比如 4 位数据需要 3 位汉明码，7 位数据需要 4 位汉
+明码，64 位数据时就需要 7 位汉明码。RAID2 是按 1bit 来分割数据写入的，而 P:D 就代表了数据
+盘与校验盘的个数。所以如果数据位宽越大，用于校验的盘的比例就越小。由于汉明码能够
+纠正单一比特的错误，所以当单个磁盘损坏时，汉明码便能够纠正数据。</p>
+<p>RAID 2 因为每次读写都需要全组磁盘联动，所以为了最大化其性能，最好保证每块磁盘主
+轴同步，使同一时刻每块磁盘磁头所处的扇区逻辑编号都一致，并存并取，达到最佳性能。
+如果不能同步，则会产生等待，影响速度。</p>
+<p>与 RAID0 相比，RAID2 的传输率更好。因为 RAID0 一般<code>stripe size</code> 相对于 RAID2 的 1bit 来说
+实在太大，并不能保证每次都是多磁盘并行。而 RAID2 每次 IO 都能保证是多磁盘并行，为了
+发挥这个优势，磁盘的寻道时间一定要减少(寻道时间比数据传输时间要大几个数量级),所
+以 RAID2 适合于连续 IO,大块 IO(比如视频流服务)的情况。</p>
+<h2 id="raid-3">RAID 3</h2>
+<p>类似于 RAID2,数据条带化(stripe)存储于不同的硬盘,数据以字节为单位，只是 RAID3 使用单块磁盘存储简单的
+奇偶校验信息，所以最终磁盘数量为 N+1。当这 N+1 个硬盘中的其中一个硬盘出现故障时，
+从其它 N 个硬盘中的数据也可以恢复原始数据,当更换一个新硬盘后，系统可以重新恢复完整
+的校验容错信息。</p>
+<p><img src="http://hangyan.github.io/images/posts/raid/RAID3.jpg" alt=" " title="RAID3"></p>
+<p>由于在一个硬盘阵列中，多于一个硬盘同时出现故障率的几率很小，所以一般情况下，使用
+RAID3，安全性是可以得到保障的。RAID 3 会把数据的写入操作分散到多个磁盘上进行，不管是向哪一个数据盘写入数据，
+都需要同时重写校验盘中的相关信息。因此，对于那些经常需要执行大量写入操作的应用来
+说，校验盘的负载将会很大，无法满足程序的运行速度，从而导致整个 RAID 系统性能的下降。
+鉴于这种原因，RAID 3 更加适合应用于那些写入操作较少，读取操作较多的应用环境，例如
+数据库和 WEB 服务器等。</p>
+<h2 id="raid-4">RAID 4</h2>
+<p>与 RAID3 类似，但 RAID4 是按块(扇区)存取。无须像 RAID3 那样，哪怕每一次小 I/O 操作也要涉
+及全组，只需涉及组中两块硬盘（一块数据盘，一块校验盘）即可，从而提高了小量数据
+I/O 速度。</p>
+<p><img src="http://hangyan.github.io/images/posts/raid/RAID4.jpg" alt=" " title="RAID4"></p>
+<h2 id="raid-5">RAID 5</h2>
+<p>奇偶校验(XOR)，数据以块分段条带化存储。校验信息交叉地存储在所有的数据盘上。</p>
+<p><img src="http://hangyan.github.io/images/posts/raid/RAID5.jpg" alt=" " title="RAID5"></p>
+<p>RAID5 把数据和相对应的奇偶校验信息存储到组成 RAID5 的各个磁盘上，并且奇偶校验信息和
+相对应的数据分别存储于不同的磁盘上，其中任意 N-1 块磁盘上都存储完整的数据，也就是
+说有相当于一块磁盘容量的空间用于存储奇偶校验信息。因此当 RAID5 的一个磁盘发生损坏
+后，不会影响数据的完整性，从而保证了数据安全。当损坏的磁盘被替换后，RAID 还会自动
+利用剩下奇偶校验信息去重建此磁盘上的数据，来保持 RAID5 的高可靠性。</p>
+<p>RAID 5 可以理解为是 RAID 0 和 RAID 1 的折衷方案。RAID 5 可以为系统提供数据安全保障，但
+保障程度要比镜像低而磁盘空间利用率要比镜像高。RAID 5 具有和 RAID 0 相近似的数据读取
+速度，只是因为多了一个奇偶校验信息，写入数据的速度相对单独写入一块硬盘的速度略慢。</p>
+<h2 id="raid-6">RAID 6</h2>
+<p>类似 RAID5,但是增加了第二个独立的奇偶校验信息块，两个独立的奇偶系统使用不同的算法，
+数据的可靠性非常高，即使两块磁盘同时失效也不会影响数据的使用。但 RAID 6 需要分配给
+奇偶校验信息更大的磁盘空间，相对于 RAID 5 有更大的“写损失”，因此“写性能”非常差。</p>
+<p><img src="http://hangyan.github.io/images/posts/raid/RAID6.jpg" alt=" " title="RAID6"></p>
+<p>由图所知，每个硬盘上除了都有同级数据 XOR 校验区外，还有一个针对每个数据
+块的 XOR 校验区。当然，当前盘数据块的校验数据不可能存在当前盘而是交错存储的。从数
+学角度来说，RAID 5 使用一个方程式解出一个未知变量，而 RAID 6 则能通过两个独立的线性
+方程构成方程组，从而恢复两个未知数据。</p>
+<p>伴随着硬盘容量的增长,RAID6 已经变得越来越重要。TB 级别的硬盘上更容易造成数据丢失，
+数据重建过程(比如 RAID5，只允许一块硬盘损坏)也越来越长，甚至到数周，这是完全不可接受的。而 RAID6 允许两
+块硬盘同时发生故障，所以渐渐受到人们的青睐。</p>
+<p>伴随 CD，DVD 和蓝光光盘的问世，存储介质出现了擦除码技术，即使媒介表面出现划痕，仍
+然可以播放，大多数常见的擦除码算法已经演变为上世纪 60 年代麻省理工学院林肯实验室开
+发的 Reed-Solomon 码。实际情况中，多数 RAID6 实现都采用了标准的 RAID5 教校验比特和<code>Reed-Solomon</code>码
+。而纯擦除码算法的使用使得 RAID 6 阵列可以失效两块以上的硬盘,保护力度更强,有些实现
+方法提供了多种级别的保护，甚至允许用户(或存储管理员)指定保护级别。</p>
+<h1 id="混合-raid">混合 RAID</h1>
+<h2 id="raid-01">RAID 01</h2>
+<p>顾名思义，是 RAID0 和 RAID1 的结合。先做条带(0),再做镜像(1)。</p>
+<p><img src="http://hangyan.github.io/images/posts/raid/RAID01.jpg" alt=" " title="RAID01"></p>
+<h2 id="raid-10">RAID 10</h2>
+<p>同上，但是先做镜像(1)，再做条带(0)</p>
+<p><img src="http://hangyan.github.io/images/posts/raid/RAID10.jpg" alt=" " title="RAID10"></p>
+<p>RAID01 和 RAID10 非常相似，二者在读写性能上没有什么差别。但是在安全性上 RAID10 要好于
+RAID01。如图中所示，假设 DISK0 损坏，在 RAID10 中，在剩下的 3 块盘中，只有当 DISK1 故障，
+整个 RAID 才会失效。但在 RAID01 中，DISK0 损坏后，左边的条带将无法读取，在剩下的 3 快盘
+中,只要 DISK2 或 DISK3 两个盘中任何一个损坏,都会导致 RAID 失效。</p>
+<p>RAID10 和 RAID5 也是经常用来比较的两种方案，二者都在生产实践中得到了广泛的应用。
+RAID10 安全性更高，但是空间利用率低。至于读写性能，与 cache 有很大关联，最好根据实
+际情况测试比较选择。</p>
+<h1 id="非标准-raid">非标准 RAID</h1>
+<h2 id="drfs">DRFS</h2>
+<p>DRFS,即<code>DistributedRaidFileSystem</code>,是一种尝试将 RAID 与 Hadoop 的 DFS 结合起来的技术。
+通常的 HDFS 在实践中需要将<code>replication factor</code>设为 3 以保证数据完整性，而如果利用
+RAID 的<code>stripe</code>和<code>partity</code>(奇偶校验)技术,将数据分为多个块，并且存储各个块的校验信
+息(XOR 或擦除码)。有了这些措施，块的副本数就可以降低并且保证同样的数据可靠性，就能节省相当一部
+分的存储空间。</p>
+<p>DRFS 包含以下几个组件：</p>
+<ul>
+<li><code>DRFS client</code> : 提供应用程序访问 DRFS 的接口，在发现读取到的文件有损坏时修复,整
+个操作对应用程序透明</li>
+<li><code>RaidNode</code> : 创建，维护检验文件的<code>daemon</code></li>
+<li><code>BlockFixer</code> : 周期性地检查文件,重新计算校验和,修复文件.</li>
+<li><code>RaidShell</code> : 类似于<code>hadoop shell</code>.</li>
+<li><code>ErasureCode</code> : 即 DRFS 所使用的生成校验码的算法，可为 XOR 或者 <code>Reed-Solomon</code>算法。
+XOR 仅能创建一个校验字节，而<code>Reed-Solomon</code>则可以创建无数位(位数越多，能恢复的数
+据也越多),如果使用<code>Reed-Solomon</code>,<code>replication</code>甚至可以降为 1，缺点是降低了数据读
+写的并行程度(只能从单机读写)。</li>
+</ul>
+<h1 id="实现">实现</h1>
+<h2 id="软件实现">软件实现</h2>
+<p>现在很都操作系统都提供了 RAID 的软件实现,主要由以下几个方面:</p>
+<ul>
+<li>由软件在多个设备上创建 RAID，比如 linux 上的<code>mdadm</code>工具.具体使用方法可查看参考链接中
+的例子。</li>
+<li><code>LVM</code>或者 <code>Veritas</code>,虚拟卷管理工具.</li>
+<li>文件系统实现 : <code>btrfs</code>,<code>ZFS</code>,<code>GPFS</code>.这些文件都可以直接管理多个设备上的数据，实
+现了类似各级 RAID 的功能。</li>
+<li>在已有文件系统之上提供数据校验功能的 RAID 系统(RAID-F)</li>
+</ul>
+<h2 id="固件驱动实现">固件/驱动实现</h2>
+<p>软件实现并总是与系统的启动进程兼容，硬件实现(RAID 控制器)总是太贵并且都是厂商专有的技术，所以
+有了一中混合的实现:系统启动时，由固件(firmware)来实现 RAID，系统启动的差不多了，由驱动来管
+理 RAID。当然，这需要操作系统对这种驱动提供支持。</p>
+<h1 id="参考链接">参考链接</h1>
+<ol>
+<li><a href="http://zh.wikipedia.org/wiki/RAID">维基百科 : RAID</a></li>
+<li><a href="http://www.pcguide.com/ref/hdd/perf/raid/concepts/perf_Stripe.htm">Stripe Width and Stripe Size</a></li>
+<li><a href="http://storage.it168.com/a2011/0920/1248/000001248734.shtml">RAID6</a></li>
+<li><a href="http://wiki.apache.org/hadoop/HDFS-RAID">DRFS</a></li>
+<li><a href="http://hadoopblog.blogspot.com/2009/08/hdfs-and-erasure-codes-hdfs-raid.html">HDFS and Erasure Codes</a></li>
+<li><a href="http://blog.csdn.net/deansrk/article/details/6647290">Linux 下的软磁盘矩阵 Software RAID 实现步骤简介</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Mdadm">Wiki: mdadm</a></li>
+<li><a href="http://www.tektea.com/archives/1752.html">VxFS(Veritas File System)文件系统简介</a></li>
+<li><a href="http://lzw.me/a/linux-lvm.html">Linux LVM 逻辑卷管理详细介绍</a></li>
+<li><a href="http://www-31.ibm.com/support/techdocs/cn/viewdoc/detail?DocId=1611201A26000">GPFS 介绍</a></li>
+<li><a href="http://wiki.flexraid.com/about/what-is-raid-f/">RAID-F</a></li>
+<li><a href="http://logicgate.iteye.com/blog/346950">基本的 RAID 介绍</a></li>
+</ol>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2015-01-25
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E6%8A%80%E6%9C%AF/">技术</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2015-01-29-docker-source-code-part1-dev-setup/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">docker 源码分析(1) -- 开发环境准备</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2015-01-23-bash-config-files/">
+            <span class="next-text nav-default">bash 各配置文件浅析</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

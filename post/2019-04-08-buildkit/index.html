@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Docker BuildKit 介绍 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="为什么需要 BuildKit BuildKit 长什么样子 LLB 有用的新功能 Links 对于 Docker 和 Kubernetes 来说，在自身发展的壮大过程中，都会经历一个因为功能不断增加导致的软件结构庞杂的问题。对于 Kubernetes" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2019-04-08-buildkit/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Docker BuildKit 介绍" />
+<meta property="og:description" content="为什么需要 BuildKit BuildKit 长什么样子 LLB 有用的新功能 Links 对于 Docker 和 Kubernetes 来说，在自身发展的壮大过程中，都会经历一个因为功能不断增加导致的软件结构庞杂的问题。对于 Kubernetes" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2019-04-08-buildkit/" />
+<meta property="article:published_time" content="2019-04-08T16:22:48+08:00" />
+<meta property="article:modified_time" content="2019-04-08T16:22:48+08:00" />
+<meta itemprop="name" content="Docker BuildKit 介绍">
+<meta itemprop="description" content="为什么需要 BuildKit BuildKit 长什么样子 LLB 有用的新功能 Links 对于 Docker 和 Kubernetes 来说，在自身发展的壮大过程中，都会经历一个因为功能不断增加导致的软件结构庞杂的问题。对于 Kubernetes">
+<meta itemprop="datePublished" content="2019-04-08T16:22:48+08:00" />
+<meta itemprop="dateModified" content="2019-04-08T16:22:48+08:00" />
+<meta itemprop="wordCount" content="1640">
+
+
+
+<meta itemprop="keywords" content="docker," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Docker BuildKit 介绍"/>
+<meta name="twitter:description" content="为什么需要 BuildKit BuildKit 长什么样子 LLB 有用的新功能 Links 对于 Docker 和 Kubernetes 来说，在自身发展的壮大过程中，都会经历一个因为功能不断增加导致的软件结构庞杂的问题。对于 Kubernetes"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Docker BuildKit 介绍</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-04-08 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 1640 字 </span>
+          <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#为什么需要-buildkit">为什么需要 BuildKit</a></li>
+        <li><a href="#buildkit-长什么样子">BuildKit 长什么样子</a>
+          <ul>
+            <li><a href="#llb">LLB</a></li>
+          </ul>
+        </li>
+        <li><a href="#有用的新功能">有用的新功能</a></li>
+        <li><a href="#links">Links</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <!-- toc -->
+<ul>
+<li><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-buildkit">为什么需要 BuildKit</a></li>
+<li><a href="#buildkit-%E9%95%BF%E4%BB%80%E4%B9%88%E6%A0%B7%E5%AD%90">BuildKit 长什么样子</a>
+<ul>
+<li><a href="#llb">LLB</a></li>
+</ul>
+</li>
+<li><a href="#%E6%9C%89%E7%94%A8%E7%9A%84%E6%96%B0%E5%8A%9F%E8%83%BD">有用的新功能</a></li>
+<li><a href="#links">Links</a></li>
+</ul>
+<!-- tocstop -->
+<p>对于 Docker 和 Kubernetes 来说，在自身发展的壮大过程中，都会经历一个因为功能不断增加导致的软件结构庞杂的问题。对于 Kubernetes 来说，出于架构上的考量，<code>kubectl</code> 等项目的代码都会逐渐从主项目中移除。对于 Docker 来说，事情更为复杂，它既要考虑开源，又要考虑自己的商业化，所以有了 moby 以及 <code>*kit</code> 等一系列项目。
+下图清晰地展示出了 Docker 对于相关项目的一个架构规划:</p>
+<p><img src="https://images.techhive.com/images/article/2017/05/moby-project-100721192-large.jpg" alt=""></p>
+<p>总体来说，Docker 希望将容器技术与容器产品分离开，核心技术是开源的，可扩展的，这样允许有其他人来基于同样的技术来构建类似于 Docker CE/Docker EE 这样的产品。
+BuildKit 自 2017 年年底便已经实现，但似乎关注度不是很高(在国内)，在 CI/CD 系统中的应用也不是很广泛。本文是关于 BuildKit 的一个相关介绍。</p>
+<h2 id="为什么需要-buildkit">为什么需要 BuildKit</h2>
+<p>除了上面说的商业以及架构上的考量，本身在构建这一块，Dockerfile 以及相应的机制也面临着一些问题</p>
+<ol>
+<li>
+<p>并发程度不够好</p>
+<p>很多步骤都是可以并行执行的，比如两部构建中的两次 pull 镜像，以及各种 run 命令</p>
+</li>
+<li>
+<p>对 cache 的支持不好</p>
+<p>像 golang 这样的语言，每次构建都要从头开始，没法复用缓存</p>
+</li>
+<li>
+<p>对 secret 的支持不好</p>
+<p>难以支持在 dockerfile 中通过 username-password/ssl key 等方式获取一些加密信息</p>
+</li>
+<li>
+<p>可扩展性不够好</p>
+</li>
+<li>
+<p>&hellip;</p>
+</li>
+</ol>
+<p>这些问题并不是说在现有的代码基础之上实现不了，而是综合来看，工作量比较大，而且到了一种必须审视现有架构的时机了。有了 moby 与 containerd 之后更是如此，这并不是一个孤立的问题，而是每个 docker 子功能(command)都会面临的机遇与挑战。</p>
+<h2 id="buildkit-长什么样子">BuildKit 长什么样子</h2>
+<p>通常来讲，我们将 Dockerfile 当做一个项目里的一个用于部署的配置文件。但从某种角度来说，Dockerfile 就是一种编程语言，他有自己特定的语法，有编译器（docker）,有最终的产出(image)。这样来看，<code>docker build</code> 做的就是编译器的工作。关于编译器的结构与性能，我们已经有了在各个语言方面的实现以及优化经验，完全可以应用于 dockerfile。</p>
+<p>从最初的 buildkit 的 <a href="https://gist.github.com/tonistiigi/059fc72c4630f066d94dafb5e0e70dc6">proposal</a>来看，也正是采用这样的视角。在架构上像 LLVM 一样，采用模块化的结构，每一个部分都是可以单独扩展的，只需要保正彼此之间的<code>接口</code>兼容性。</p>
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*VWogVHhCagxopvAKVFjBeA.jpeg" alt=""></p>
+<p>BuiltKit 主要分为以下几个部分</p>
+<ul>
+<li><code>frontends</code>: build 的描述定义，比如 Dockerfile,面向用户</li>
+<li><code>solver</code>/<code>low level builder</code>: 负责语法解析，生成中间结构，cache 管理</li>
+<li><code>exporter</code>: 生成物导出,比如现在的 image</li>
+</ul>
+<p>有了抽象的 frontends 和 exporter，BuildKit 已经不再单单是针对 dockerfile 的一个优化，而是一个通用的构建系统。像 LLVM 一样，它可以支持多语言: Dockerfile,BuildPack,以及各种可能的自定义语言。在输出端，镜像也不再是唯一的输出格式，还可以是文件，目录，plugin，其他的镜像格式等等。</p>
+<p>而最核心的，自然是 solver 部分。类似编译器的最核心部分:将<code>源代码</code>专程成<code>目标结果</code>。</p>
+<h3 id="llb">LLB</h3>
+<p>LLB 指 low level builder,也即 solver。上层语言转成一些中间指令之后，形成一个<code>DAG</code>,它负责找到一种最有效的方式来执行指令并且管理 cache。
+它的主要目标有：</p>
+<p>1.能够复用相同的步骤
+2.结果相同的 instruction 能够复用结果
+3.尽量并行化</p>
+<p><img src="https://hangyan.github.io/images/buildkit/llb.png" alt=""></p>
+<p>不管 Dockerfile 里支持多少指令，frontend 支持多少种语言，对于 LLB 来说，核心的操作都是类似的：在一个 snapshot 中做一些操作，记录结果。其伪代码定义大概如下所示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Input</span> <span class="kd">struct</span> <span class="p">{</span>
+  <span class="nx">Base</span> <span class="nx">Op</span>
+  <span class="nx">Index</span> <span class="kt">int</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">Op</span> <span class="kd">struct</span> <span class="p">{</span>
+  <span class="nx">Deps</span> <span class="p">[]</span><span class="nx">Input</span>
+  <span class="nx">Outs</span> <span class="p">[]</span><span class="nx">snapshot</span><span class="p">.</span><span class="nx">Snapshot</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">ExecOp</span> <span class="kd">struct</span> <span class="p">{</span>
+  <span class="nx">Op</span>
+  <span class="nx">Meta</span> <span class="nx">ExecMeta</span>
+  <span class="nx">Mounts</span> <span class="p">[]</span><span class="nx">Mount</span> <span class="c1">// mapping for inputs to paths
+</span><span class="c1"></span><span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">CopyOp</span> <span class="kd">struct</span> <span class="p">{</span>
+  <span class="nx">Op</span>
+  <span class="nx">Sources</span> <span class="p">[]</span><span class="kt">string</span>
+  <span class="nx">Dest</span> <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">SourceOp</span> <span class="kd">struct</span> <span class="p">{</span>
+  <span class="nx">Op</span>
+  <span class="nx">Identifier</span> <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">ExecMeta</span> <span class="kd">struct</span> <span class="p">{</span>
+  <span class="nx">Args</span> <span class="p">[]</span><span class="kt">string</span>
+  <span class="nx">Env</span>  <span class="p">[]</span><span class="kt">string</span>
+  <span class="nx">User</span> <span class="kt">string</span>
+  <span class="nx">Wd</span>   <span class="kt">string</span>
+  <span class="nx">Tty</span>  <span class="kt">bool</span>
+  <span class="c1">// DisableNetworking bool
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>ExecMeta</code>部分定义了构建过程中所需要的尽量少的环境信息。<code>SourceOp</code>定义了构建开始时的初始数据，在 dockerfile 中就是我们常见的 FROM 语句，当然 BuildKit 并不限于此，
+而是也可以使用其他的 git 仓库，本地文件/目录等数据。</p>
+<h2 id="有用的新功能">有用的新功能</h2>
+<p>启用了 BuildKit 之后，除了性能上的改善，我们现在就可以在 Dockerfile 中体验到一些非常有用的新功能。比如 mount 操作,其语法格式如下所示：</p>
+<p><code>RUN --mount=type=&lt;bind|cache|secret|tempfs|ssh&gt;</code></p>
+<p>这几种类型就解决了开始所说的一些问题</p>
+<ul>
+<li>cache: 各语言 package managers 所使用的 cache</li>
+<li>secret: 用于一些需要登录才能获取的资源，在最终的生成物中也不会保留这些敏感信息</li>
+<li>ssh: 直接使用本地的 ssh-agent 去做登陆认证。</li>
+</ul>
+<h2 id="links">Links</h2>
+<ol>
+<li><a href="https://blog.mobyproject.org/introducing-buildkit-17e056cc5317">Moby Project: Introducing BuildKit</a></li>
+<li><a href="https://gist.github.com/tonistiigi/059fc72c4630f066d94dafb5e0e70dc6">Buildkit Proposal</a></li>
+<li><a href="https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/experimental.md#experimental-syntaxes">Dockerfile frontend experimental syntaxes</a></li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-04-08
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/docker/">docker</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2019-04-10-the-useless-web/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">The useless web</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2019-04-04-more-secure-dns/">
+            <span class="next-text nav-default">更安全的 DNS</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

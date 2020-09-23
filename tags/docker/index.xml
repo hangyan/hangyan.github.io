@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>docker on 工业革命</title>
+    <link>http://yanhang.me/tags/docker/</link>
+    <description>Recent content in docker on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 07 Sep 2020 18:13:47 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Docker 私有 Registry 的镜像 GC 问题</title>
+      <link>http://yanhang.me/post/2020-09-07-docker-registry-gc/</link>
+      <pubDate>Mon, 07 Sep 2020 18:13:47 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-09-07-docker-registry-gc/</guid>
+      <description>需求 一个轻量级的 docker registry 方案讨论 Harbor 的功能丰富，但是过于重量级了，与其他平台集成并不方便。Portus 类似。这一类产品都比较侧重 UI 和认证，一般都带</description>
+    </item>
+    
+    <item>
+      <title>What is Helm Doing Wrong and How a Helm3 Controller Can Fix It</title>
+      <link>http://yanhang.me/post/2019-08-03-helm-controller/</link>
+      <pubDate>Sat, 03 Aug 2019 11:26:30 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-08-03-helm-controller/</guid>
+      <description>Helm is big success for sure, it&amp;rsquo;s nearly the standard application package format in kubernetes.You only need to provide some metadata about your application&amp;rsquo;s name, version, description….Helm can help you package up and upload to a central or custom chart repo.Just like npm,rpm,docker image, or whatever other package management system. About a year ago,</description>
+    </item>
+    
+    <item>
+      <title>Docker BuildKit 介绍</title>
+      <link>http://yanhang.me/post/2019-04-08-buildkit/</link>
+      <pubDate>Mon, 08 Apr 2019 16:22:48 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-04-08-buildkit/</guid>
+      <description>为什么需要 BuildKit BuildKit 长什么样子 LLB 有用的新功能 Links 对于 Docker 和 Kubernetes 来说，在自身发展的壮大过程中，都会经历一个因为功能不断增加导致的软件结构庞杂的问题。对于 Kubernetes</description>
+    </item>
+    
+    <item>
+      <title>Docker 1.7 介绍</title>
+      <link>http://yanhang.me/post/2015-07-12-docker-1.7/</link>
+      <pubDate>Sun, 12 Jul 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-07-12-docker-1.7/</guid>
+      <description>实验特性 很多软件在发布的时候都会分为开发板和稳定版，稳定版可以供生产环境使用，开发版是让 感兴趣的用户使用，体验新特性，并报告 BUG 以助于官方改进</description>
+    </item>
+    
+    <item>
+      <title>docker 容器内多进程的管理方案</title>
+      <link>http://yanhang.me/post/2015-05-08-container-process-monitor/</link>
+      <pubDate>Fri, 08 May 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-05-08-container-process-monitor/</guid>
+      <description>&lt;p&gt;容器生来适合的是以单进程为主的独立的微服务架构，而很多传统的组件则是体积庞大，多个进程（组件）之间难以拆分到不同的容器中，所以在单个容器内部署多个组件便成了一种
+暂时的折衷方案。这便引入了一个问题：如何在容器内管理多个进程？&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>docker 容器的一些概念辨析</title>
+      <link>http://yanhang.me/post/2015-04-16-some-concepts-of-docker-containers/</link>
+      <pubDate>Thu, 16 Apr 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-04-16-some-concepts-of-docker-containers/</guid>
+      <description>&lt;p&gt;本篇的主要内容是为了澄清 docker 容器的一些容易混淆的概念，主要分两部分，
+一是容器端口的&lt;code&gt;publish&lt;/code&gt;和&lt;code&gt;expose&lt;/code&gt;,二是 Dockerfile 中&lt;code&gt;ENTRYPOINT&lt;/code&gt;和&lt;code&gt;CMD&lt;/code&gt;的区分。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>docker 源码分析(6) -- 镜像删除</title>
+      <link>http://yanhang.me/post/2015-04-03-docker-source-code-part6-image-delete/</link>
+      <pubDate>Fri, 03 Apr 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-04-03-docker-source-code-part6-image-delete/</guid>
+      <description>&lt;p&gt;本篇的主要内容是关于如何删除镜像的.听起来是挺简单的一件事,但是&lt;code&gt;docker&lt;/code&gt;本身的删除
+策略定义并不清除，而且在实际的使用过程中,似乎总是与我们预计的结果不符,比如磁盘空间并没有被释放.所以在此单列一篇,详细解析镜
+像删除的过程.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>docker 源码分析(5) -- 镜像拉取及存储</title>
+      <link>http://yanhang.me/post/2015-03-30-docker-source-code-part5-images/</link>
+      <pubDate>Mon, 30 Mar 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-03-30-docker-source-code-part5-images/</guid>
+      <description>&lt;p&gt;本篇的内容主要是关于&lt;code&gt;docker&lt;/code&gt;镜像的。在我们安装好&lt;code&gt;docker&lt;/code&gt;之后，要想使用它，第
+一步就是要下载一些镜像。本文将依据此流程分析&lt;code&gt;docker&lt;/code&gt;中镜像的拉取、存储等相关内容。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>docker 源码分析(4) -- 网络设置</title>
+      <link>http://yanhang.me/post/2015-02-16-docker-source-code-part4-network-settings/</link>
+      <pubDate>Mon, 16 Feb 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-02-16-docker-source-code-part4-network-settings/</guid>
+      <description>&lt;p&gt;本篇的主要内容是关于&lt;code&gt;docker daemon&lt;/code&gt;启动时网络设置的相关部分，在上一篇中已经简要
+提到(&lt;a href=&#34;http://hangyan.github.io/docker/docker-source-code-part3-daemon-start/&#34;&gt;Docker daemon 启动流程&lt;/a&gt;)
+。主要内容集中在&lt;code&gt;InitDriver&lt;/code&gt;函数的解析上。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>docker 源码分析(3) -- daemon 启动流程</title>
+      <link>http://yanhang.me/post/2015-02-05-docker-source-code-part3-daemon-start/</link>
+      <pubDate>Thu, 05 Feb 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-02-05-docker-source-code-part3-daemon-start/</guid>
+      <description>&lt;p&gt;本篇的主要内容是关于&lt;code&gt;docker daemon&lt;/code&gt;的启动流程。其主要内容均包含在
+&lt;code&gt;github.com/docker/docker/docker/daemon.go&lt;/code&gt;文件中的&lt;code&gt;mainDaemon&lt;/code&gt;函数中，本文即按
+其执行流程分析源码。因为所涉源码较多，所以所涉部分多是点到为止，详细分析会在后续
+分专篇讲述。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>docker 源码分析(2) -- 主程序及命令行参数解析</title>
+      <link>http://yanhang.me/post/2015-01-30-docker-source-code-part2-start-and-args/</link>
+      <pubDate>Fri, 30 Jan 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-01-30-docker-source-code-part2-start-and-args/</guid>
+      <description>&lt;p&gt;研究一个大项目的源码，最好是从&lt;code&gt;main&lt;/code&gt;函数入口，一步一步与实际程序相结合，将实际代
+码与相应相印证。所以本篇的主要内容就是 docker 主程序的启动流程以及命令行参数解析的
+过程。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>docker 源码分析(1) -- 开发环境准备</title>
+      <link>http://yanhang.me/post/2015-01-29-docker-source-code-part1-dev-setup/</link>
+      <pubDate>Thu, 29 Jan 2015 21:37:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2015-01-29-docker-source-code-part1-dev-setup/</guid>
+      <description>&lt;p&gt;之前看过一遍&lt;code&gt;docker&lt;/code&gt;的代码，但比较粗略。第二遍准备详细过一遍并且用博客的方式将其
+整理一下。目前为止&lt;code&gt;docker&lt;/code&gt;的稳定版本为&lt;code&gt;1.4.1&lt;/code&gt;,所以就以此版本的代码为基础进行阅读，分
+析。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

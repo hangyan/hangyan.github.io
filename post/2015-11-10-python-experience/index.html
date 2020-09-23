@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>一点 python 的经验 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="可能已经过时了。" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2015-11-10-python-experience/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="一点 python 的经验" />
+<meta property="og:description" content="可能已经过时了。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2015-11-10-python-experience/" />
+<meta property="article:published_time" content="2015-11-10T21:37:39+08:00" />
+<meta property="article:modified_time" content="2015-11-10T21:37:39+08:00" />
+<meta itemprop="name" content="一点 python 的经验">
+<meta itemprop="description" content="可能已经过时了。">
+<meta itemprop="datePublished" content="2015-11-10T21:37:39+08:00" />
+<meta itemprop="dateModified" content="2015-11-10T21:37:39+08:00" />
+<meta itemprop="wordCount" content="1998">
+
+
+
+<meta itemprop="keywords" content="language," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="一点 python 的经验"/>
+<meta name="twitter:description" content="可能已经过时了。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">一点 python 的经验</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2015-11-10 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 1998 字 </span>
+          <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#返回值">返回值</a>
+          <ul>
+            <li><a href="#异常">异常</a></li>
+            <li><a href="#日志">日志</a></li>
+          </ul>
+        </li>
+        <li><a href="#日志打印">日志打印</a>
+          <ul>
+            <li><a href="#书写习惯">书写习惯</a></li>
+            <li><a href="#高亮支持">高亮支持</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>工作中总结的一些 python 的小经验，分享一下~</p>
+<h2 id="返回值">返回值</h2>
+<p>当 python 项目越来越庞大的时候,返回值的不一致就成为了一个越来越严重的问题。有的返
+回 None,有的返回一个 Object，有的返回一个 dict,有的抛出异常&hellip;.有些函数我们可以从名
+字上猜出它可能的返回值，有的必须要有健全的文档才能厘清。不一致的返回类型导致上层
+调用者必须维护各种各样的判断逻辑，还要考虑到以后可能的改动，确实是一件非常头疼的
+事。</p>
+<p>所以可以考虑对所有函数的返回值进行一个封装，对上层调用者提供一个统一的判断逻辑。
+下面是一个示例:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">fail</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">err_code</span><span class="o">=</span><span class="n">error</span><span class="o">.</span><span class="n">ERR_DATA_NOT_EXIST</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;suc&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+        <span class="s1">&#39;errmsg&#39;</span><span class="p">:</span> <span class="n">msg</span><span class="p">,</span>
+        <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="n">err_code</span>
+    <span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">suc</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;suc&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">data</span>
+    <span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>函数调用者在拿到返回值后只需判断 <code>result['suc']</code>的真假即可知道函数执行的情况。对
+于<code>fail</code>来说，有一个错误信息和一个错误码，即可用于日志信息显示，也可以判断错误类
+型。对于<code>suc</code>来说,数据存在<code>data</code>字段中，而大多数情况下仅需根据函数名字即可判断出
+<code>data</code>是否为<code>None</code>。</p>
+<h3 id="异常">异常</h3>
+<p>使用异常还是错误码，一直都是见仁见智的问题。但是如果两者混用，就会带来很多额外的
+麻烦。尤其是在使用第三方库的时候，有的使用异常，有的不抛出异常，如果直接使用，调
+用代码会显得非常混乱。使用上面的<code>suc/fail</code>封装后，可以将所有的异常捕获并以错误码
+的形式返回，上层代码会显得更加具有一致性,示例如下:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">_do_req</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">service</span> <span class="o">=</span> <span class="n">Api</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="n">generateUrl</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&#34;API http request url. | url=</span><span class="si">%s</span><span class="s2">&#34;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">fail</span><span class="p">(</span><span class="n">resp</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">],</span> <span class="n">err_code</span><span class="o">=</span><span class="n">error</span><span class="o">.</span><span class="n">ERR_REMOTE_FAILED</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">suc</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fail</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">err_code</span><span class="o">=</span><span class="n">error</span><span class="o">.</span><span class="n">ERR_NETWORK_EXCEPTION</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这段代码需要处理两种情况,一种是网络异常,通过<code>fail</code>将其转化为错误码和错误信息。另
+一种是成功调用但是 response 里面也有错误码,也可以用<code>fail</code>自己进行处理。调用者只需
+判断返回值中的<code>suc</code>字段即可知道该如何处理返回值。</p>
+<h3 id="日志">日志</h3>
+<p>很多时候我们希望既能返回错误信息也能同时将其打印到日志中,最简单的方式如下:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="n">msg</span> <span class="o">=</span> <span class="s2">&#34;error message&#34;</span>
+<span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+<span class="k">return</span> <span class="n">fail</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">error_code</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这样写有点累赘，可以将其写成一个单独的函数:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">log_fail</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">err_code</span><span class="o">=</span><span class="n">error</span><span class="o">.</span><span class="n">ERR_DATA_NOT_EXIST</span><span class="p">):</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fail</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">err_code</span><span class="o">=</span><span class="n">err_code</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这样每次只用将<code>logger</code>实例和<code>msg</code>传给<code>log_fail</code>即可。</p>
+<p>Update:
+这种方式并不是很好，最终显示调用 logger 的位置是不对的，需要一点 hack 才能正确地显示打日志的位置:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">CallerLog</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">lno</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">lno</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">lno</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">exc_info</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exc_info</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="n">exc_info</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()</span>
+        <span class="n">record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">makeRecord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">lno</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">exc_info</span><span class="p">,</span>
+                                 <span class="n">func</span><span class="p">,</span> <span class="n">extra</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">setLoggerClass</span><span class="p">(</span><span class="n">CallerLog</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">log_fail</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">ERR_DATA_NOT_EXIST</span><span class="p">):</span>
+    <span class="s2">&#34;&#34;&#34;Log as caller function and return fail.
+</span><span class="s2">
+</span><span class="s2">    Common scenario is a function want to log and return the same error message.
+</span><span class="s2">
+</span><span class="s2">    Args:
+</span><span class="s2">        msg(str): error message
+</span><span class="s2">        code(str): error code
+</span><span class="s2">    &#34;&#34;&#34;</span>
+    <span class="n">caller</span> <span class="o">=</span> <span class="n">getframeinfo</span><span class="p">(</span><span class="n">stack</span><span class="p">()[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">module_name</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">filename</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BASE_DIR</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.py&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
+    <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">caller</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">caller</span><span class="o">.</span><span class="n">lineno</span><span class="p">,</span> <span class="n">caller</span><span class="o">.</span><span class="n">function</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fail</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">code</span><span class="p">)</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="日志打印">日志打印</h2>
+<p>日志基本上使我们平时调试线上问题最重要的工具了。良好的日志分级，格式能够帮助我们
+很快地定位问题所在，但是不像 python 语言本身有很多规范去约束代码，日志打印经常会出
+现各种各样的问题影响我们的查看,比如:</p>
+<ol>
+<li>数量不够。导致看不出代码的执行逻辑</li>
+<li>格式混乱。看起来费力</li>
+<li>日志级别错误。 有些人喜欢将自己觉得重要的信息打在<code>ERROR</code>里，这是非常不好的一
+个习惯。</li>
+<li>没有高亮。 日志通常没有高亮显示功能,看起来非常费力。</li>
+</ol>
+<p>下面是一些改善的方式:</p>
+<h3 id="书写习惯">书写习惯</h3>
+<p>这个就跟 git 的<code>commit message</code>一样，怎么写都行，但一定要只维持一种习惯。比如首字
+母要大写都大写，要小写都小写，混用的话眼睛看起来会比较累。其他如标点符号， 使用
+词汇等都是非常细节的问题，但如果能保持一致，会让日志的可读性提高不少。</p>
+<p>这是我之前写的一个简单地一些日志规范,可以参考:
+<a href="https://github.com/alaudacloud/style-guides/blob/master/logs.md">日志打印规范</a></p>
+<p>日志信息描述中比较重要的一点是描述信息和实际数据的格式。当然我们使用格式化字符串
+将变量的值嵌入到描述语句中，我个人比较偏爱的一种方式是:</p>
+<p><img src="http://hangyan.github.io/images/posts/python/experience/log-var.png" alt=" " title="log-var"></p>
+<p>这样统一将描述放在前面，将数据放在后面，可读性会更好一点。<code>golang</code>有一个日志库(logrus)就
+支持此种方式的打印:</p>
+<p><img src="https://camo.githubusercontent.com/b9d0e424bfc6378e79b90de33b983ef5bae2f578/687474703a2f2f692e696d6775722e636f6d2f505937714d77642e706e67" alt=" " title="logrus"></p>
+<p><code>logrus</code>做的更好，能够将数据统一向右对齐。可惜 python 没有这样的库。</p>
+<h3 id="高亮支持">高亮支持</h3>
+<p>高亮支持一般是对于终端显示用的,写在文件里就不是很合适，因为有好多颜色控制字符。
+有一种折衷的办法就是同时往两个文件打印日志，一个是普通的，一个是可以高亮的。这样
+当使用<code>cat</code>或者<code>tail</code>这样的工具时可以查看带高亮的日志，其他的情况查看普通的日志。</p>
+<p>python 有一个<a href="https://github.com/borntyping/python-colorlog">colorlog</a>库支持带高
+亮的日志，下面是一个示例的配置:</p>
+<p>formatters:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="s1">&#39;formatters&#39;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s1">&#39;standard&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> [</span><span class="si">%(levelname)s</span><span class="s1">][</span><span class="si">%(threadName)s</span><span class="s1">]&#39;</span> <span class="o">+</span>
+                  <span class="s1">&#39;[</span><span class="si">%(name)s</span><span class="s1">.</span><span class="si">%(funcName)s</span><span class="s1">():</span><span class="si">%(lineno)d</span><span class="s1">] </span><span class="si">%(message)s</span><span class="s1">&#39;</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;()&#39;</span><span class="p">:</span> <span class="s1">&#39;util.log.SplitColoredFormatter&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="s2">&#34;</span><span class="si">%(asctime)s</span><span class="s2"> &#34;</span> <span class="o">+</span>
+                  <span class="s2">&#34;</span><span class="si">%(log_color)s%(bold)s</span><span class="s2">[</span><span class="si">%(levelname)s</span><span class="s2">]</span><span class="si">%(reset)s</span><span class="s2">&#34;</span> <span class="o">+</span>
+                  <span class="s2">&#34;[</span><span class="si">%(threadName)s</span><span class="s2">][</span><span class="si">%(name)s</span><span class="s2">.</span><span class="si">%(funcName)s</span><span class="s2">():</span><span class="si">%(lineno)d</span><span class="s2">] &#34;</span> <span class="o">+</span>
+                  <span class="s2">&#34;</span><span class="si">%(blue)s%(message)s</span><span class="s2">&#34;</span>
+    <span class="p">}</span>
+<span class="p">},</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>handlers:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-python" data-lang="python">    <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="s1">&#39;DEBUG&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;logging.handlers.RotatingFileHandler&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="n">LOG_PATH</span>  <span class="o">+</span> <span class="s1">&#39;.color.log&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;maxBytes&#39;</span><span class="p">:</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>
+        <span class="s1">&#39;backupCount&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="s1">&#39;formatter&#39;</span><span class="p">:</span> <span class="s1">&#39;color&#39;</span><span class="p">,</span>
+    <span class="p">},</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其中<code>SplitColoredformatter</code>是我自己重写的一个<code>formatter</code>,用来支持我上面所说的描
+述和数据分离的格式:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">SplitColoredFormatter</span><span class="p">(</span><span class="n">ColoredFormatter</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="s2">&#34;&#34;&#34;Format a message from a record object.&#34;&#34;&#34;</span>
+        <span class="n">record</span> <span class="o">=</span> <span class="n">ColoredRecord</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+        <span class="n">record</span><span class="o">.</span><span class="n">log_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_colors</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">levelname</span><span class="p">)</span>
+
+        <span class="c1"># Set secondary log colors</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_log_colors</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">log_colors</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_log_colors</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">(</span><span class="n">log_colors</span><span class="p">,</span> <span class="n">record</span><span class="o">.</span><span class="n">levelname</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_log_color&#39;</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+
+        <span class="c1"># Format the message</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">ColoredFormatter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
+
+        <span class="c1"># Add a reset code to the end of the message</span>
+        <span class="c1"># (if it wasn&#39;t explicitly added in format str)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">message</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">escape_codes</span><span class="p">[</span><span class="s1">&#39;reset&#39;</span><span class="p">]):</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="n">escape_codes</span><span class="p">[</span><span class="s1">&#39;reset&#39;</span><span class="p">]</span>
+
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">escape_codes</span><span class="p">[</span><span class="s1">&#39;reset&#39;</span><span class="p">]</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">escape_codes</span><span class="p">[</span><span class="s1">&#39;green&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">desc</span> <span class="o">+</span> <span class="s1">&#39;|&#39;</span> <span class="o">+</span> <span class="n">data</span>
+
+        <span class="k">return</span> <span class="n">message</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>最终出来的效果如下图所示:</p>
+<p><img src="http://hangyan.github.io/images/posts/python/experience/log-color.png" alt=" " title="log-color"></p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2015-11-10
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/language/">language</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2017-08-11-sharding/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Shard</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2015-08-31-scala-notes-function-and-closures/">
+            <span class="next-text nav-default">Scala 笔记: 函数和闭包</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>KARL, ASLR, KASLR - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="前段时间在零星地看一些关于 unikerel 的文章。里面提到的一些安全相关的技术非常有趣，就又开始转向 kernel 安全这部分。本文主要探讨的是 KARL, KASLR 以及 ASLR 相关的技术。 安" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2019-08-27-karl-aslr/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="KARL, ASLR, KASLR" />
+<meta property="og:description" content="前段时间在零星地看一些关于 unikerel 的文章。里面提到的一些安全相关的技术非常有趣，就又开始转向 kernel 安全这部分。本文主要探讨的是 KARL, KASLR 以及 ASLR 相关的技术。 安" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2019-08-27-karl-aslr/" />
+<meta property="article:published_time" content="2019-08-27T11:11:23+00:00" />
+<meta property="article:modified_time" content="2019-08-27T11:11:23+00:00" />
+<meta itemprop="name" content="KARL, ASLR, KASLR">
+<meta itemprop="description" content="前段时间在零星地看一些关于 unikerel 的文章。里面提到的一些安全相关的技术非常有趣，就又开始转向 kernel 安全这部分。本文主要探讨的是 KARL, KASLR 以及 ASLR 相关的技术。 安">
+<meta itemprop="datePublished" content="2019-08-27T11:11:23+00:00" />
+<meta itemprop="dateModified" content="2019-08-27T11:11:23+00:00" />
+<meta itemprop="wordCount" content="1654">
+
+
+
+<meta itemprop="keywords" content="安全,kernel," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="KARL, ASLR, KASLR"/>
+<meta name="twitter:description" content="前段时间在零星地看一些关于 unikerel 的文章。里面提到的一些安全相关的技术非常有趣，就又开始转向 kernel 安全这部分。本文主要探讨的是 KARL, KASLR 以及 ASLR 相关的技术。 安"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">KARL, ASLR, KASLR</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-08-27 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 1654 字 </span>
+          <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#aslr">ASLR</a>
+          <ul>
+            <li><a href="#rng">RNG</a></li>
+          </ul>
+        </li>
+        <li><a href="#karl">KARL</a></li>
+        <li><a href="#kaslr">KASLR</a></li>
+        <li><a href="#链接">链接</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <!-- toc -->
+<p>前段时间在零星地看一些关于 unikerel 的文章。里面提到的一些安全相关的技术非常有趣，就又开始转向 kernel 安全这部分。本文主要探讨的是 KARL,  KASLR 以及 ASLR 相关的技术。</p>
+<p>安全相关的实现技术很多，但想了想，大体的分类可以归为以下几类：</p>
+<ul>
+<li>RWX 权限检查</li>
+<li>随机化: 尽量不用确定性的内存地址</li>
+<li>暴露最少的信息: 日志，输出里尽量不暴露相关信息</li>
+</ul>
+<p>KARL, KASLR 以及 ASLR 都属于第二类。尽量让应用程序以及内核在内存中的地址随机化，这样攻击者就难以猜出相关的地址。</p>
+<p>简单来讲， ASLR(Address-space layout randomization) 主要是指内存中用户层的地址随机化，KASLR 是指内存中内核的地址随机化， 而 KARL(kernel adress randomized link)是指内核本身的地址随机化。ASLR出现的时间更早一些，更成熟一些。</p>
+<p>注意有一个区别， 三者中都有一个 <code>L</code>，但意义不一样。 ASLR/KASLR 中的 <code>L</code> 是指 <code>layout</code>，是说内存中的布局。你不可能要求大量的应用程序自己去考虑随机化，而是在应用程序无感知的情况下，由内核来选择一个随机的位置来运行应用程序。而 KARL 中的 <code>L</code> 是指 <code>link</code> ，是在链接阶段就做好了地址的随机化处理，这样就不需要再内存中在做了。</p>
+<h2 id="aslr">ASLR</h2>
+<p>ASLR 理解起来相对更为简单，本身不需要再重复介绍。</p>
+<h3 id="rng">RNG</h3>
+<p>不管是 KARL / ASLR / KASLR，其核心都是一个<code>随机</code>的概念。明显它依赖于随机数的生成算法。当然随机程度越高越安全，但是又要考内核的性能。这个平衡很难掌握，选择哪个 RNG(random number generation) 也经过了很多讨论。</p>
+<p>一开始用的是 <code>get_random_int()</code>,一个性能比较好但安全性不够好的方法，后来有人提出用 <code>get_random_bytes()</code>,安全性大大提高，但是性能下降也比较多。再后来 Linux 自己对<code>get_random_int()</code>做了一些改进, 增加了一些噪音进去，在不影响性能的情况下改进了随机性。这也是目前在用的方法。</p>
+<p>但是，这仍然是一个不够<code>完美</code>的选择。<code>get_random_int</code>内部用了<code>half_md4_transform</code>，一个更弱化版本的<code>MD4</code>算法，现在 MD4/MD5 的碰撞都很容易了。后来有人换成 <code>SHA1</code>做 benchmark,性能下降 50%左右，对内核的人来说也是基本上不可接受。所以目前只能是这样了。再说，现在<code>SHA1</code>的碰撞也已经被发现了。</p>
+<h2 id="karl">KARL</h2>
+<p>在 KARL 之前， kernel 里面的 boostrap代码，汇编语言 runtime 代码(<code>locore.S</code>)，以及其他 c 代码之间的位置都是固定的。一般都是 <code>locore.S</code> 在前，然后是各种 <code>c</code> 文件。引入 KARL 之后，<code>locore</code> 被分成两部分，一部分是最开始的 boostrap, 然后是汇编语言 runtime 以及 其他的 c 文件，不过后者的放置是随机的了。这样每一个新的内核都是独一无二的，代码以及数据之间的偏移量也是不固定的。当然 boostrap 的代码还是固定的。但是内核可以在启动之后清理掉相关信息。</p>
+<p>这样就有个问题，虽然内核以及做了 KARL，但你不能编译好一次之后重复去用，不然还是不安全。最好的方式是在每次启动时重新 link,相当于生成一个新的内核。通过各种优化手段，这个过程可以做到耗时很短。</p>
+<h2 id="kaslr">KASLR</h2>
+<p>KASLR 与 ASLR 类似，但是是针对于 kernel 的。与 ASLR 不同，KASLR 有几个问题</p>
+<ul>
+<li>
+<p>如果用户在暴力破解找 kernel 的位置，会直接导致机器 crash</p>
+</li>
+<li>
+<p>与电脑的休眠机制不兼容。</p>
+</li>
+<li>
+<p>有很多其他的模块需要或者依赖于知道 kernel 的位置，这些都需要谨慎处理。</p>
+</li>
+</ul>
+<p>第三条设计的面比较广， 一个例子是 <code>SIDT</code> 指令，它不是特权指令，并且能够拿到<code>IDT(interrupt descriptro table)</code>的地址，进而能够推断出内核的地址。所以需要解除 IDT 的位置与内核位置的关联，将其放置其他地方，并且设置为只读。</p>
+<p>另外一个例子是 <code>INET_DIAG</code> socket API, 它用了内核地址作为 handler。 虽然对上层应用透明，但是仍然是个安全隐患。可以通过数据混淆解决这个问题。</p>
+<p>当然，除了这些已知的状况，还应该通过各种方式来限制其他模块使用内核地址，并且尽量不泄露给用户,比如:</p>
+<ul>
+<li>开启<code>kptr_restrict</code> 系统调用防止内核地址泄露到用户空间</li>
+<li>使用<code>dmesg_restrict</code> 防止 <code>dmesg</code> 泄露内核地址</li>
+<li><code>/var/log/messages</code> 应该设置为只有 <code>root</code> 用户能访问.</li>
+</ul>
+<p>对于一般的用户来说，比如个人电脑， KASLR 的意义不是很大。但是对于现在的容器化环境(包括container 以及浏览器的 sandbox )来说，有很多安全场景需要考虑(从容器侵入宿主机内核) , KASLR就更有价值了。</p>
+<h2 id="链接">链接</h2>
+<ul>
+<li><a href="https://marc.info/?l=openbsd-tech&amp;m=149732026405941">KARL - kernel address randomized link</a></li>
+<li><a href="https://lwn.net/Articles/569635/">Kernel address space layout randomization</a></li>
+<li><a href="https://lwn.net/Articles/332602/">Random numbers for ASLR</a></li>
+</ul>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-08-27
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E5%AE%89%E5%85%A8/">安全</a>
+          <a href="/tags/kernel/">kernel</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2019-08-29-rick-and-morty/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Rick and Morty</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2019-08-26-cnar/">
+            <span class="next-text nav-default">Cloud Native Artifact Registries</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

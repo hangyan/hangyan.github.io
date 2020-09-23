@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>docker 源码分析(4) -- 网络设置 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="docker network setttings" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2015-02-16-docker-source-code-part4-network-settings/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="docker 源码分析(4) -- 网络设置" />
+<meta property="og:description" content="docker network setttings" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2015-02-16-docker-source-code-part4-network-settings/" />
+<meta property="article:published_time" content="2015-02-16T21:37:39+08:00" />
+<meta property="article:modified_time" content="2015-02-16T21:37:39+08:00" />
+<meta itemprop="name" content="docker 源码分析(4) -- 网络设置">
+<meta itemprop="description" content="docker network setttings">
+<meta itemprop="datePublished" content="2015-02-16T21:37:39+08:00" />
+<meta itemprop="dateModified" content="2015-02-16T21:37:39+08:00" />
+<meta itemprop="wordCount" content="2297">
+
+
+
+<meta itemprop="keywords" content="docker," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="docker 源码分析(4) -- 网络设置"/>
+<meta name="twitter:description" content="docker network setttings"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">docker 源码分析(4) -- 网络设置</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2015-02-16 </span>
+        
+          <span class="more-meta"> 约 2297 字 </span>
+          <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#简介">简介</a></li>
+        <li><a href="#相关网络参数">相关网络参数</a></li>
+        <li><a href="#网桥设置">网桥设置</a></li>
+        <li><a href="#iptables-设置">IPTables 设置</a>
+          <ul>
+            <li><a href="#ip-masquerade">IP Masquerade</a></li>
+            <li><a href="#package-forward">Package Forward</a></li>
+            <li><a href="#docker-chain">Docker Chain</a></li>
+          </ul>
+        </li>
+        <li><a href="#handlers">Handlers</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>本篇的主要内容是关于<code>docker daemon</code>启动时网络设置的相关部分，在上一篇中已经简要
+提到(<a href="http://hangyan.github.io/docker/docker-source-code-part3-daemon-start/">Docker daemon 启动流程</a>)
+。主要内容集中在<code>InitDriver</code>函数的解析上。</p>
+<h2 id="简介">简介</h2>
+<p><code>InitDriver</code>函数位于<code>github.com/docker/docker/daemon/networkdriver/bridge/driver.go</code>中。
+主要包含参数解析,<code>docker0</code>的创建,<code>iptables</code>的设置等。</p>
+<h2 id="相关网络参数">相关网络参数</h2>
+<p>前面两篇也已经提到了相关的网络参数，主要是以下几个:</p>
+<ol>
+<li>
+<p>iptables</p>
+<p>是否启用<code>iptables</code></p>
+</li>
+<li>
+<p>icc</p>
+<p>即<code>Inter-Container Communitaion</code>,是否允许<code>docker container</code>之间以及与
+<code>host</code>之间的的通信。</p>
+</li>
+<li>
+<p>ip-masq</p>
+<p>是否启用<code>IP masquerading</code>,用于源地址转换。</p>
+</li>
+<li>
+<p>bridge ip</p>
+<p>给<code>docker0</code>指定 IP</p>
+</li>
+<li>
+<p>CIDR</p>
+<p>限制给<code>container</code>分配的 IP 范围.</p>
+</li>
+<li>
+<p>ip</p>
+<p><code>container</code>映射<code>port</code>时默认的绑定地址,默认为<code>0.0.0.0</code>.</p>
+</li>
+<li>
+<p>bridge</p>
+<p>使用已经存在的网桥而不是创建<code>docker0</code>.</p>
+</li>
+</ol>
+<p>这些参数由命令行参数传入，最终存储在<code>Job</code>的<code>env</code>中,<code>InitDriver</code>即通过<code>env</code>来获取
+相关的设置:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="p">(</span>
+    <span class="nx">network</span>        <span class="o">*</span><span class="nx">net</span><span class="p">.</span><span class="nx">IPNet</span>
+    <span class="nx">enableIPTables</span> <span class="p">=</span> <span class="nx">job</span><span class="p">.</span><span class="nf">GetenvBool</span><span class="p">(</span><span class="s">&#34;EnableIptables&#34;</span><span class="p">)</span>
+    <span class="nx">icc</span>            <span class="p">=</span> <span class="nx">job</span><span class="p">.</span><span class="nf">GetenvBool</span><span class="p">(</span><span class="s">&#34;InterContainerCommunication&#34;</span><span class="p">)</span>
+    <span class="nx">ipMasq</span>         <span class="p">=</span> <span class="nx">job</span><span class="p">.</span><span class="nf">GetenvBool</span><span class="p">(</span><span class="s">&#34;EnableIpMasq&#34;</span><span class="p">)</span>
+    <span class="nx">ipForward</span>      <span class="p">=</span> <span class="nx">job</span><span class="p">.</span><span class="nf">GetenvBool</span><span class="p">(</span><span class="s">&#34;EnableIpForward&#34;</span><span class="p">)</span>
+    <span class="nx">bridgeIP</span>       <span class="p">=</span> <span class="nx">job</span><span class="p">.</span><span class="nf">Getenv</span><span class="p">(</span><span class="s">&#34;BridgeIP&#34;</span><span class="p">)</span>
+    <span class="nx">fixedCIDR</span>      <span class="p">=</span> <span class="nx">job</span><span class="p">.</span><span class="nf">Getenv</span><span class="p">(</span><span class="s">&#34;FixedCIDR&#34;</span><span class="p">)</span>
+<span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>之后便是对<code>ip</code>参数进行设置:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go">
+<span class="nx">defaultBindingIP</span>  <span class="p">=</span> <span class="nx">net</span><span class="p">.</span><span class="nf">ParseIP</span><span class="p">(</span><span class="s">&#34;0.0.0.0&#34;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="nx">defaultIP</span> <span class="o">:=</span> <span class="nx">job</span><span class="p">.</span><span class="nf">Getenv</span><span class="p">(</span><span class="s">&#34;DefaultBindingIP&#34;</span><span class="p">);</span> <span class="nx">defaultIP</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+    <span class="nx">defaultBindingIP</span> <span class="p">=</span> <span class="nx">net</span><span class="p">.</span><span class="nf">ParseIP</span><span class="p">(</span><span class="nx">defaultIP</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>然后便是判断是否使用默认的网桥<code>docker0</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">bridgeIface</span> <span class="p">=</span> <span class="nx">job</span><span class="p">.</span><span class="nf">Getenv</span><span class="p">(</span><span class="s">&#34;BridgeIface&#34;</span><span class="p">)</span>
+<span class="nx">usingDefaultBridge</span> <span class="o">:=</span> <span class="kc">false</span>
+<span class="k">if</span> <span class="nx">bridgeIface</span> <span class="o">==</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+	<span class="nx">usingDefaultBridge</span> <span class="p">=</span> <span class="kc">true</span>
+	<span class="nx">bridgeIface</span> <span class="p">=</span> <span class="nx">DefaultNetworkBridge</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="网桥设置">网桥设置</h2>
+<p>确定好将要使用的网桥后,便需要对其 IP 地址进行相关设定。首先看能不能获取到其 IP 地址:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">addr</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">networkdriver</span><span class="p">.</span><span class="nf">GetIfaceAddr</span><span class="p">(</span><span class="nx">bridgeIface</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>docker</code>服务停止后<code>docker0</code>网桥并不删掉，所以如果不是第一次使用，都能成功获取
+到<code>ip</code>。我们来看下首次创建<code>docker0</code>的情况:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="p">!</span><span class="nx">usingDefaultBridge</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">job</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">configureBridge</span><span class="p">(</span><span class="nx">bridgeIP</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">job</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
+    
+<span class="nx">addr</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">networkdriver</span><span class="p">.</span><span class="nf">GetIfaceAddr</span><span class="p">(</span><span class="nx">bridgeIface</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">job</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="nx">network</span> <span class="p">=</span> <span class="nx">addr</span><span class="p">.(</span><span class="o">*</span><span class="nx">net</span><span class="p">.</span><span class="nx">IPNet</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果要使用自己指定的网桥而且获取不到 IP，那就只能当成错误返回了。如果是使用
+<code>docker0</code>且获取不到 IP，则就创建并且赋给它 IP，<code>configureBridge</code>参数为<code>bridgeIp</code>，
+即命令行里的<code>-bip</code>,一般都没有指定，默认值为空。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">addrs</span> <span class="p">=</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span>
+    <span class="s">&#34;172.17.42.1/16&#34;</span><span class="p">,</span>
+    <span class="s">&#34;10.0.42.1/16&#34;</span><span class="p">,</span>  
+    <span class="s">&#34;10.1.42.1/16&#34;</span><span class="p">,</span>
+    <span class="s">&#34;10.42.42.1/16&#34;</span><span class="p">,</span>
+    <span class="s">&#34;172.16.42.1/24&#34;</span><span class="p">,</span>
+    <span class="s">&#34;172.16.43.1/24&#34;</span><span class="p">,</span>
+    <span class="s">&#34;172.16.44.1/24&#34;</span><span class="p">,</span>
+    <span class="s">&#34;10.0.42.1/24&#34;</span><span class="p">,</span>
+    <span class="s">&#34;10.0.43.1/24&#34;</span><span class="p">,</span>
+    <span class="s">&#34;192.168.42.1/24&#34;</span><span class="p">,</span>
+    <span class="s">&#34;192.168.43.1/24&#34;</span><span class="p">,</span>
+    <span class="s">&#34;192.168.44.1/24&#34;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">addr</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">addrs</span> <span class="p">{</span>
+    <span class="nx">_</span><span class="p">,</span> <span class="nx">dockerNetwork</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">net</span><span class="p">.</span><span class="nf">ParseCIDR</span><span class="p">(</span><span class="nx">addr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">err</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">networkdriver</span><span class="p">.</span><span class="nf">CheckNameserverOverlaps</span><span class="p">(</span><span class="nx">nameservers</span><span class="p">,</span> <span class="nx">dockerNetwork</span><span class="p">);</span> <span class="nx">err</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">networkdriver</span><span class="p">.</span><span class="nf">CheckRouteOverlaps</span><span class="p">(</span><span class="nx">dockerNetwork</span><span class="p">);</span> <span class="nx">err</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="nx">ifaceAddr</span> <span class="p">=</span> <span class="nx">addr</span>
+            <span class="k">break</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">log</span><span class="p">.</span><span class="nf">Debugf</span><span class="p">(</span><span class="s">&#34;%s %s&#34;</span><span class="p">,</span> <span class="nx">addr</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>每次给<code>docker0</code>分配 IP，都会从<code>addrs</code>一个一个地尝试，所以我们一般看到的运行中的
+<code>docker0</code>的 IP 都是<code>172.17.42.1/16</code>。对<code>addrs</code>中的 IP,要检测其与<code>nameservers</code>和路由
+表是否有重叠。<code>nameservers</code>即是从系统的<code>/etc/resolv.conf</code>中读取到的列表,路由表是
+类似于如下图的结果中的第一列:</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-4/ip-route.png" alt=" " title="ip-route"></p>
+<p>有了 IP 之后，再次调用<code>GetIfaceAddr</code>,将获取到的地址赋给<code>addr</code>,后面的<code>IP Tables</code>的
+设置要用到这个地址。</p>
+<h2 id="iptables-设置">IPTables 设置</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">enableIPTables</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">setupIPTables</span><span class="p">(</span><span class="nx">addr</span><span class="p">,</span> <span class="nx">icc</span><span class="p">,</span> <span class="nx">ipMasq</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">job</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>下面的重点部分就是介绍<code>setupIPTables</code>函数的流程。因为所涉及到<code>IPTables</code>部分较多，
+单看代码难以理顺，所以将主要结合程序运行时的日志信息来进行介绍。</p>
+<h3 id="ip-masquerade">IP Masquerade</h3>
+<p>关于<code>IP Masquerade</code>的介绍,因为个人英语水平有限，怕翻译的不准确，感兴趣可以先看下这个
+简单的介绍<a href="http://www.tldp.org/HOWTO/IP-Masquerade-HOWTO/ipmasq-background2.1.html">What is IP Masquerade?</a>。
+简单来说就是用来做对包的源地址做地址转换(NAT)</p>
+<p>如果<code>ipmasq</code>参数为真，则插入一条相应的 rule(先检查是否存在，不存在则插入)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go">
+<span class="nx">natArgs</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;POSTROUTING&#34;</span><span class="p">,</span> <span class="s">&#34;-t&#34;</span><span class="p">,</span> <span class="s">&#34;nat&#34;</span><span class="p">,</span> <span class="s">&#34;-s&#34;</span><span class="p">,</span> <span class="nx">addr</span><span class="p">.</span><span class="nf">String</span><span class="p">(),</span> <span class="s">&#34;!&#34;</span><span class="p">,</span> <span class="s">&#34;-o&#34;</span><span class="p">,</span> <span class="nx">bridgeIface</span><span class="p">,</span> <span class="s">&#34;-j&#34;</span><span class="p">,</span> <span class="s">&#34;MASQUERADE&#34;</span><span class="p">}</span>
+
+<span class="k">if</span> <span class="p">!</span><span class="nx">iptables</span><span class="p">.</span><span class="nf">Exists</span><span class="p">(</span><span class="nx">natArgs</span><span class="o">...</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">output</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">iptables</span><span class="p">.</span><span class="nf">Raw</span><span class="p">(</span><span class="nb">append</span><span class="p">([]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;-I&#34;</span><span class="p">},</span> <span class="nx">natArgs</span><span class="o">...</span><span class="p">)</span><span class="o">...</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Unable to enable network bridge NAT: %s&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">output</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="o">&amp;</span><span class="nx">iptables</span><span class="p">.</span><span class="nx">ChainError</span><span class="p">{</span><span class="nx">Chain</span><span class="p">:</span> <span class="s">&#34;POSTROUTING&#34;</span><span class="p">,</span> <span class="nx">Output</span><span class="p">:</span> <span class="nx">output</span><span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>从日志中我们可以看到实际运行的命令是：
+<img src="http://hangyan.github.io/images/posts/docker/source-4/ip-masq.png" alt=" " title="ip-masq"></p>
+<p>这条 rules 的作用是对于 container 向外发出的包做源地址转换操作.</p>
+<h3 id="package-forward">Package Forward</h3>
+<ul>
+<li>Inter-Container Communitaion</li>
+</ul>
+<p>如果启用 Inter-Container Communitaion (<code>icc</code>为真),则实际执行的结果如下:
+<img src="http://hangyan.github.io/images/posts/docker/source-4/icc.png" alt=" " title="icc"></p>
+<p>确保<code>container</code>之间包的转发的<code>target</code>为<code>ACCEPT</code>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">iptables</span><span class="p">.</span><span class="nf">Raw</span><span class="p">(</span><span class="nb">append</span><span class="p">([]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;-D&#34;</span><span class="p">},</span> <span class="nx">dropArgs</span><span class="o">...</span><span class="p">)</span><span class="o">...</span><span class="p">)</span>
+<span class="k">if</span> <span class="p">!</span><span class="nx">iptables</span><span class="p">.</span><span class="nf">Exists</span><span class="p">(</span><span class="nx">acceptArgs</span><span class="o">...</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Debugf</span><span class="p">(</span><span class="s">&#34;Enable inter-container communication&#34;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">output</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">iptables</span><span class="p">.</span><span class="nf">Raw</span><span class="p">(</span><span class="nb">append</span><span class="p">([]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;-I&#34;</span><span class="p">},</span> <span class="nx">acceptArgs</span><span class="o">...</span><span class="p">)</span><span class="o">...</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Unable to allow intercontainer communication: %s&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">output</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Error enabling intercontainer communication: %s&#34;</span><span class="p">,</span> <span class="nx">output</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>Non-Intercontainer Outgoing Packets</li>
+</ul>
+<p>对于<code>non-intercontainer outgoing packets</code>,也将其<code>target</code>设为<code>ACCEPT</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">outgoingArgs</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;FORWARD&#34;</span><span class="p">,</span> <span class="s">&#34;-i&#34;</span><span class="p">,</span> <span class="nx">bridgeIface</span><span class="p">,</span> <span class="s">&#34;!&#34;</span><span class="p">,</span> <span class="s">&#34;-o&#34;</span><span class="p">,</span> <span class="nx">bridgeIface</span><span class="p">,</span> <span class="s">&#34;-j&#34;</span><span class="p">,</span> <span class="s">&#34;ACCEPT&#34;</span><span class="p">}</span>
+<span class="k">if</span> <span class="p">!</span><span class="nx">iptables</span><span class="p">.</span><span class="nf">Exists</span><span class="p">(</span><span class="nx">outgoingArgs</span><span class="o">...</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nx">output</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">iptables</span><span class="p">.</span><span class="nf">Raw</span><span class="p">(</span><span class="nb">append</span><span class="p">([]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;-I&#34;</span><span class="p">},</span> <span class="nx">outgoingArgs</span><span class="o">...</span><span class="p">)</span><span class="o">...</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Unable to allow outgoing packets: %s&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">output</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="o">&amp;</span><span class="nx">iptables</span><span class="p">.</span><span class="nx">ChainError</span><span class="p">{</span><span class="nx">Chain</span><span class="p">:</span> <span class="s">&#34;FORWARD outgoing&#34;</span><span class="p">,</span> <span class="nx">Output</span><span class="p">:</span> <span class="nx">output</span><span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>实际执行的命令为:
+<code>/sbin/iptables --wait -C FORWARD -i docker0 ! -o docker0 -j ACCEPT</code></p>
+<p><code>iptables</code>的参数中,<code>-C</code>代表检查,<code>-D</code>删除,<code>-I</code>插入。一般设置都是先检查，没有的话
+再插入，所以一般日志中见到的都只有<code>-C</code></p>
+<ul>
+<li>Incoming Packets for Existing Connecting</li>
+</ul>
+<p>Accept incoming packets for existing connections</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">existingArgs</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;FORWARD&#34;</span><span class="p">,</span> <span class="s">&#34;-o&#34;</span><span class="p">,</span> <span class="nx">bridgeIface</span><span class="p">,</span> <span class="s">&#34;-m&#34;</span><span class="p">,</span> <span class="s">&#34;conntrack&#34;</span><span class="p">,</span> <span class="s">&#34;--ctstate&#34;</span><span class="p">,</span> <span class="s">&#34;RELATED,ESTABLISHED&#34;</span><span class="p">,</span> <span class="s">&#34;-j&#34;</span><span class="p">,</span> <span class="s">&#34;ACCEPT&#34;</span><span class="p">}</span>
+
+<span class="k">if</span> <span class="p">!</span><span class="nx">iptables</span><span class="p">.</span><span class="nf">Exists</span><span class="p">(</span><span class="nx">existingArgs</span><span class="o">...</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">output</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">iptables</span><span class="p">.</span><span class="nf">Raw</span><span class="p">(</span><span class="nb">append</span><span class="p">([]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;-I&#34;</span><span class="p">},</span> <span class="nx">existingArgs</span><span class="o">...</span><span class="p">)</span><span class="o">...</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Unable to allow incoming packets: %s&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">output</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="o">&amp;</span><span class="nx">iptables</span><span class="p">.</span><span class="nx">ChainError</span><span class="p">{</span><span class="nx">Chain</span><span class="p">:</span> <span class="s">&#34;FORWARD incoming&#34;</span><span class="p">,</span> <span class="nx">Output</span><span class="p">:</span> <span class="nx">output</span><span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>实际执行的命令为:
+<code>/sbin/iptables --wait -C FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEP</code></p>
+<h3 id="docker-chain">Docker Chain</h3>
+<p>以上两部分就是<code>setIPTables</code>的流程,主要是一些基本的网络设置。除此之外,还有一些针
+对<code>NAT</code>表中<code>docker chain</code>的设置。</p>
+<p>先从日志中看看实际执行的命令是什么:</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-4/docker-chain.png" alt=" " title="docker-chain"></p>
+<p>(<code>-F</code> 删除一条<code>chain</code>中的所有规则,<code>-X</code>删除一条用户自定义的<code>chain</code>,<code>-N</code>创建一条用
+户自定义的<code>chain</code>,<code>-A</code>在一条<code>chain</code>后面添加一条规则.)</p>
+<p>首先是尝试删除<code>docker chain</code>中的规则及其本身:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">iptables</span><span class="p">.</span><span class="nf">RemoveExistingChain</span><span class="p">(</span><span class="s">&#34;DOCKER&#34;</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">job</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>然后添加新的空的<code>docker chain</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="k">if</span> <span class="nx">enableIPTables</span> <span class="p">{</span>
+    <span class="nx">chain</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">iptables</span><span class="p">.</span><span class="nf">NewChain</span><span class="p">(</span><span class="s">&#34;DOCKER&#34;</span><span class="p">,</span> <span class="nx">bridgeIface</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">job</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">portmapper</span><span class="p">.</span><span class="nf">SetIptablesChain</span><span class="p">(</span><span class="nx">chain</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>最终的<code>nat</code>的表的结果如下图所示:
+<img src="http://hangyan.github.io/images/posts/docker/source-4/nat-table.png" alt=" " title="nat-table"></p>
+<p>当有<code>container</code>的端口暴露时，我们就可以看到其中会有新的<code>rules</code>添加进来:</p>
+<p><img src="http://hangyan.github.io/images/posts/docker/source-4/docker-chain-new-rules.png" alt=" " title="docker-chain-new-rules"></p>
+<h2 id="handlers">Handlers</h2>
+<p>网络设置的最后一部分是一些<code>handler</code>的注册，具体见下面列表:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Name</th>
+<th style="text-align:center">Funciton</th>
+<th style="text-align:center">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">allocate_interface</td>
+<td style="text-align:center">Allocate</td>
+<td style="text-align:center">Allocate a network interface</td>
+</tr>
+<tr>
+<td style="text-align:center">release_interface</td>
+<td style="text-align:center">Release</td>
+<td style="text-align:center">Release an interface for a select ip</td>
+</tr>
+<tr>
+<td style="text-align:center">allocate_port</td>
+<td style="text-align:center">AllocatePort</td>
+<td style="text-align:center">Allocate an external port and map it to the interface</td>
+</tr>
+<tr>
+<td style="text-align:center">link</td>
+<td style="text-align:center">LinkContainers</td>
+<td style="text-align:center"></td>
+</tr>
+</tbody>
+</table>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2015-02-16
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/docker/">docker</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2015-03-30-docker-source-code-part5-images/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">docker 源码分析(5) -- 镜像拉取及存储</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2015-02-05-docker-source-code-part3-daemon-start/">
+            <span class="next-text nav-default">docker 源码分析(3) -- daemon 启动流程</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

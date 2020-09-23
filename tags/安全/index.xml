@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>安全 on 工业革命</title>
+    <link>http://yanhang.me/tags/%E5%AE%89%E5%85%A8/</link>
+    <description>Recent content in 安全 on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 27 Aug 2019 11:11:23 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/%E5%AE%89%E5%85%A8/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>KARL, ASLR, KASLR</title>
+      <link>http://yanhang.me/post/2019-08-27-karl-aslr/</link>
+      <pubDate>Tue, 27 Aug 2019 11:11:23 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-08-27-karl-aslr/</guid>
+      <description>前段时间在零星地看一些关于 unikerel 的文章。里面提到的一些安全相关的技术非常有趣，就又开始转向 kernel 安全这部分。本文主要探讨的是 KARL, KASLR 以及 ASLR 相关的技术。 安</description>
+    </item>
+    
+  </channel>
+</rss>

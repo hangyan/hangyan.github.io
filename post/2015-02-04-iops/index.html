@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>IOPS 介绍 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="An introduce to IOPS" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2015-02-04-iops/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="IOPS 介绍" />
+<meta property="og:description" content="An introduce to IOPS" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2015-02-04-iops/" />
+<meta property="article:published_time" content="2015-02-04T21:37:39+08:00" />
+<meta property="article:modified_time" content="2015-02-04T21:37:39+08:00" />
+<meta itemprop="name" content="IOPS 介绍">
+<meta itemprop="description" content="An introduce to IOPS">
+<meta itemprop="datePublished" content="2015-02-04T21:37:39+08:00" />
+<meta itemprop="dateModified" content="2015-02-04T21:37:39+08:00" />
+<meta itemprop="wordCount" content="1219">
+
+
+
+<meta itemprop="keywords" content="技术," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="IOPS 介绍"/>
+<meta name="twitter:description" content="An introduce to IOPS"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">IOPS 介绍</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2015-02-04 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 1219 字 </span>
+          <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#概念">概念</a></li>
+    <li><a href="#io-时间">IO 时间</a>
+      <ul>
+        <li><a href="#机械磁盘">机械磁盘</a></li>
+        <li><a href="#固态硬盘">固态硬盘</a></li>
+      </ul>
+    </li>
+    <li><a href="#指标">指标</a></li>
+    <li><a href="#参考链接">参考链接</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>依旧是自己不甚清楚的一个概念，希望通过自己的整理来加深印象，也希望这篇介绍能帮助
+到其他人。</p>
+<h1 id="概念">概念</h1>
+<p>IOPS,即<code>Input/Output Operations Per Second</code>,每秒钟执行 IO 请求的次数,一般即指读写
+数据操作，是衡量存储性能的主要指标之一。Throughput(吞吐量)表示的是每秒数据的传输总量，是另一个主要指标。
+二者关注点不同，对于小 I/O，且传输 I/O 数量比较大的情况下，以 IOPS 衡量为宜，比如
+OLTP(<code>On-Line Transcation Processing</code>)系统、小文件存储、邮件服务器等。而对于经常传输
+大量连续数据的系统，以吞吐量衡量为宜，比如视频点播、视频编辑等。</p>
+<h1 id="io-时间">IO 时间</h1>
+<h2 id="机械磁盘">机械磁盘</h2>
+<p>机械磁盘完成一次 I/O 请求所花费的时间由寻道时间、旋转延迟
+和数据传输时间三部分构成：</p>
+<p><img src="http://hangyan.github.io/images/posts/IOPS/hdd.png" alt=" " title="hdd"></p>
+<ol>
+<li>
+<p>寻道时间</p>
+<p>将读写磁头移动至正确的磁道上所需的时间。目前磁盘的平均寻道时间一般在 3-15ms.</p>
+</li>
+<li>
+<p>旋转延迟</p>
+<p>盘片旋转将请求数据所在扇区移至读写磁头下方所需时间。旋转延迟取决于磁盘转速，
+通常使用磁盘旋转一周所需时间的 1/2 表示。比如 7200 rpm (每分钟 7200 转)的磁盘，其平
+均旋转延迟约为 <code>60*1000/7200/2 = 4.17ms</code>。</p>
+</li>
+<li>
+<p>传输时间</p>
+<p>完成传输所请求的数据所需要的时间，它取决于数据传输率，其值等于数据大小除以数
+据传输率。目前 IDE/ATA 能达到 133MB/s，SATA II 可达到 300MB/s 的接口数据传输率，数
+据传输时间通常远小于前两部分。</p>
+</li>
+</ol>
+<p>因此，如果忽略数据传输时间，就可以计算出机械磁盘的最大 IOPS.假设磁盘平均物理寻道时间
+为 3ms, 磁盘转速为 7200,10K,15K rpm，则磁盘 IOPS 理论最大值分别为:</p>
+<pre><code> IOPS = 1000 / (3 + 60000/7200/2)  = 140
+ IOPS = 1000 / (3 + 60000/10000/2) = 167
+ IOPS = 1000 / (3 + 60000/15000/2) = 200
+</code></pre>
+<h2 id="固态硬盘">固态硬盘</h2>
+<p>固态硬盘 SSD 是一种电子装置， 避免了传统磁盘在寻道和旋转上的时间花费，存储单元寻址
+开销大大降低，因此 IOPS 可以非常高，能够达到数万甚至数十万。</p>
+<h1 id="指标">指标</h1>
+<p>实际测量中，IOPS 数值会受到很多因素的影响，包括 I/O 负载特征(读写比例，顺序和随机，
+工作线程数，队列深度，数据记录大小)、系统配置、操作系统、磁盘驱动等等。因此对比
+测量磁盘 IOPS 时，必须在同样的测试基准下进行，即便如何也会产生一定的随机不确定性。
+通常情况下，IOPS 可细分为如下几个指标：</p>
+<ol>
+<li>
+<p>Toatal IOPS，混合读写和顺序随机 I/O 负载情况下的磁盘 IOPS，这个与实际 I/O 情况最为
+相符，大多数应用关注此指标。</p>
+</li>
+<li>
+<p>Random Read IOPS，100%随机读负载情况下的 IOPS.</p>
+</li>
+<li>
+<p>Random Write IOPS，100%随机写负载情况下的 IOPS。</p>
+</li>
+<li>
+<p>Sequential Read IOPS，100%顺序负载读情况下的 IOPS。</p>
+</li>
+<li>
+<p>Sequential Write IOPS，100%顺序写负载情况下的 IOPS。</p>
+</li>
+</ol>
+<p>对于 HDDs 和类似的机械存储设备,<code>random IOPS</code>的时间主要取决于寻道时间，但是对于 SSD
+或类似的固态存储设备，则主要取决于存储设备内部的控制器以及<code>memeory interface speeds</code>.
+在两种设备上，<code>Sequential IOPS</code>(尤其是使用大的数据块的时候)一般都指示了存储设备
+的最大带宽:</p>
+<pre><code>    IOPS * TransferSizeInBytes = BytesPerSec
+</code></pre>
+<h1 id="参考链接">参考链接</h1>
+<ol>
+<li><a href="http://www.csdn.net/article/2015-01-14/2823552">论存储 IOPS 和 Throughput 吞吐量之间的关系</a></li>
+<li><a href="http://tech.it168.com/a2012/0704/1368/000001368113_all.shtml">数据库应用类型：OLTP 与 OLAP 的比较</a></li>
+<li><a href="http://blog.csdn.net/liuaigui/article/details/6168186">磁盘 IOPS 计算与测量</a></li>
+<li><a href="http://zh.wikipedia.org/wiki/%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98">固态硬盘</a></li>
+<li><a href="http://elf8848.iteye.com/blog/1731274">磁盘性能指标&ndash;IOPS 理论</a></li>
+<li><a href="http://storage.it168.com/a2011/0104/1145/000001145668_all.shtml">探究 SSD 固态硬盘性能下降谜题</a></li>
+<li><a href="http://wenku.baidu.com/view/c4679add6f1aff00bed51e79.html">队列深度对硬盘性能的影响</a></li>
+</ol>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2015-02-04
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E6%8A%80%E6%9C%AF/">技术</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2015-02-05-docker-source-code-part3-daemon-start/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">docker 源码分析(3) -- daemon 启动流程</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2015-01-30-docker-source-code-part2-start-and-args/">
+            <span class="next-text nav-default">docker 源码分析(2) -- 主程序及命令行参数解析</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

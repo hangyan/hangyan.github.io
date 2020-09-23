@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>CI/CD on 工业革命</title>
+    <link>http://yanhang.me/tags/ci/cd/</link>
+    <description>Recent content in CI/CD on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language><atom:link href="http://yanhang.me/tags/ci/cd/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>失败博物馆 - Jenkins</title>
+      <link>http://yanhang.me/post/2019-08-22-fuck-jenkins/</link>
+      <pubDate>Thu, 22 Aug 2019 17:02:37 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-08-22-fuck-jenkins/</guid>
+      <description>我想记录一下工作中使用过的软件里的一些在设计上比较失败的。因为它们，工作中多了很多痛苦。 Jenkins 便是其中之一。跟很多软件一样，Jenkins 在商业</description>
+    </item>
+    
+    <item>
+      <title>在 Gitlab 中使用 Danger</title>
+      <link>http://yanhang.me/post/2019-05-07-gitlab-danger/</link>
+      <pubDate>Tue, 07 May 2019 23:23:52 +0000</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-05-07-gitlab-danger/</guid>
+      <description>Gitlab 社区版的 CI 功能非常好用，能够很方便的地做到代码的 lint/build/test/等等。不过社区版在多人协作上(比如 Merge Request)上阉割</description>
+    </item>
+    
+  </channel>
+</rss>

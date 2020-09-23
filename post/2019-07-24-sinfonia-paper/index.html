@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Sinfonia: a new paradigm for building scalable distributed systems - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="论文链接: Sinfonia: a new paradigm for building scalable distributed systems Sinfornia 像是一个构建分布式系统的 SDK 。目前的市面上分布式系统已经非常多了，比如 etcd, zookeeper, ceph 等等。但他们都是分别实现的，彼此之间" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2019-07-24-sinfonia-paper/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Sinfonia: a new paradigm for building scalable distributed systems" />
+<meta property="og:description" content="论文链接: Sinfonia: a new paradigm for building scalable distributed systems Sinfornia 像是一个构建分布式系统的 SDK 。目前的市面上分布式系统已经非常多了，比如 etcd, zookeeper, ceph 等等。但他们都是分别实现的，彼此之间" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2019-07-24-sinfonia-paper/" />
+<meta property="article:published_time" content="2019-07-24T17:22:10+00:00" />
+<meta property="article:modified_time" content="2019-07-24T17:22:10+00:00" />
+<meta itemprop="name" content="Sinfonia: a new paradigm for building scalable distributed systems">
+<meta itemprop="description" content="论文链接: Sinfonia: a new paradigm for building scalable distributed systems Sinfornia 像是一个构建分布式系统的 SDK 。目前的市面上分布式系统已经非常多了，比如 etcd, zookeeper, ceph 等等。但他们都是分别实现的，彼此之间">
+<meta itemprop="datePublished" content="2019-07-24T17:22:10+00:00" />
+<meta itemprop="dateModified" content="2019-07-24T17:22:10+00:00" />
+<meta itemprop="wordCount" content="2340">
+
+
+
+<meta itemprop="keywords" content="论文,分布式,笔记," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Sinfonia: a new paradigm for building scalable distributed systems"/>
+<meta name="twitter:description" content="论文链接: Sinfonia: a new paradigm for building scalable distributed systems Sinfornia 像是一个构建分布式系统的 SDK 。目前的市面上分布式系统已经非常多了，比如 etcd, zookeeper, ceph 等等。但他们都是分别实现的，彼此之间"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Sinfonia: a new paradigm for building scalable distributed systems</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-07-24 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 2340 字 </span>
+          <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#memory-node">Memory Node</a></li>
+        <li><a href="#minitranscation">Minitranscation</a></li>
+        <li><a href="#两阶段提交">两阶段提交</a></li>
+        <li><a href="#cache">Cache</a></li>
+        <li><a href="#容错">容错</a></li>
+        <li><a href="#垃圾回收">垃圾回收</a></li>
+        <li><a href="#数据备份">数据备份</a></li>
+        <li><a href="#评论">评论</a></li>
+        <li><a href="#链接">链接</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <!-- toc -->
+<p>论文链接: <a href="http://www.sosp2007.org/papers/sosp064-aguilera.pdf">Sinfonia: a new paradigm for building scalable distributed systems</a></p>
+<p>Sinfornia 像是一个构建分布式系统的 SDK 。目前的市面上分布式系统已经非常多了，比如 etcd, zookeeper, ceph 等等。但他们都是分别实现的，彼此之间的代码并无太多借鉴。Sinfonia 的实践是很难得的，可以说比大部分的分布式软件都更有指导价值一些。</p>
+<p><img src="/images/sinfonia/arc.png" alt=""></p>
+<p>这个图中展示了 Sinfonia 中关键的几部分</p>
+<ul>
+<li>user library: SDK 部分，隐藏了分布式系统处理内部细节的 SDK。用户基于 user library 来开发分布式应用</li>
+<li>minitranscations: Sinfonia 的核心概念。一个分布式的事物机制</li>
+<li>application node: 应用节点</li>
+<li>memory node: 维持分布式系统内部状态的节点。</li>
+</ul>
+<p>图中没有画出的有</p>
+<ul>
+<li>管理节点: 用于执行一些定期的 recover 任务</li>
+<li><code>directory node</code>: Application Node 访问 Memory Node 使用的是逻辑 id,   directory node 记录了逻辑 id 与 真实地址的映射。</li>
+</ul>
+<h2 id="memory-node">Memory Node</h2>
+<p>Memory Node 存储了应用的状态数据，根据不同情况，可能是存在 RAM 中，也可能是在磁盘上。 user library 封装了操作 Memory Node 中数据的方式。Application Node 可以与 Memory Node 是同台机器也可以是不同机器(有些 Application 出于性能考虑会需要 Applicaiton Node 与 Memory Node 为同台机器，Sinfonia 会告知 Application 此种情况以便让其尽量把数据写在本机)。</p>
+<p>Sinfonia 的一个特点是，它的数据结构可以理解为都是字节数组，目的是为了解耦。每个 Memory Node 都只负责管理字节数组，并且可以通过 <code>(memory-node-id, address)</code> 这样的序列来定位具体的数据。user library 即封装了操纵 Memory Node 上这些字节数组的细节。</p>
+<p>Memory Node是多个，出于数据 locality 的考虑，Sinafonia 并不提供负责均衡策略，而是让 Application 自己选择 Memory Node。Sinfonia 给 Application 提供了 Memory Node 的 load 信息供其参考。</p>
+<h2 id="minitranscation">Minitranscation</h2>
+<p>Minitranscation 可以说是 Sinfonia 的核心了。Application 可以通过它来访问和修改 Memory Node，并且保证一致性，持久性，隔离性以及可靠性。 它有如下优点:</p>
+<ol>
+<li>允许用户将多次操作放到一个 batch 里面</li>
+<li>可以直接在 commit protocol 里执行?</li>
+<li>minitransactions can execute in parallel with a replication scheme ?</li>
+</ol>
+<p>一个 Minitranscation 包含三类操作, 按执行顺序如下所示:</p>
+<ul>
+<li>compare items: 对比发送的数据与已经存储的数据。如果对比不相等，或者出错，那么整个 transcation 中断。</li>
+<li>read items: 比较成功(相等), 读取数据</li>
+<li>write items: 比较成功(相等), 写入数据</li>
+</ul>
+<p><img src="/images/sinfonia/minitranscation.png" alt=""></p>
+<p>这几个 items 的组合能够实现我们普遍需要的一些原子语义:</p>
+<ul>
+<li><code>swap</code>: read -&gt; write</li>
+<li><code>compare-and-swap</code>: compare -&gt; write</li>
+<li><code>acquire-lease</code>: compare 0 -&gt; write id</li>
+</ul>
+<h2 id="两阶段提交">两阶段提交</h2>
+<p>标准的 two-phase commit 里，如果 coordinator 崩溃，整个系统需等待其恢复后才可用。在 Sinfonia 中，coodinator 就在 application node, 如果它不可用，系统并不会阻塞。而是阻塞在出问题的 Meomory Node 上（因为 Memory Node 保存了系统的核心数据，并且 Memory Node 有 replicate 机制来保证高可用性coodinator 的作用减轻了，它并不需要维持状态。只要在 Meomory Node 处理失败时重试即可。</p>
+<p>需要注意的是， 在 phase 1,  participant 在获取锁后，首先对 compare items 进行比较，如果成功，vote commit, 然后读取 read items ，记录 transcations(<code>redo-log</code>，只包含 write items).否则就 vote abort,释放锁并反悔了。</p>
+<p>在 phase 2, coordinator 汇总结果，告知 participants 是 commit 还是 abort。如果是 commit, partcipants 开始写入 write items。</p>
+<h2 id="cache">Cache</h2>
+<p>cache 放置在 Application 层，而不是在 Memory Node 上。这样做的好处有:</p>
+<ul>
+<li>灵活性更好</li>
+<li>Application 对于  cache 的利用率比较高</li>
+<li>Sinfonia 的架构更为简单，从 Sinfonia 获取到的数据永远都是最新的</li>
+</ul>
+<p>Minitranscations 提供的 <code>compare</code> 机制可以让 Application 方便地校验其本地的 cache 是否有效。</p>
+<h2 id="容错">容错</h2>
+<p>Sinfonia 使用四种机制来提供 Meomory Node 容错功能:</p>
+<ul>
+<li><code>disk images</code>: 保存 memory node 的数据的 copy。异步写，数据可能会比较老。reply <code>repo-log</code> 可以再 memory 数据丢失的时候进行恢复。</li>
+<li><code>logging</code>: 同步写，保存最近的数据更新</li>
+<li><code>replication</code>: 一个 stand-by 的 node。同步更新</li>
+<li><code>backup</code>: 数据备份。如果 disk images 数据丢失，可以尝试从 backup 恢复。</li>
+</ul>
+<p>上面说到 coordinator 的作用在 two-phase commit 中的作用被削弱，因为其不保存状态。在其 crash 时，会使一些 transcation 陷入不确定状态。 Sinfonia 引入了一个 <code>recovery coordinator</code> 来解决这个问题。首先，每个 Momory Node 会记录其处理的一些 transcations 的状态，如下图所示:</p>
+<p><img src="/images/sinfonia/log.png" alt=""></p>
+<p>recovery coordinator 会循环执行，读取 Memory Node 的记录，从 <code>in-doubt</code> list 中读取那些未提交的 transcations 并尝试恢复。首先，在 phase 1, recovery coordinator 要求所有的 participants vote abort。如果一个 participants 已经 vote 过了，那么就使用之前的 vote ，否则就 vote abort。phase 2 就跟普通的流程一样。 所以假设之前的 participants 都 vote 了 commit ，然后 coordinator 不可用，那么 recovery coordinator 就能将这个 transcations commit 了。否则就是 abort 。</p>
+<p>如果一个 Memory Node crash, 上图中的 <code>decided</code> list 可以辅助 <code>disk-image</code> 用来恢复 Meomory Node 的内存数据。因为它也是异步写的，会有一些 transcations 存在于 <code>redo-log</code> 但不在 <code>decided</code> 中。这种情况下需要联系其他 particants 看他们的 vote 结果来判定这个 transcations 是否需要 replay。(参与某个 transcations 的particants都记录在 redo-log 中)</p>
+<p>如果大部分或者所有 Memory Node crash, 管理节点会启动程序来尝试恢复。关于管理节点，论文中并未着重介绍。目前提到的就两个地方，一个是用于recovery coordinator,一个便是恢复整个系统的。所以看起来更像是一个救火的，并不是常驻服务。在此种情况下，每个 Meomory Node 都会用上面所说的方式进行自我恢复。但是可以通过主动向其他 Meomory Node 发送自己的最近的 transcations 来避免像上面那样的主动询问(交互量上的优化)。</p>
+<h2 id="垃圾回收">垃圾回收</h2>
+<p><code>redo-log</code>以及其他 log 随着时间的增长肯定是不断增加的，所以需要进行定期的垃圾回收。对于已经 aborted 的 transcation, 可以直接回收。对于已经 commited 的 transcation, 需要确保每个参与的 momory node 都将数据落地了。(因为会有 Node crash 的情况)。其他的 list 也会随着 redo-log 的清理同步回收一些 transcations。</p>
+<p><code>forced-abort</code> list 的回收要复杂些。因为 Sinfonia 允许 origin 和 recovery 两个 coordinator 同时运行。如果直接回收，会导致正在运行的 coordinator 出错(它仍想处理这个 transcation)。 Sinfornia 加了一个 <code>epoch number</code> 来处理这种情况。epoch number 与时间相关，由participants 定义并返回给 coordinator。每个 transcation 都与一个 <code>epoch number</code> 绑定。partipants 可以拒绝<code> stale</code> 的 epoch（大于等于两个 epoch 的差距）。那么 <code>forced-abort</code> 中早期的 trancations 都可以被回收掉，因为如果要重试肯定会被 abort 掉。</p>
+<h2 id="数据备份">数据备份</h2>
+<p>transication -&gt; redo-log -&gt; disk-image -&gt; backup 。当然 disk-image 只会更新已经 commited 的 transcations， backup 可以从 disk-image 做整个 copy 或者 snapshot。</p>
+<h2 id="评论">评论</h2>
+<p>这个论文引用次数还挺多。但是感觉设计的还是挺零碎的，一些核心概念可以借鉴，但作为一个整体还是感觉不太可靠。另外，不是很懂它是如何做到小部分 Memory Node 不可用时仍然保证系统可用的?</p>
+<h2 id="链接">链接</h2>
+<ol>
+<li><a href="https://zhuanlan.zhihu.com/p/34421583">论文笔记：[SOSP 2007] Sinfonia: a new paradigm for building scalable distributed systems</a></li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-07-24
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E8%AE%BA%E6%96%87/">论文</a>
+          <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+          <a href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2019-07-27-poi/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">《疑犯追踪》的有趣小知识</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2019-07-19-waste-sorting-game/">
+            <span class="next-text nav-default">垃圾分类模拟游戏设定</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>闪存 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="基本定义 NOR / NAND 写/擦除 eMMC / UFS Links 本来看华为新弄了 FS 和编译器，想学习下。但是目前似乎放出来的技术资料并不多，就先做下技术储备。先研究下他们做这个" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2019-04-18-flash/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="闪存" />
+<meta property="og:description" content="基本定义 NOR / NAND 写/擦除 eMMC / UFS Links 本来看华为新弄了 FS 和编译器，想学习下。但是目前似乎放出来的技术资料并不多，就先做下技术储备。先研究下他们做这个" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2019-04-18-flash/" />
+<meta property="article:published_time" content="2019-04-18T21:01:13+08:00" />
+<meta property="article:modified_time" content="2019-04-18T21:01:13+08:00" />
+<meta itemprop="name" content="闪存">
+<meta itemprop="description" content="基本定义 NOR / NAND 写/擦除 eMMC / UFS Links 本来看华为新弄了 FS 和编译器，想学习下。但是目前似乎放出来的技术资料并不多，就先做下技术储备。先研究下他们做这个">
+<meta itemprop="datePublished" content="2019-04-18T21:01:13+08:00" />
+<meta itemprop="dateModified" content="2019-04-18T21:01:13+08:00" />
+<meta itemprop="wordCount" content="1309">
+
+
+
+<meta itemprop="keywords" content="存储,硬件," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="闪存"/>
+<meta name="twitter:description" content="基本定义 NOR / NAND 写/擦除 eMMC / UFS Links 本来看华为新弄了 FS 和编译器，想学习下。但是目前似乎放出来的技术资料并不多，就先做下技术储备。先研究下他们做这个"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">闪存</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-04-18 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            </div>
+          <span class="more-meta"> 约 1309 字 </span>
+          <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#基本定义">基本定义</a></li>
+        <li><a href="#nor--nand">NOR / NAND</a></li>
+        <li><a href="#写擦除">写/擦除</a></li>
+        <li><a href="#emmc--ufs">eMMC / UFS</a></li>
+        <li><a href="#links">Links</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <!-- toc -->
+<ul>
+<li><a href="#%E5%9F%BA%E6%9C%AC%E5%AE%9A%E4%B9%89">基本定义</a></li>
+<li><a href="#nor--nand">NOR / NAND</a></li>
+<li><a href="#%E5%86%99%E6%93%A6%E9%99%A4">写/擦除</a></li>
+<li><a href="#emmc--ufs">eMMC / UFS</a></li>
+<li><a href="#links">Links</a></li>
+</ul>
+<!-- tocstop -->
+<p>本来看华为新弄了 FS 和编译器，想学习下。但是目前似乎放出来的技术资料并不多，就先做下技术储备。先研究下他们做这个优化的历史背景。一路看下来发现链路太长，EXT4、更早的文件系统、最后到了闪存。
+大学课堂上学过，但到现在真要考我，估计也说不出个所以然，所以先记录下闪存相关的笔记。</p>
+<h2 id="基本定义">基本定义</h2>
+<p>ROM 的一种，虽然看着是<code>read only</code>，但是闪存属于的细分类别已经可以允许重写数据(EEPROM)。比较接近的两种细分类别对比来看：</p>
+<ul>
+<li>EPROM: 需要用紫外线照射才能重写数据(注定要被淘汰的技术)</li>
+<li>EEPROM: 多的一个<code>E</code>便是<code>Electrically</code>，可以用电擦除数据</li>
+</ul>
+<p>自然 EEPROM 的应用更加广泛。目前手机上的存储主要就是闪存（EEPROM)。闪存用于手机等移动设备的一些原因如下:</p>
+<ol>
+<li>动态抗震性好(没有机械部件)</li>
+<li>极端环境下也比较可靠(手机三防)</li>
+<li>在擦除数据时比一般的 EEPROM 效率更高(区块对字节)</li>
+</ol>
+<h2 id="nor--nand">NOR / NAND</h2>
+<p>两种 flash 的类型，直接上一个比较简单的表格对比：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">NOR</th>
+<th style="text-align:center">NAND</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">抹写速度</td>
+<td style="text-align:center">慢</td>
+<td style="text-align:center">快</td>
+</tr>
+<tr>
+<td style="text-align:center">抹写次数</td>
+<td style="text-align:center">低</td>
+<td style="text-align:center">高 (10x)</td>
+</tr>
+<tr>
+<td style="text-align:center">存取方式</td>
+<td style="text-align:center">随机</td>
+<td style="text-align:center">区块</td>
+</tr>
+<tr>
+<td style="text-align:center">成本</td>
+<td style="text-align:center">高</td>
+<td style="text-align:center">低</td>
+</tr>
+<tr>
+<td style="text-align:center">面积</td>
+<td style="text-align:center">大</td>
+<td style="text-align:center">小</td>
+</tr>
+<tr>
+<td style="text-align:center">适用场景</td>
+<td style="text-align:center">微处理器</td>
+<td style="text-align:center">普通存储</td>
+</tr>
+<tr>
+<td style="text-align:center">实际使用</td>
+<td style="text-align:center">BIOS/机顶盒</td>
+<td style="text-align:center">U 盘/SSD</td>
+</tr>
+</tbody>
+</table>
+<h2 id="写擦除">写/擦除</h2>
+<p>这也是一个容易忽略但是细究起来很容易让人迷惑的东西。为什么闪存有擦除的概念?
+简单来讲，由于闪存特殊的物理构造，可以理解为<code>写</code>操作只能写入<code>0</code>,擦除操作相当于写入<code>1</code>。<a href="https://zhuanlan.zhihu.com/p/35115499">手机闪存和固态硬盘为什么擦除多了会损坏？</a>这篇文章提供了具体的电路图示意：</p>
+<p><img src="https://pic4.zhimg.com/80/v2-ad58e77cccf81f51b00fdd9520deee5b_hd.jpg" alt=""></p>
+<p>这个是写操作，控制栅加正电压，将电子（带负电）吸入浮动栅。在此后，由于浮动栅上下的二氧化硅材料并不导电，这些电子被囚禁（Trap）在浮动栅之中，出不去了。这样无论今后控制栅电压有否，这个状态都会保持下去，所以闪存可以掉电保存数据。注意写操作完毕后，该闪存单元存储的是 0。</p>
+<p><img src="https://pic4.zhimg.com/80/v2-5678979dfd96659c36acdf894d991fff_hd.jpg" alt="">
+这个是擦除操作。在源极加正电压利用浮空栅与漏极之间的隧道效应，将注入到浮空栅的负电荷吸引到源极，排空浮动栅的电子。这时读取的状态是 1。</p>
+<p>具体为什么分别对应于 0/1 以及读取的逻辑，可参考链接的文章，这里不再赘述。这里重点要说下擦除的逻辑，理论上来说，闪存可以每个单元来单独擦除和编程。但是为了节省成本，实际上作用在控制栅上的擦除电压是整个块（Block）连接在一起的，所以实际的擦除要以块为单位了。这里出现了一种不对称：可以单一字节的方式读或写入，但是擦除一定是一整个区块。
+举个例子，有一小区块的值已抹除为 1111，然后写入 1110 的消息。接下来这个区块还可以依序写入 1010、0010，最后则是 0000。不能说从 0010 直接写为 0011 了，必须整个擦除为 1111 之后重写。实际上很少有算法可以从这种连续写入兼容性得到好处，一般来说还是整块抹除再重写。</p>
+<p>这个限制也会极大地影响闪存之上的文件系统的设计。</p>
+<h2 id="emmc--ufs">eMMC / UFS</h2>
+<p>华为 P10 将这两个东西带到大众视野面前。可以说 UFS/eMMC 是一种内嵌式存储器的标准规格（基于闪存介质的基础上集成主控芯片，而且拥有标准接口）</p>
+<p>还是表格对比</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th>eMMC</th>
+<th>UFS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">全拼</td>
+<td>embedded MultiMedia Card</td>
+<td>Universal Flash Storage</td>
+</tr>
+<tr>
+<td style="text-align:center">读写速度</td>
+<td>50MB/S - 600MB/S</td>
+<td>780MB/S - 1.5GB/S</td>
+</tr>
+<tr>
+<td style="text-align:center">价格(仅作对比)</td>
+<td>67 - 145RMB</td>
+<td>285RMB</td>
+</tr>
+<tr>
+<td style="text-align:center">工作模式</td>
+<td>半双工</td>
+<td>全双工模式</td>
+</tr>
+</tbody>
+</table>
+<h2 id="links">Links</h2>
+<ol>
+<li><a href="https://zh.wikipedia.org/wiki/%E9%97%AA%E5%AD%98">维基百科:闪存</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/26745577">杂谈闪存二：NOR 和 NAND Flash</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/42998104">有关手机闪存类型的一些知识</a></li>
+<li><a href="https://mobile.pconline.com.cn/913/9130147.html">UFS 与 eMMC 到底是啥？3 分钟带你看懂它们的秘密</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/26551438">浅谈 SSD，eMMC，UFS</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/35115499">手机闪存和固态硬盘为什么擦除多了会损坏？</a></li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-04-18
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E5%AD%98%E5%82%A8/">存储</a>
+          <a href="/tags/%E7%A1%AC%E4%BB%B6/">硬件</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2019-04-20-jffs3/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">JFFS3 文件系统</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2019-04-15-video-test/">
+            <span class="next-text nav-default">视频测试</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

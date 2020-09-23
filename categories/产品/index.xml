@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>产品 on 工业革命</title>
+    <link>http://yanhang.me/categories/%E4%BA%A7%E5%93%81/</link>
+    <description>Recent content in 产品 on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 12 Sep 2020 12:30:28 +0800</lastBuildDate><atom:link href="http://yanhang.me/categories/%E4%BA%A7%E5%93%81/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hugo 的优点</title>
+      <link>http://yanhang.me/post/fuck-hexo/</link>
+      <pubDate>Sat, 12 Sep 2020 12:30:28 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/fuck-hexo/</guid>
+      <description>经历了 N 次在各个不同的环境里初始化 Hexo 的环境失败之后，我终于换了 Hugo. 从 Jekyll -&amp;gt; Hexo -&amp;gt; Hugo 我算是发现了，依赖不好处理的平台根本不适合做 static blog generato</description>
+    </item>
+    
+  </channel>
+</rss>

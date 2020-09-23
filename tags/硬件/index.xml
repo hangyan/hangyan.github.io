@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>硬件 on 工业革命</title>
+    <link>http://yanhang.me/tags/%E7%A1%AC%E4%BB%B6/</link>
+    <description>Recent content in 硬件 on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 18 Apr 2019 21:01:13 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/%E7%A1%AC%E4%BB%B6/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>闪存</title>
+      <link>http://yanhang.me/post/2019-04-18-flash/</link>
+      <pubDate>Thu, 18 Apr 2019 21:01:13 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2019-04-18-flash/</guid>
+      <description>基本定义 NOR / NAND 写/擦除 eMMC / UFS Links 本来看华为新弄了 FS 和编译器，想学习下。但是目前似乎放出来的技术资料并不多，就先做下技术储备。先研究下他们做这个</description>
+    </item>
+    
+  </channel>
+</rss>
