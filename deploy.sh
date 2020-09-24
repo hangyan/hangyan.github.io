@@ -14,7 +14,7 @@ git add .
 git commit -m "Update site"
 
 # Push source and build repos.
-git push upstream master
+git push origin master --force
 
 # Come Back up to the Project Root
 cd ..
