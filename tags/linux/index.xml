@@ -6,7 +6,16 @@
     <description>Recent content in Linux on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 10 Sep 2020 16:01:54 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 19 Oct 2020 13:12:59 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ARM指针的一些安全功能</title>
+      <link>http://yanhang.me/post/arm-pointer/</link>
+      <pubDate>Mon, 19 Oct 2020 13:12:59 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/arm-pointer/</guid>
+      <description>伴随着 ARM 平台的越来越普及，Linux 内核对其的支持也逐渐丰富。而且 ARM 的设计也有很多独特的优点，本文将介绍在 ARM 平台关于指针操作的一些安全方面的</description>
+    </item>
+    
     <item>
       <title>统信 UOS 究竟咋样</title>
       <link>http://yanhang.me/post/2020-09-10-uos/</link>

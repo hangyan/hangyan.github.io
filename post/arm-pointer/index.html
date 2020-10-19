@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>ARM指针的一些安全功能 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="伴随着 ARM 平台的越来越普及，Linux 内核对其的支持也逐渐丰富。而且 ARM 的设计也有很多独特的优点，本文将介绍在 ARM 平台关于指针操作的一些安全方面的" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/arm-pointer/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="ARM指针的一些安全功能" />
+<meta property="og:description" content="伴随着 ARM 平台的越来越普及，Linux 内核对其的支持也逐渐丰富。而且 ARM 的设计也有很多独特的优点，本文将介绍在 ARM 平台关于指针操作的一些安全方面的" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/arm-pointer/" />
+<meta property="article:published_time" content="2020-10-19T13:12:59+08:00" />
+<meta property="article:modified_time" content="2020-10-19T13:12:59+08:00" />
+<meta itemprop="name" content="ARM指针的一些安全功能">
+<meta itemprop="description" content="伴随着 ARM 平台的越来越普及，Linux 内核对其的支持也逐渐丰富。而且 ARM 的设计也有很多独特的优点，本文将介绍在 ARM 平台关于指针操作的一些安全方面的">
+<meta itemprop="datePublished" content="2020-10-19T13:12:59+08:00" />
+<meta itemprop="dateModified" content="2020-10-19T13:12:59+08:00" />
+<meta itemprop="wordCount" content="823">
+
+
+
+<meta itemprop="keywords" content="安全,Linux,Kernel," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="ARM指针的一些安全功能"/>
+<meta name="twitter:description" content="伴随着 ARM 平台的越来越普及，Linux 内核对其的支持也逐渐丰富。而且 ARM 的设计也有很多独特的优点，本文将介绍在 ARM 平台关于指针操作的一些安全方面的"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">ARM指针的一些安全功能</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-10-19 </span>
+        <div class="post-category">
+            <a href="/categories/kernel/"> Kernel </a>
+            </div>
+          <span class="more-meta"> 约 823 字 </span>
+          <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#pointer-authentication">Pointer Authentication</a></li>
+        <li><a href="#memory-tagging">Memory Tagging</a></li>
+        <li><a href="#总结">总结</a></li>
+        <li><a href="#links">Links</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>伴随着 ARM 平台的越来越普及，Linux 内核对其的支持也逐渐丰富。而且 ARM 的设计也有很多独特的优点，本文将介绍在 ARM 平台关于指针操作的一些安全方面的设计。</p>
+<h2 id="pointer-authentication">Pointer Authentication</h2>
+<p>很多攻击都是通过骇客设计的不安全指针进行的。比如 <code>buffer-overflow</code> 和 <code>return-oriented programming</code>, 都是通过在返回地址放置一个指针来进行的。内核已经针对这个问题做了很多改善，ARM 提供了 <code>pointer authentication</code> 来检测和拒绝这种插入的非法指针。</p>
+<p>简单来说，就是在指针上附加一个签名，要想使用一个指针，先得签名验证通过。如果是外部的攻击者，它没法伪造这种签名，那么自己就不能制造指针来进行攻击了。</p>
+<p>目前一般指针都是64位，但一般都不是所有bit都是用了。ARM64的系统，如果是三级页表，那么只有低位的40bit用来存放地址，那么其他的bit就可以用来干其他事情。 签名一般是通过以下几个参数确定:</p>
+<ul>
+<li>pointer 本身</li>
+<li>process context 里的一个 secret key, kernel生成 这个肯定是攻击者无法获取到的</li>
+<li>current stack pointer。防止签名过的pointer泄露被复用</li>
+</ul>
+<p>使用的话，需要先重新计算一下签名，确保二者对的上，然后把签名部署的数据清理掉，这时候就是一个正常的指针了。不然的话，就认为其非法。</p>
+<h2 id="memory-tagging">Memory Tagging</h2>
+<p><code>Memory Tagging</code>的做法与<code>Pointer Authentication</code>类似，都是利用指针里未利用的 bits 去存储一些信息。<code>Memory Tagging</code> 是利用 4bit 的信息存储了一个 key, 同时在 pointer 指向的内存地址里也存储了同样的 key. 当对指针进行解引用操作时，需要对比 pointer 里的 key 与实际内存地址里的 key 是否一致。如果不一致将会报错。这个功能有以下用处：</p>
+<ul>
+<li>被释放的内存可以修改其 key, 防止被二次引用</li>
+<li>每个 stack frame 分配一个 key, 越界访问也会报错</li>
+<li>野指针也能检测到</li>
+<li>&hellip;.</li>
+</ul>
+<p>这些 keys 可以用应用层来管理，也可以用 CPU 来随机生成。当用应用层来管理的时候，可以提前检测出内存方便的 bug.</p>
+<h2 id="总结">总结</h2>
+<p>上面两个功能是可以一起协同工作的，因为他们都分别占用了 pointer 里不用的一些 bits, 只要规划好分给各自的部分就好。如果 glibc 等相关部分的工作完善好，理论上应用层是不需要做任何改动就能享受到这些好处了。</p>
+<h2 id="links">Links</h2>
+<ol>
+<li><a href="https://lwn.net/Articles/718888/">ARM pointer authentication</a></li>
+<li><a href="https://www.qualcomm.com/media/documents/files/whitepaper-pointer-authentication-on-armv8-3.pdf">Pointer Authentication on ARMv8.3</a></li>
+<li><a href="https://developer.arm.com/-/media/Arm%20Developer%20Community/PDF/Arm_Memory_Tagging_Extension_Whitepaper.pdf">Armv8.5-A  Memory Tagging Extension</a></li>
+<li><a href="https://lwn.net/Articles/834289/">The Arm64 memory tagging extension in Linux</a></li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2020-10-19
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E5%AE%89%E5%85%A8/">安全</a>
+          <a href="/tags/linux/">Linux</a>
+          <a href="/tags/kernel/">Kernel</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/semantic-web/">
+            <span class="next-text nav-default">Semantic Web</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

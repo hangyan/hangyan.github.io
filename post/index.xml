@@ -6,7 +6,52 @@
     <description>Recent content in Posts on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 26 Sep 2020 12:53:41 +0800</lastBuildDate><atom:link href="http://yanhang.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 19 Oct 2020 13:12:59 +0800</lastBuildDate><atom:link href="http://yanhang.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ARM指针的一些安全功能</title>
+      <link>http://yanhang.me/post/arm-pointer/</link>
+      <pubDate>Mon, 19 Oct 2020 13:12:59 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/arm-pointer/</guid>
+      <description>伴随着 ARM 平台的越来越普及，Linux 内核对其的支持也逐渐丰富。而且 ARM 的设计也有很多独特的优点，本文将介绍在 ARM 平台关于指针操作的一些安全方面的</description>
+    </item>
+    
+    <item>
+      <title>Semantic Web</title>
+      <link>http://yanhang.me/post/semantic-web/</link>
+      <pubDate>Sat, 17 Oct 2020 11:56:20 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/semantic-web/</guid>
+      <description>最近开始关注Semantic Web的原因是Abstract Wikipedia项目的发展．作为一个很老的互联网课题，大家的愿景都是很清楚的：想</description>
+    </item>
+    
+    <item>
+      <title>关于&lt;罪与罚&gt;</title>
+      <link>http://yanhang.me/post/crime-and-punishment/</link>
+      <pubDate>Fri, 16 Oct 2020 17:44:06 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/crime-and-punishment/</guid>
+      <description>我不懂俄语，但是之前在网上看到过一些说法觉得很好玩的．大意是说俄国能出这么多长篇巨著是跟俄语本身有关系的，相比于英语等语言，作者更容易在写长</description>
+    </item>
+    
+    <item>
+      <title>Kubernetes Webhook Cert 方案</title>
+      <link>http://yanhang.me/post/k8s-webhook-cert/</link>
+      <pubDate>Fri, 16 Oct 2020 16:53:17 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/k8s-webhook-cert/</guid>
+      <description>Kubernetes 里的 Cert 数据是挺零散的一块，而 Webhook 中又强制要求必须是 HTTPS, 在实际使用的过程中尝试了几种方案，发现各有优劣，也都有不少问题．下面将分别详述一下: Cert Manager</description>
+    </item>
+    
+    <item>
+      <title>VSCode 和 Emacs</title>
+      <link>http://yanhang.me/post/vscode-and-emacs/</link>
+      <pubDate>Sun, 27 Sep 2020 12:28:55 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/vscode-and-emacs/</guid>
+      <description>除了 Emacs 和 Vim 之外的 Editor 战争，现在看起来 VSCode 已经赢了。 先不说现存的一些 Editor 的现状和对比，我们直接猜想一下一个比较完美的 editor 应该是什么样子的 modern look. 就是好看，</description>
+    </item>
+    
     <item>
       <title>喜剧中说话的节奏</title>
       <link>http://yanhang.me/post/about-talking/</link>

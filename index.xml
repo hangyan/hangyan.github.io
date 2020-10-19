@@ -6,7 +6,209 @@
         <description>Recent content on 工业革命</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
-        <lastBuildDate>Sat, 26 Sep 2020 12:53:41 +0800</lastBuildDate><atom:link href="http://yanhang.me/index.xml" rel="self" type="application/rss+xml" />
+        <lastBuildDate>Mon, 19 Oct 2020 13:12:59 +0800</lastBuildDate><atom:link href="http://yanhang.me/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>ARM指针的一些安全功能</title>
+            <link>http://yanhang.me/post/arm-pointer/</link>
+            <pubDate>Mon, 19 Oct 2020 13:12:59 +0800</pubDate>
+            
+            <guid>http://yanhang.me/post/arm-pointer/</guid>
+            <description>&lt;p&gt;伴随着 ARM 平台的越来越普及，Linux 内核对其的支持也逐渐丰富。而且 ARM 的设计也有很多独特的优点，本文将介绍在 ARM 平台关于指针操作的一些安全方面的设计。&lt;/p&gt;
+&lt;h2 id=&#34;pointer-authentication&#34;&gt;Pointer Authentication&lt;/h2&gt;
+&lt;p&gt;很多攻击都是通过骇客设计的不安全指针进行的。比如 &lt;code&gt;buffer-overflow&lt;/code&gt; 和 &lt;code&gt;return-oriented programming&lt;/code&gt;, 都是通过在返回地址放置一个指针来进行的。内核已经针对这个问题做了很多改善，ARM 提供了 &lt;code&gt;pointer authentication&lt;/code&gt; 来检测和拒绝这种插入的非法指针。&lt;/p&gt;
+&lt;p&gt;简单来说，就是在指针上附加一个签名，要想使用一个指针，先得签名验证通过。如果是外部的攻击者，它没法伪造这种签名，那么自己就不能制造指针来进行攻击了。&lt;/p&gt;
+&lt;p&gt;目前一般指针都是64位，但一般都不是所有bit都是用了。ARM64的系统，如果是三级页表，那么只有低位的40bit用来存放地址，那么其他的bit就可以用来干其他事情。 签名一般是通过以下几个参数确定:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;pointer 本身&lt;/li&gt;
+&lt;li&gt;process context 里的一个 secret key, kernel生成 这个肯定是攻击者无法获取到的&lt;/li&gt;
+&lt;li&gt;current stack pointer。防止签名过的pointer泄露被复用&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;使用的话，需要先重新计算一下签名，确保二者对的上，然后把签名部署的数据清理掉，这时候就是一个正常的指针了。不然的话，就认为其非法。&lt;/p&gt;
+&lt;h2 id=&#34;memory-tagging&#34;&gt;Memory Tagging&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;Memory Tagging&lt;/code&gt;的做法与&lt;code&gt;Pointer Authentication&lt;/code&gt;类似，都是利用指针里未利用的 bits 去存储一些信息。&lt;code&gt;Memory Tagging&lt;/code&gt; 是利用 4bit 的信息存储了一个 key, 同时在 pointer 指向的内存地址里也存储了同样的 key. 当对指针进行解引用操作时，需要对比 pointer 里的 key 与实际内存地址里的 key 是否一致。如果不一致将会报错。这个功能有以下用处：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;被释放的内存可以修改其 key, 防止被二次引用&lt;/li&gt;
+&lt;li&gt;每个 stack frame 分配一个 key, 越界访问也会报错&lt;/li&gt;
+&lt;li&gt;野指针也能检测到&lt;/li&gt;
+&lt;li&gt;&amp;hellip;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这些 keys 可以用应用层来管理，也可以用 CPU 来随机生成。当用应用层来管理的时候，可以提前检测出内存方便的 bug.&lt;/p&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;p&gt;上面两个功能是可以一起协同工作的，因为他们都分别占用了 pointer 里不用的一些 bits, 只要规划好分给各自的部分就好。如果 glibc 等相关部分的工作完善好，理论上应用层是不需要做任何改动就能享受到这些好处了。&lt;/p&gt;
+&lt;h2 id=&#34;links&#34;&gt;Links&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://lwn.net/Articles/718888/&#34;&gt;ARM pointer authentication&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.qualcomm.com/media/documents/files/whitepaper-pointer-authentication-on-armv8-3.pdf&#34;&gt;Pointer Authentication on ARMv8.3&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://developer.arm.com/-/media/Arm%20Developer%20Community/PDF/Arm_Memory_Tagging_Extension_Whitepaper.pdf&#34;&gt;Armv8.5-A  Memory Tagging Extension&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://lwn.net/Articles/834289/&#34;&gt;The Arm64 memory tagging extension in Linux&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Semantic Web</title>
+            <link>http://yanhang.me/post/semantic-web/</link>
+            <pubDate>Sat, 17 Oct 2020 11:56:20 +0800</pubDate>
+            
+            <guid>http://yanhang.me/post/semantic-web/</guid>
+            <description>&lt;p&gt;最近开始关注&lt;code&gt;Semantic Web&lt;/code&gt;的原因是&lt;code&gt;Abstract Wikipedia&lt;/code&gt;项目的发展．作为一个很老的互联网课题，大家的愿景都是很清楚的：想要一个语义更加清晰，更方便机器处理的互联网，然后构建一个真正的&lt;code&gt;互联网&lt;/code&gt;．但是市场的行为总是与技术理想有很大偏差，想要用后期的技术来补救，其成功的概率是很低的．&lt;code&gt;Abstract Wikipedia&lt;/code&gt; 的让人期待的地方在于，它成功的可能性更高，带来的改善也可能不止局限于&lt;code&gt;Wikipedia&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;先说什么是 &lt;code&gt;Abstract Wikipedia&lt;/code&gt;, 首先目前维基百科的内容结构大家基本上也都了解:不同语言分别维护，体量差异巨大．从一个程序设计的结构来讲，这种模式是很糟糕的，因为它抽象的程度太低，大量的内容无法复用，造成的 interface 对很多用户不友好: 不同语言内容差别大，同步不及时，维护工作繁重等等．之前的低地苏格兰语被一个美国小哥&lt;code&gt;勤奋&lt;/code&gt;地填充了大量的错误内容就是一例．&lt;/p&gt;
+&lt;p&gt;如何解决? 按程序设计的思路来看，需要分清&lt;code&gt;数据&lt;/code&gt;和&lt;code&gt;算法&lt;/code&gt;两部分，数据是什么，是语言无关的抽象知识，用抽象符号来表述知识．算法是什么？怎么来组织这些数据，让他们构成合理的语句．最后可能再需要一个&lt;code&gt;Render&lt;/code&gt;层，将结果最终呈现给用户．这基本上就是一个&lt;code&gt;MVC&lt;/code&gt;结构了．&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Abstract Wikipedia&lt;/code&gt;就是想做这个事情.数据部分，由&lt;code&gt;wikidata&lt;/code&gt;维护，大致如下所示的模式:
+&lt;img src=&#34;https://en.wikipedia.org/wiki/File:Datamodel_in_Wikidata.svg&#34; alt=&#34;&#34;&gt;
+可以打开这个&lt;a href=&#34;https://www.wikidata.org/wiki/Q5684409&#34;&gt;Hawaii State Public Library System&lt;/a&gt;的链接看下实际的数据是什么样子的．这部分的内容跟&lt;code&gt;RDF&lt;/code&gt;的结构很像,可以预见的是，以后&lt;code&gt;wikidata&lt;/code&gt;的内容越来越多，也能促进&lt;code&gt;Semantic Web&lt;/code&gt;本身的发展．&lt;/p&gt;
+&lt;p&gt;算法部分，由&lt;code&gt;wikilambda&lt;/code&gt;维护，这部分暂时还没有现成的实现，但是已经有初步的概要设计．一个完整的示例如下:
+假设原始语句为:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;San Francisco is the cultural, commercial, and financial center of Northern California. It is the fourth-most populous
+city in California, after Los Angeles, San Diego and San Jose
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;我们想把这个语句专为通用的结构化内容,那么数据部分如下:
+&lt;img src=&#34;http://yanhang.me/images/posts/semantic-web/data.png&#34; alt=&#34;&#34;&gt;
+(这部分数据完全可以用 RDF 表示出来)
+注意上面的 &lt;code&gt;Q62&lt;/code&gt;等，就代表着它们目前在&lt;code&gt;wikidata&lt;/code&gt;中的链接.有了这些数据，那么我们可以通过一个简单的函数把它们拼接成一句英语:
+&lt;img src=&#34;http://yanhang.me/images/posts/semantic-web/func.png&#34; alt=&#34;&#34;&gt;
+这是个比较简单的示例，真实的情况肯定会比目前复杂一些．但是理论上都可以通过更丰富的数据和算法来组合出所有目前常用的句式．&lt;/p&gt;
+&lt;p&gt;对维基百科来说，这是一条看起来很有希望的路．期待的场景是人类的大部分的知识，都能通过这样的方式，以不同的语言展示给读者．当然，也不会局限于此．稍微展望一下，我们就可以发现它带来的变革几乎是无限的．我们能用它来做各种各样的事:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;知识图谱．有了维基百科的数据，我们可以更方便地构建各种知识图谱&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;wikidata&lt;/code&gt;和&lt;code&gt;wikilambda&lt;/code&gt;的内容可以以各种方式直接给其他系统集成，提供各种编程语言的 binding.&lt;/li&gt;
+&lt;li&gt;机器学习系统以及学术界可以利用维基百科的内容做各种数据研究&lt;/li&gt;
+&lt;li&gt;&amp;hellip;.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;期望这个美好的愿景能实现吧．&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>关于&lt;罪与罚&gt;</title>
+            <link>http://yanhang.me/post/crime-and-punishment/</link>
+            <pubDate>Fri, 16 Oct 2020 17:44:06 +0800</pubDate>
+            
+            <guid>http://yanhang.me/post/crime-and-punishment/</guid>
+            <description>&lt;p&gt;我不懂俄语，但是之前在网上看到过一些说法觉得很好玩的．大意是说俄国能出这么多长篇巨著是跟俄语本身有关系的，相比于英语等语言，作者更容易在写长篇的内容时保持文章的逻辑严谨，语义清晰．听起来是一个比较合理的解释，最近我也发现了一个问题(很多人应该都发现了)，那就是英语的缩写是非常不好的一种传递信息的方式(英语的缺点之一)，这点在互联网行业更为普遍，我可以随便写出来一大堆外行人完全摸不着头脑的缩写, 比如:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;CNCF&lt;/li&gt;
+&lt;li&gt;ABS&lt;/li&gt;
+&lt;li&gt;VXLAN&lt;/li&gt;
+&lt;li&gt;&amp;hellip;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;等等．而这点至少中文完全不同，中文本身的组词能力的优异性已经有目共睹，即使汉子数量也有几万往上，但数量已经固定下来，不需要再造新词，所有的新的内容都可以组合出新的词语来表达，常人也只需要掌握常用的两三千个汉子就行．但英语需要一直创造新词语来应对变化，其数量早就超过了百万．在缩写的表达能力上中文也远比英语优秀，就拿这次的疫情来说，两种表达方式如下:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;新冠肺炎&lt;/li&gt;
+&lt;li&gt;COVID-19&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;普通民众足以从&lt;code&gt;新冠肺炎&lt;/code&gt;这几个字中获取到如下信息:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;这是一种肺炎, 可能具有传染性&lt;/li&gt;
+&lt;li&gt;开始的&lt;code&gt;新&lt;/code&gt;字可能代表着某种现存病毒的病变
+如果是有医学经验的人可能也能从&lt;code&gt;冠&lt;/code&gt;字上理解到冠状病毒等信息．而&lt;code&gt;COVID-19&lt;/code&gt;,应该没有多少人能在没有前置知识的前提下知道它代表什么．&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;抱着这样的目的我看了＜罪与罚＞，老实说关于语言方面的体验并不明显，因为翻译的缘故，你很难去理解到这一层．单就故事本身而已，能在这种体量下，有这样的清晰的结构，跟英语世界的大部分著作对比起来，可能确实有不少优势．原本计划是照着这个路子把其他的俄语巨著都看一遍，想了想其实并无必要．毕竟读的不是俄语，这层意义已经被剥夺，反倒不如回过来去看看文言文．&lt;/p&gt;
+&lt;p&gt;为什么说是文言文而不是现代文学？因为现代汉语明显受字母文字的影响比较大，可能有很多好的影响，但应该也有不少的坏的影响．这种坏的影响导致了汉语本身某种表达能力的丧失，主要是在语言的凝练上面．我不太确定现在对语言研究的方面有没有涉及到这个问题，但这应该会在某个未来的时期引起我们的警觉．&lt;/p&gt;
+&lt;p&gt;现代汉语的长篇巨著并不算多，我觉得这算是坏的影响之一．有的都是一些不太优秀的作品．语言影响了文章的结构以及表达的清晰．反过来想，那么越多的保留古汉语的面貌，是不是表达能力更强？我觉得是有这个迹象的，港台地区的很多作家都有这个能力，比较明显的就是武侠小说，金庸的各个长篇，其古白话本身就是亮点，也是书本能写成的原因之一．即使像亦舒这样的言情小说家，其语言的凝练性也给内容增色不少．&lt;/p&gt;
+&lt;p&gt;所以后面的阅读计划我觉得会偏向以下几个方面：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;＜古文观止＞等&lt;/li&gt;
+&lt;li&gt;明清小说&lt;/li&gt;
+&lt;li&gt;&amp;lt;史记&amp;gt;等&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;希望这是比较有收获的安排．&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Kubernetes Webhook Cert 方案</title>
+            <link>http://yanhang.me/post/k8s-webhook-cert/</link>
+            <pubDate>Fri, 16 Oct 2020 16:53:17 +0800</pubDate>
+            
+            <guid>http://yanhang.me/post/k8s-webhook-cert/</guid>
+            <description>&lt;p&gt;Kubernetes 里的 Cert 数据是挺零散的一块，而 Webhook 中又强制要求必须是 HTTPS, 在实际使用的过程中尝试了几种方案，发现各有优劣，也都有不少问题．下面将分别详述一下:&lt;/p&gt;
+&lt;h2 id=&#34;cert-manager&#34;&gt;Cert Manager&lt;/h2&gt;
+&lt;p&gt;Cert Manager 可能是最成熟的方案了，使用 Let&amp;rsquo;s Encrypt 来签发证书．只需要配置好响应的 CR (Issuer, Cert&amp;hellip;等), Cert Manager会自动生成证书，比较方便．&lt;/p&gt;
+&lt;p&gt;缺点也很多，首先是引入了一个比较重的依赖，Cert Manager本身的稳定性也是一个问题．实际用的时候经常发现它的 apiservice Not Ready等问题．假设本来环境中已经有 Cert Manager,那么直接用它是一个比较好的选项，否则并不建议使用．&lt;/p&gt;
+&lt;h2 id=&#34;脚本--csr-resource&#34;&gt;脚本 + CSR Resource&lt;/h2&gt;
+&lt;p&gt;这种方式是利用 Kubernetes 内置的 CSR 资源来管理证书，最终 caBundle 就可以直接用　Kubernetes 集群自带的 cert 数据，但 Server CRT 和 Server KEY 需要自己用脚本生成．Github 上有现成的项目演示了这种用法: &lt;a href=&#34;https://github.com/newrelic/k8s-webhook-cert-manager&#34;&gt;k8s-webhook-cert-manager&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;其基本使用方式如下:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;./generate_certificate.sh --service &lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;WEBHOOK_SERVICE_NAME&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt; --webhook
+&lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;WEBHOOK_NAME&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt; --secret &lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;SECRET_NAME&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt; --namespace &lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;WEBHOOK_NAMESPACE&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt; 
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;我们需要提供&lt;code&gt;SVC&lt;/code&gt;的名字和&lt;code&gt;NS&lt;/code&gt;以生成&lt;code&gt;cert&lt;/code&gt;数据．脚本也可以根據自己需求進行適當裁剪.当数据生成之后，使用的 CSR 资源我们还可以通过集群看到(一段时间后会被GC):&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;core@bastion ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;$ kubectl  get csr 
+NAME        AGE     REQUESTOR             CONDITION
+csr-w6ldh   5m56s   system:node:master3   Approved,Issued
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;需要注意的细节如下:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;生成证书默认的有效时间是一年，可以通过 controller-manager 的参数调节&lt;/li&gt;
+&lt;li&gt;webhook caBundle　里的数据默认可以从 POD 挂在的 default token里获取到 (&lt;code&gt;/run/secrets/kubernetes.io/serviceaccount&lt;/code&gt;), 也可以从系统的一个 ConfigMap 里读取到　(&lt;code&gt;kubectl  get cm -n kube-system extension-apiserver-authentication&lt;/code&gt;)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这种方式是比较忙简单的，而且利用了原生 k8s 的一些功能，是比较理想的一些形式．它的不足之处如下:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;一般需要用一个 initContainer 之类的方式来提前生成 cert 数据，并且在&lt;code&gt;webhook&lt;/code&gt;主程序中手工读取数据，整体流程比较原始，容易出错．&lt;/li&gt;
+&lt;li&gt;多实例的 webhook 程序其 initContainer里脚本的数据冲突也是个问题，需要单独处理．&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;另外，对原生 k8s 来说，这是一种比较理想的形式，但是对于一些特定的发行版来说，可能会遇到其他问题，下面举两个例子&lt;/p&gt;
+&lt;h3 id=&#34;aws&#34;&gt;AWS&lt;/h3&gt;
+&lt;p&gt;AWS的特殊之处在于，它的 &lt;code&gt;extension-apiserver-authentication&lt;/code&gt; 与&lt;code&gt;Pod&lt;/code&gt;里挂载的默认的 CA 数据不是一个．所以在 AWS 中，caBundle的数据只能从默认token里读取．这样的问题主要原因在于缺乏明确的文档说明，一旦默认其一致，难以DEBUG.&lt;/p&gt;
+&lt;h3 id=&#34;openshift&#34;&gt;OpenShift&lt;/h3&gt;
+&lt;p&gt;OpenShift的默认token里的CA数据是一个证书链，而且如果用上述方式生成，由CSR请求到的 CERT 数据也无法被&lt;code&gt;kube-apiserver&lt;/code&gt;认证．目前此问题暂无特别好的方法，只能通过下面使用自签名的证书的方式绕开．&lt;/p&gt;
+&lt;h2 id=&#34;自签名证书&#34;&gt;自签名证书&lt;/h2&gt;
+&lt;p&gt;这种方式是完全用 cli 程序生成自签名的证书，不使用&lt;code&gt;k8s CSR&lt;/code&gt;的方式．好处就是能避开像上面的依赖于标准 k8s 的行为，防止未知的错误．&lt;a href=&#34;https://zhuanlan.zhihu.com/p/137070531&#34;&gt;如何部署自己的webhook admission&lt;/a&gt;这篇文章讲了大致的流程，将其脚本化并且做成镜像应该也比较简单．&lt;/p&gt;
+&lt;p&gt;它使用的工具并不是 openssl, 而是新的工具．我觉得一个原因就是 openssl 应该算是常用软件里使用非常不友好的一个工具了，基本上都不知道怎么用，网上也没多少好的介绍文章．新的工具至少能改善一下这方面的体验．&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>VSCode 和 Emacs</title>
+            <link>http://yanhang.me/post/vscode-and-emacs/</link>
+            <pubDate>Sun, 27 Sep 2020 12:28:55 +0800</pubDate>
+            
+            <guid>http://yanhang.me/post/vscode-and-emacs/</guid>
+            <description>&lt;p&gt;除了 Emacs 和 Vim 之外的 Editor 战争，现在看起来 VSCode 已经赢了。&lt;/p&gt;
+&lt;p&gt;先不说现存的一些 Editor 的现状和对比，我们直接猜想一下一个比较完美的 editor 应该是什么样子的&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;modern look. 就是好看，让人想用.&lt;/li&gt;
+&lt;li&gt;易上手: 不需要学太多才能才能用好&lt;/li&gt;
+&lt;li&gt;易扩展: 就是 plugin 多到满足常用需求&lt;/li&gt;
+&lt;li&gt;跨平台，方便配置&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这几点就差不多了，能做到这几点基本上就能做到广受欢迎了。下面一个一个细拆开讲讲.&lt;/p&gt;
+&lt;h1 id=&#34;决定特性&#34;&gt;决定特性&lt;/h1&gt;
+&lt;h2 id=&#34;modern-look&#34;&gt;Modern Look&lt;/h2&gt;
+&lt;p&gt;这点最成功的案例就是 JetBrains 的一系列产品，单是其 &lt;code&gt;Darcula  theme&lt;/code&gt; 就让多少人愿意试一试。Atom 和 VSCode, LightTable， Sublime 做的也都不错， Vim 和 Emacs 做的不行，太古老了。虽然可以配置好的好看，但默认配置太劝退了。&lt;/p&gt;
+&lt;h2 id=&#34;易上手&#34;&gt;易上手&lt;/h2&gt;
+&lt;p&gt;这点 vim 和 Emacs 还是做的最差，虽然最终效率最高，但学习曲线太漫长了。VSCode 和 Atom 比较像，做的都不错。&lt;/p&gt;
+&lt;h2 id=&#34;易扩展&#34;&gt;易扩展&lt;/h2&gt;
+&lt;p&gt;但从扩展性上来讲，Atom/VSCode/Vim/Emacs都差不多，该有的插件都有，安装也不难。不过前两个明显使用起来更方便些，是真正的&lt;code&gt;易&lt;/code&gt;扩展,直接在 UI上就可以点点安装 plugin。也有方便的介绍和使用说明。LightTable 插件太少，半死不活的。Sublime 插件也不算多。&lt;/p&gt;
+&lt;h2 id=&#34;跨平台&#34;&gt;跨平台&lt;/h2&gt;
+&lt;p&gt;跨平台的能力不难做，前面提到的几个都能做到。难的是尽量保证一致性的体验和性能。这里面 VSCode 做的最好， Atom 是在哪个平台性能都不咋样.Emacs在Linux下性能最好，Mac下 UI 效果一般, Windows 下配置着更麻烦。Vim 主要是 Terminal 领域了。&lt;/p&gt;
+&lt;p&gt;综合来看，VSCode 还是当之无愧的最受欢迎的 Editor, 每个方面都做的不错。Atom 算是因为性能等原因被击败。LightTable 差不多死了， Sublime 也是被老大老二打架的时候弄死了(自己还收费), Vim 和 Emacs 比较特殊，因为本身历史比较久，不可替代性比较强，属于不在一个竞争层面上的。因为单从 Editor 的设计来讲，VSCode 之类的根本没法和 Vim/Emacs 比，前者是属于产品层面的胜利，不是属于技术方面的胜利。&lt;/p&gt;
+&lt;p&gt;Emacs 比较特殊一点，我自己一直在用。社区最近也一直在讨论如何让其现代化一点，能吸引到更多用户，其中的策略就是内置一个比较好的 Theme, 多加一些 intro 或者 默认比较好的配置之类的，不出上面提到的几个关键点。这点本身也算是 Emacs 被开源社区的模式坑了，Fork 的版本在那瞎改不往回 contribute, 一部分人不希望改变 Emacs 的现状等等。但 Emacs 的存在的一个很重要的意义仍然在于告诉我们 ,VSCode 仍然是有巨大缺陷的产品，我们离最终的完美的 Editor 还差的很远。后面肯定会有更优秀的产品出现。不只好用，还厉害。&lt;/p&gt;
+</description>
+        </item>
+        
         <item>
             <title>喜剧中说话的节奏</title>
             <link>http://yanhang.me/post/about-talking/</link>

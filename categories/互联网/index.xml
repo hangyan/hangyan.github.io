@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>互联网 on 工业革命</title>
+    <link>http://yanhang.me/categories/%E4%BA%92%E8%81%94%E7%BD%91/</link>
+    <description>Recent content in 互联网 on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 17 Oct 2020 11:56:20 +0800</lastBuildDate><atom:link href="http://yanhang.me/categories/%E4%BA%92%E8%81%94%E7%BD%91/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Semantic Web</title>
+      <link>http://yanhang.me/post/semantic-web/</link>
+      <pubDate>Sat, 17 Oct 2020 11:56:20 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/semantic-web/</guid>
+      <description>最近开始关注Semantic Web的原因是Abstract Wikipedia项目的发展．作为一个很老的互联网课题，大家的愿景都是很清楚的：想</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -6,7 +6,16 @@
     <description>Recent content in Kubernetes on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 07 Sep 2020 18:13:47 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 16 Oct 2020 16:53:17 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Kubernetes Webhook Cert 方案</title>
+      <link>http://yanhang.me/post/k8s-webhook-cert/</link>
+      <pubDate>Fri, 16 Oct 2020 16:53:17 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/k8s-webhook-cert/</guid>
+      <description>Kubernetes 里的 Cert 数据是挺零散的一块，而 Webhook 中又强制要求必须是 HTTPS, 在实际使用的过程中尝试了几种方案，发现各有优劣，也都有不少问题．下面将分别详述一下: Cert Manager</description>
+    </item>
+    
     <item>
       <title>Docker 私有 Registry 的镜像 GC 问题</title>
       <link>http://yanhang.me/post/2020-09-07-docker-registry-gc/</link>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Kubernetes Webhook Cert 方案 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="Kubernetes 里的 Cert 数据是挺零散的一块，而 Webhook 中又强制要求必须是 HTTPS, 在实际使用的过程中尝试了几种方案，发现各有优劣，也都有不少问题．下面将分别详述一下: Cert Manager" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/k8s-webhook-cert/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Kubernetes Webhook Cert 方案" />
+<meta property="og:description" content="Kubernetes 里的 Cert 数据是挺零散的一块，而 Webhook 中又强制要求必须是 HTTPS, 在实际使用的过程中尝试了几种方案，发现各有优劣，也都有不少问题．下面将分别详述一下: Cert Manager" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/k8s-webhook-cert/" />
+<meta property="article:published_time" content="2020-10-16T16:53:17+08:00" />
+<meta property="article:modified_time" content="2020-10-16T16:53:17+08:00" />
+<meta itemprop="name" content="Kubernetes Webhook Cert 方案">
+<meta itemprop="description" content="Kubernetes 里的 Cert 数据是挺零散的一块，而 Webhook 中又强制要求必须是 HTTPS, 在实际使用的过程中尝试了几种方案，发现各有优劣，也都有不少问题．下面将分别详述一下: Cert Manager">
+<meta itemprop="datePublished" content="2020-10-16T16:53:17+08:00" />
+<meta itemprop="dateModified" content="2020-10-16T16:53:17+08:00" />
+<meta itemprop="wordCount" content="1155">
+
+
+
+<meta itemprop="keywords" content="Kubernetes," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Kubernetes Webhook Cert 方案"/>
+<meta name="twitter:description" content="Kubernetes 里的 Cert 数据是挺零散的一块，而 Webhook 中又强制要求必须是 HTTPS, 在实际使用的过程中尝试了几种方案，发现各有优劣，也都有不少问题．下面将分别详述一下: Cert Manager"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Kubernetes Webhook Cert 方案</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-10-16 </span>
+        <div class="post-category">
+            <a href="/categories/kubernetes/"> Kubernetes </a>
+            </div>
+          <span class="more-meta"> 约 1155 字 </span>
+          <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#cert-manager">Cert Manager</a></li>
+        <li><a href="#脚本--csr-resource">脚本 + CSR Resource</a>
+          <ul>
+            <li><a href="#aws">AWS</a></li>
+            <li><a href="#openshift">OpenShift</a></li>
+          </ul>
+        </li>
+        <li><a href="#自签名证书">自签名证书</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>Kubernetes 里的 Cert 数据是挺零散的一块，而 Webhook 中又强制要求必须是 HTTPS, 在实际使用的过程中尝试了几种方案，发现各有优劣，也都有不少问题．下面将分别详述一下:</p>
+<h2 id="cert-manager">Cert Manager</h2>
+<p>Cert Manager 可能是最成熟的方案了，使用 Let&rsquo;s Encrypt 来签发证书．只需要配置好响应的 CR (Issuer, Cert&hellip;等), Cert Manager会自动生成证书，比较方便．</p>
+<p>缺点也很多，首先是引入了一个比较重的依赖，Cert Manager本身的稳定性也是一个问题．实际用的时候经常发现它的 apiservice Not Ready等问题．假设本来环境中已经有 Cert Manager,那么直接用它是一个比较好的选项，否则并不建议使用．</p>
+<h2 id="脚本--csr-resource">脚本 + CSR Resource</h2>
+<p>这种方式是利用 Kubernetes 内置的 CSR 资源来管理证书，最终 caBundle 就可以直接用　Kubernetes 集群自带的 cert 数据，但 Server CRT 和 Server KEY 需要自己用脚本生成．Github 上有现成的项目演示了这种用法: <a href="https://github.com/newrelic/k8s-webhook-cert-manager">k8s-webhook-cert-manager</a>.</p>
+<p>其基本使用方式如下:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">./generate_certificate.sh --service <span class="si">${</span><span class="nv">WEBHOOK_SERVICE_NAME</span><span class="si">}</span> --webhook
+<span class="si">${</span><span class="nv">WEBHOOK_NAME</span><span class="si">}</span> --secret <span class="si">${</span><span class="nv">SECRET_NAME</span><span class="si">}</span> --namespace <span class="si">${</span><span class="nv">WEBHOOK_NAMESPACE</span><span class="si">}</span> 
+</code></pre></td></tr></table>
+</div>
+</div><p>我们需要提供<code>SVC</code>的名字和<code>NS</code>以生成<code>cert</code>数据．脚本也可以根據自己需求進行適當裁剪.当数据生成之后，使用的 CSR 资源我们还可以通过集群看到(一段时间后会被GC):</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">[</span>core@bastion ~<span class="o">]</span>$ kubectl  get csr 
+NAME        AGE     REQUESTOR             CONDITION
+csr-w6ldh   5m56s   system:node:master3   Approved,Issued
+</code></pre></td></tr></table>
+</div>
+</div><p>需要注意的细节如下:</p>
+<ol>
+<li>生成证书默认的有效时间是一年，可以通过 controller-manager 的参数调节</li>
+<li>webhook caBundle　里的数据默认可以从 POD 挂在的 default token里获取到 (<code>/run/secrets/kubernetes.io/serviceaccount</code>), 也可以从系统的一个 ConfigMap 里读取到　(<code>kubectl  get cm -n kube-system extension-apiserver-authentication</code>)</li>
+</ol>
+<p>这种方式是比较忙简单的，而且利用了原生 k8s 的一些功能，是比较理想的一些形式．它的不足之处如下:</p>
+<ol>
+<li>一般需要用一个 initContainer 之类的方式来提前生成 cert 数据，并且在<code>webhook</code>主程序中手工读取数据，整体流程比较原始，容易出错．</li>
+<li>多实例的 webhook 程序其 initContainer里脚本的数据冲突也是个问题，需要单独处理．</li>
+</ol>
+<p>另外，对原生 k8s 来说，这是一种比较理想的形式，但是对于一些特定的发行版来说，可能会遇到其他问题，下面举两个例子</p>
+<h3 id="aws">AWS</h3>
+<p>AWS的特殊之处在于，它的 <code>extension-apiserver-authentication</code> 与<code>Pod</code>里挂载的默认的 CA 数据不是一个．所以在 AWS 中，caBundle的数据只能从默认token里读取．这样的问题主要原因在于缺乏明确的文档说明，一旦默认其一致，难以DEBUG.</p>
+<h3 id="openshift">OpenShift</h3>
+<p>OpenShift的默认token里的CA数据是一个证书链，而且如果用上述方式生成，由CSR请求到的 CERT 数据也无法被<code>kube-apiserver</code>认证．目前此问题暂无特别好的方法，只能通过下面使用自签名的证书的方式绕开．</p>
+<h2 id="自签名证书">自签名证书</h2>
+<p>这种方式是完全用 cli 程序生成自签名的证书，不使用<code>k8s CSR</code>的方式．好处就是能避开像上面的依赖于标准 k8s 的行为，防止未知的错误．<a href="https://zhuanlan.zhihu.com/p/137070531">如何部署自己的webhook admission</a>这篇文章讲了大致的流程，将其脚本化并且做成镜像应该也比较简单．</p>
+<p>它使用的工具并不是 openssl, 而是新的工具．我觉得一个原因就是 openssl 应该算是常用软件里使用非常不友好的一个工具了，基本上都不知道怎么用，网上也没多少好的介绍文章．新的工具至少能改善一下这方面的体验．</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2020-10-16
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/kubernetes/">Kubernetes</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/crime-and-punishment/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">关于&lt;罪与罚&gt;</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/vscode-and-emacs/">
+            <span class="next-text nav-default">VSCode 和 Emacs</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>VSCode 和 Emacs - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="除了 Emacs 和 Vim 之外的 Editor 战争，现在看起来 VSCode 已经赢了。 先不说现存的一些 Editor 的现状和对比，我们直接猜想一下一个比较完美的 editor 应该是什么样子的 modern look. 就是好看，" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/vscode-and-emacs/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="VSCode 和 Emacs" />
+<meta property="og:description" content="除了 Emacs 和 Vim 之外的 Editor 战争，现在看起来 VSCode 已经赢了。 先不说现存的一些 Editor 的现状和对比，我们直接猜想一下一个比较完美的 editor 应该是什么样子的 modern look. 就是好看，" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/vscode-and-emacs/" />
+<meta property="article:published_time" content="2020-09-27T12:28:55+08:00" />
+<meta property="article:modified_time" content="2020-09-27T12:28:55+08:00" />
+<meta itemprop="name" content="VSCode 和 Emacs">
+<meta itemprop="description" content="除了 Emacs 和 Vim 之外的 Editor 战争，现在看起来 VSCode 已经赢了。 先不说现存的一些 Editor 的现状和对比，我们直接猜想一下一个比较完美的 editor 应该是什么样子的 modern look. 就是好看，">
+<meta itemprop="datePublished" content="2020-09-27T12:28:55+08:00" />
+<meta itemprop="dateModified" content="2020-09-27T12:28:55+08:00" />
+<meta itemprop="wordCount" content="963">
+
+
+
+<meta itemprop="keywords" content="Emacs,VSCode," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="VSCode 和 Emacs"/>
+<meta name="twitter:description" content="除了 Emacs 和 Vim 之外的 Editor 战争，现在看起来 VSCode 已经赢了。 先不说现存的一些 Editor 的现状和对比，我们直接猜想一下一个比较完美的 editor 应该是什么样子的 modern look. 就是好看，"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">VSCode 和 Emacs</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-09-27 </span>
+        <div class="post-category">
+            <a href="/categories/%E4%BA%A7%E5%93%81/"> 产品 </a>
+            </div>
+          <span class="more-meta"> 约 963 字 </span>
+          <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#决定特性">决定特性</a>
+      <ul>
+        <li><a href="#modern-look">Modern Look</a></li>
+        <li><a href="#易上手">易上手</a></li>
+        <li><a href="#易扩展">易扩展</a></li>
+        <li><a href="#跨平台">跨平台</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>除了 Emacs 和 Vim 之外的 Editor 战争，现在看起来 VSCode 已经赢了。</p>
+<p>先不说现存的一些 Editor 的现状和对比，我们直接猜想一下一个比较完美的 editor 应该是什么样子的</p>
+<ol>
+<li>modern look. 就是好看，让人想用.</li>
+<li>易上手: 不需要学太多才能才能用好</li>
+<li>易扩展: 就是 plugin 多到满足常用需求</li>
+<li>跨平台，方便配置</li>
+</ol>
+<p>这几点就差不多了，能做到这几点基本上就能做到广受欢迎了。下面一个一个细拆开讲讲.</p>
+<h1 id="决定特性">决定特性</h1>
+<h2 id="modern-look">Modern Look</h2>
+<p>这点最成功的案例就是 JetBrains 的一系列产品，单是其 <code>Darcula  theme</code> 就让多少人愿意试一试。Atom 和 VSCode, LightTable， Sublime 做的也都不错， Vim 和 Emacs 做的不行，太古老了。虽然可以配置好的好看，但默认配置太劝退了。</p>
+<h2 id="易上手">易上手</h2>
+<p>这点 vim 和 Emacs 还是做的最差，虽然最终效率最高，但学习曲线太漫长了。VSCode 和 Atom 比较像，做的都不错。</p>
+<h2 id="易扩展">易扩展</h2>
+<p>但从扩展性上来讲，Atom/VSCode/Vim/Emacs都差不多，该有的插件都有，安装也不难。不过前两个明显使用起来更方便些，是真正的<code>易</code>扩展,直接在 UI上就可以点点安装 plugin。也有方便的介绍和使用说明。LightTable 插件太少，半死不活的。Sublime 插件也不算多。</p>
+<h2 id="跨平台">跨平台</h2>
+<p>跨平台的能力不难做，前面提到的几个都能做到。难的是尽量保证一致性的体验和性能。这里面 VSCode 做的最好， Atom 是在哪个平台性能都不咋样.Emacs在Linux下性能最好，Mac下 UI 效果一般, Windows 下配置着更麻烦。Vim 主要是 Terminal 领域了。</p>
+<p>综合来看，VSCode 还是当之无愧的最受欢迎的 Editor, 每个方面都做的不错。Atom 算是因为性能等原因被击败。LightTable 差不多死了， Sublime 也是被老大老二打架的时候弄死了(自己还收费), Vim 和 Emacs 比较特殊，因为本身历史比较久，不可替代性比较强，属于不在一个竞争层面上的。因为单从 Editor 的设计来讲，VSCode 之类的根本没法和 Vim/Emacs 比，前者是属于产品层面的胜利，不是属于技术方面的胜利。</p>
+<p>Emacs 比较特殊一点，我自己一直在用。社区最近也一直在讨论如何让其现代化一点，能吸引到更多用户，其中的策略就是内置一个比较好的 Theme, 多加一些 intro 或者 默认比较好的配置之类的，不出上面提到的几个关键点。这点本身也算是 Emacs 被开源社区的模式坑了，Fork 的版本在那瞎改不往回 contribute, 一部分人不希望改变 Emacs 的现状等等。但 Emacs 的存在的一个很重要的意义仍然在于告诉我们 ,VSCode 仍然是有巨大缺陷的产品，我们离最终的完美的 Editor 还差的很远。后面肯定会有更优秀的产品出现。不只好用，还厉害。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2020-09-27
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/emacs/">Emacs</a>
+          <a href="/tags/vscode/">VSCode</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/k8s-webhook-cert/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Kubernetes Webhook Cert 方案</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/about-talking/">
+            <span class="next-text nav-default">喜剧中说话的节奏</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

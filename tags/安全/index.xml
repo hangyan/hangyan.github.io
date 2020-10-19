@@ -6,7 +6,16 @@
     <description>Recent content in 安全 on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 27 Aug 2019 11:11:23 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/%E5%AE%89%E5%85%A8/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 19 Oct 2020 13:12:59 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/%E5%AE%89%E5%85%A8/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ARM指针的一些安全功能</title>
+      <link>http://yanhang.me/post/arm-pointer/</link>
+      <pubDate>Mon, 19 Oct 2020 13:12:59 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/arm-pointer/</guid>
+      <description>伴随着 ARM 平台的越来越普及，Linux 内核对其的支持也逐渐丰富。而且 ARM 的设计也有很多独特的优点，本文将介绍在 ARM 平台关于指针操作的一些安全方面的</description>
+    </item>
+    
     <item>
       <title>KARL, ASLR, KASLR</title>
       <link>http://yanhang.me/post/2019-08-27-karl-aslr/</link>

@@ -45,7 +45,7 @@
 <meta property="og:description" content="CyberLife." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="http://yanhang.me/" />
-<meta property="og:updated_time" content="2020-09-26T12:53:41+08:00" />
+<meta property="og:updated_time" content="2020-10-19T13:12:59+08:00" />
 <meta itemprop="name" content="工业革命">
 <meta itemprop="description" content="CyberLife.">
 <meta name="twitter:card" content="summary"/>
@@ -113,91 +113,125 @@
           <section id="posts" class="posts">
     <article class="post">
   <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2015-01-25-raid/">RAID 介绍</a></h1>
+    <h1 class="post-title"><a class="post-link" href="/post/2015-02-05-docker-source-code-part3-daemon-start/">docker 源码分析(3) -- daemon 启动流程</a></h1>
     <div class="post-meta">
-      <span class="post-time"> 2015-01-25 </span>
+      <span class="post-time"> 2015-02-05 </span>
       <div class="post-category">
           <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
           </div>
-        <span class="more-meta"> 约 3972 字 </span>
-        <span class="more-meta"> 预计阅读 8 分钟 </span>
+        <span class="more-meta"> 约 7253 字 </span>
+        <span class="more-meta"> 预计阅读 15 分钟 </span>
     </div>
   </header>
   
   <div class="post-content">
     <div class="post-summary">
-      <p>RAID 是一个我们经常能见到的名词。但却因为很少能在实际环境中体验,所以很难对其原理
-能有很清楚的认识和掌握。本文将对 RAID 技术进行介绍和总结，以期能尽量阐明其概念。</p>
-<p>RAID 全称为独立磁盘冗余阵列(Redundant Array of Independent Disks),基本思想就是把
-多个相对便宜的硬盘组合起来，成为一个硬盘阵列组，使性能达到甚至超过一个价格昂贵、
-容量巨大的硬盘。RAID 通常被用在服务器电脑上，使用完全相同的硬盘组成一个逻辑扇区,
-因此操作系统只会把它当做一个硬盘。</p>
-<p>RAID 分为不同的等级，各个不同的等级均在数据可靠性及读写性能上做了不同的权衡。
-在实际应用中，可以依据自己的实际需求选择不同的 RAID 方案。</p>
+      <p>本篇的主要内容是关于<code>docker daemon</code>的启动流程。其主要内容均包含在
+<code>github.com/docker/docker/docker/daemon.go</code>文件中的<code>mainDaemon</code>函数中，本文即按
+其执行流程分析源码。因为所涉源码较多，所以所涉部分多是点到为止，详细分析会在后续
+分专篇讲述。</p>
     </div>
     <div class="read-more">
-      <a href="/post/2015-01-25-raid/" class="read-more-link">阅读更多</a>
+      <a href="/post/2015-02-05-docker-source-code-part3-daemon-start/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>
 
     <article class="post">
   <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2015-01-23-bash-config-files/">bash 各配置文件浅析</a></h1>
+    <h1 class="post-title"><a class="post-link" href="/post/2015-02-04-iops/">IOPS 介绍</a></h1>
     <div class="post-meta">
-      <span class="post-time"> 2015-01-23 </span>
+      <span class="post-time"> 2015-02-04 </span>
       <div class="post-category">
           <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
           </div>
-        <span class="more-meta"> 约 847 字 </span>
-        <span class="more-meta"> 预计阅读 2 分钟 </span>
+        <span class="more-meta"> 约 1219 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
     </div>
   </header>
   
   <div class="post-content">
     <div class="post-summary">
-      <p>与 bash 相关的配置文件非常之多,用户目录下的<code>.bashrc</code>,<code>.profile</code>,<code>.bash_profile</code>，
-系统级的<code>/etc/profile</code>等。我们也经常会发现，在某个文件里设置好了环境变量之后，并
-不能总是能在使用 bash 时正确加载。下面将对这个问题进行深入剖析，以解除疑惑。</p>
+      <p>依旧是自己不甚清楚的一个概念，希望通过自己的整理来加深印象，也希望这篇介绍能帮助
+到其他人。</p>
     </div>
     <div class="read-more">
-      <a href="/post/2015-01-23-bash-config-files/" class="read-more-link">阅读更多</a>
+      <a href="/post/2015-02-04-iops/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>
 
     <article class="post">
   <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2015-01-22-coreos-install/">CoreOS 安装及配置</a></h1>
+    <h1 class="post-title"><a class="post-link" href="/post/2015-01-30-docker-source-code-part2-start-and-args/">docker 源码分析(2) -- 主程序及命令行参数解析</a></h1>
     <div class="post-meta">
-      <span class="post-time"> 2015-01-22 </span>
+      <span class="post-time"> 2015-01-30 </span>
       <div class="post-category">
           <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
           </div>
-        <span class="more-meta"> 约 1636 字 </span>
+        <span class="more-meta"> 约 4618 字 </span>
+        <span class="more-meta"> 预计阅读 10 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <p>研究一个大项目的源码，最好是从<code>main</code>函数入口，一步一步与实际程序相结合，将实际代
+码与相应相印证。所以本篇的主要内容就是 docker 主程序的启动流程以及命令行参数解析的
+过程。</p>
+    </div>
+    <div class="read-more">
+      <a href="/post/2015-01-30-docker-source-code-part2-start-and-args/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/2015-01-30-modern-dev-tools/">现代化的开发人员实用工具</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2015-01-30 </span>
+      <div class="post-category">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+          </div>
+        <span class="more-meta"> 约 1343 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <p>常年混迹于 linux，对命令行程序情有独钟，平时也喜欢搜集各种实用的小工具。<code>github</code>流行以来，越来越多的新的实用的开
+发工具开源出来，有的可以用来替代一些老的工具，有的则是全新的。本文整理一些实用的
+工具，希望大家能在实际开发中用到。</p>
+    </div>
+    <div class="read-more">
+      <a href="/post/2015-01-30-modern-dev-tools/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/2015-01-29-docker-source-code-part1-dev-setup/">docker 源码分析(1) -- 开发环境准备</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2015-01-29 </span>
+      <div class="post-category">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+          </div>
+        <span class="more-meta"> 约 1778 字 </span>
         <span class="more-meta"> 预计阅读 4 分钟 </span>
     </div>
   </header>
   
   <div class="post-content">
     <div class="post-summary">
-      <p>本文所遵照的步骤是官网的 Installing to disk 方法,即刻录 ISO 镜像 -&gt; 启动 Coreos Live CD -&gt; 安装到硬盘的步骤，与一般的桌面 Linux 安装非常类似。但 coreos 安装时也有一些需要注意的地方:</p>
-<ol>
-<li>
-<p>cloud-config.yml</p>
-<p>这是 coreos 用来统一配置系统的地方，系统在每次启动时都会加载这个文件的配置，比
-如系统服务、网络设定、文件修改、用户设定等。这样做的好处是在部署集群的时候可
-以方便地使用相同的配置。在安装 coreos 时，需要指定好这个配置文件。实际操作时，
-可以提前将这个文件写好放在别的机器上，然后用 scp / wget (利用下面的 web server) 下载到 coreos 的 Live CD 即可，或者直接存在 Live CD 里更方便。</p>
-</li>
-<li>
-<p>GFW</p>
-<p>coreos 安装时需要从官网下载镜像，但网站被墙，所以实际安装的时候可能需要用代理来解决，缺点是速度慢。更方便的方法是提前下载好需要的文件并放在局域网内并搭建一个 web server，然后修改安装脚本的 server 即可。具体方法在后面详述。</p>
-</li>
-</ol>
+      <p>之前看过一遍<code>docker</code>的代码，但比较粗略。第二遍准备详细过一遍并且用博客的方式将其
+整理一下。目前为止<code>docker</code>的稳定版本为<code>1.4.1</code>,所以就以此版本的代码为基础进行阅读，分
+析。</p>
     </div>
     <div class="read-more">
-      <a href="/post/2015-01-22-coreos-install/" class="read-more-link">阅读更多</a>
+      <a href="/post/2015-01-29-docker-source-code-part1-dev-setup/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>
@@ -209,7 +243,10 @@
         <i class="iconfont icon-left"></i>
         <span class="prev-text">上一页</span>
       </a>
-    
+    <a class="next" href="/page/19/">
+        <span class="next-text">下一页</span>
+        <i class="iconfont icon-right"></i>
+      </a>
   </nav>
         </div>
         

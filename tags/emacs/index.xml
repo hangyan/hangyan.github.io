@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Emacs on 工业革命</title>
+    <link>http://yanhang.me/tags/emacs/</link>
+    <description>Recent content in Emacs on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sun, 27 Sep 2020 12:28:55 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/emacs/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>VSCode 和 Emacs</title>
+      <link>http://yanhang.me/post/vscode-and-emacs/</link>
+      <pubDate>Sun, 27 Sep 2020 12:28:55 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/vscode-and-emacs/</guid>
+      <description>除了 Emacs 和 Vim 之外的 Editor 战争，现在看起来 VSCode 已经赢了。 先不说现存的一些 Editor 的现状和对比，我们直接猜想一下一个比较完美的 editor 应该是什么样子的 modern look. 就是好看，</description>
+    </item>
+    
+  </channel>
+</rss>
