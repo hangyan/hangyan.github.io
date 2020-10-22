@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>应用 on 工业革命</title>
+    <link>http://yanhang.me/tags/%E5%BA%94%E7%94%A8/</link>
+    <description>Recent content in 应用 on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 22 Oct 2020 11:34:13 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/%E5%BA%94%E7%94%A8/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>关于 OAM 与云原生应用</title>
+      <link>http://yanhang.me/post/2020-10-22-oam/</link>
+      <pubDate>Thu, 22 Oct 2020 11:34:13 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-10-22-oam/</guid>
+      <description>OAM 是指阿里开源的一个应用模型，主要是云原生场景。年初的时候出来到现在，断断续续地了解过一些，之前一直没有特别想清楚，其实现在也是，但多多少少</description>
+    </item>
+    
+  </channel>
+</rss>
