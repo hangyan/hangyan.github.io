@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>notes on 工业革命</title>
+    <link>http://yanhang.me/tags/notes/</link>
+    <description>Recent content in notes on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 27 Oct 2020 15:33:02 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/notes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>笔记: Postgresql里的事务实现</title>
+      <link>http://yanhang.me/post/2020-10-27-postgres-tran/</link>
+      <pubDate>Tue, 27 Oct 2020 15:33:02 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-10-27-postgres-tran/</guid>
+      <description>虽然日常工作需要涉及到数据库的底层部分并不多，但Postgresql作为一个数据库实现的范本是很值得研究的。可以通过它的实现来探索很多通用的</description>
+    </item>
+    
+  </channel>
+</rss>

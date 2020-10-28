@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>笔记: Postgresql里的事务实现 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="虽然日常工作需要涉及到数据库的底层部分并不多，但Postgresql作为一个数据库实现的范本是很值得研究的。可以通过它的实现来探索很多通用的" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2020-10-27-postgres-tran/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="笔记: Postgresql里的事务实现" />
+<meta property="og:description" content="虽然日常工作需要涉及到数据库的底层部分并不多，但Postgresql作为一个数据库实现的范本是很值得研究的。可以通过它的实现来探索很多通用的" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2020-10-27-postgres-tran/" />
+<meta property="article:published_time" content="2020-10-27T15:33:02+08:00" />
+<meta property="article:modified_time" content="2020-10-27T15:33:02+08:00" />
+<meta itemprop="name" content="笔记: Postgresql里的事务实现">
+<meta itemprop="description" content="虽然日常工作需要涉及到数据库的底层部分并不多，但Postgresql作为一个数据库实现的范本是很值得研究的。可以通过它的实现来探索很多通用的">
+<meta itemprop="datePublished" content="2020-10-27T15:33:02+08:00" />
+<meta itemprop="dateModified" content="2020-10-27T15:33:02+08:00" />
+<meta itemprop="wordCount" content="2040">
+
+
+
+<meta itemprop="keywords" content="postgresql,notes," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="笔记: Postgresql里的事务实现"/>
+<meta name="twitter:description" content="虽然日常工作需要涉及到数据库的底层部分并不多，但Postgresql作为一个数据库实现的范本是很值得研究的。可以通过它的实现来探索很多通用的"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">笔记: Postgresql里的事务实现</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-10-27 </span>
+        <div class="post-category">
+            <a href="/categories/database/"> Database </a>
+            </div>
+          <span class="more-meta"> 约 2040 字 </span>
+          <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#mvcc">MVCC</a></li>
+        <li><a href="#transactions-tuples-and-snapshots">Transactions, tuples, and snapshots</a></li>
+        <li><a href="#事物处理">事物处理</a></li>
+        <li><a href="#links">Links</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>虽然日常工作需要涉及到数据库的底层部分并不多，但Postgresql作为一个数据库实现的范本是很值得研究的。可以通过它的实现来探索很多通用的数据库设计以及系统设计的理念。本文主要关注于事物设计方面。</p>
+<h2 id="mvcc">MVCC</h2>
+<p>pg底层使用<code>MVCC</code>，修改数据时会直接创建新版本，而不是直接修改旧数据。这部分有一点需要注意的是在pg中，所有的语句都是在事物中执行的，不管是不是明确地用了<code>BEGIN/COMMIT</code>。</p>
+<h2 id="transactions-tuples-and-snapshots">Transactions, tuples, and snapshots</h2>
+<p>先看一下 Transaction 的主要数据结构:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">PGXACT</span>
+<span class="p">{</span>
+    <span class="n">TransactionId</span> <span class="n">xid</span><span class="p">;</span>   <span class="cm">/* id of top-level transaction currently being
+</span><span class="cm">                          * executed by this proc, if running and XID
+</span><span class="cm">                          * is assigned; else InvalidTransactionId */</span>
+
+    <span class="n">TransactionId</span> <span class="n">xmin</span><span class="p">;</span>  <span class="cm">/* minimal running XID as it was when we were
+</span><span class="cm">                          * starting our xact, excluding LAZY VACUUM:
+</span><span class="cm">                          * vacuum must not remove tuples deleted by
+</span><span class="cm">                          * xid &gt;= xmin ! */</span>
+
+    <span class="p">...</span>
+<span class="p">}</span> <span class="n">PGXACT</span><span class="p">;</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>事物以<code>xid</code>作为标识.pg针对它做了很多优化，仅在真正开始写数据的时候才分配xid,如果是只读的事物就完全不分配。
+<code>xmin</code>表示当这个事物开始的时候仍然处在运行中的事物列表中最小的那个<code>xid</code></p>
+<p>表中的 <code>record</code>，pg中称之为<code>tuples</code>.下面是 tuples 相关的一些数据结构:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">HeapTupleData</span>
+<span class="p">{</span>
+    <span class="n">uint32</span>          <span class="n">t_len</span><span class="p">;</span>         <span class="cm">/* length of *t_data */</span>
+    <span class="n">ItemPointerData</span> <span class="n">t_self</span><span class="p">;</span>        <span class="cm">/* SelfItemPointer */</span>
+    <span class="n">Oid</span>             <span class="n">t_tableOid</span><span class="p">;</span>    <span class="cm">/* table the tuple came from */</span>
+    <span class="n">HeapTupleHeader</span> <span class="n">t_data</span><span class="p">;</span>        <span class="cm">/* -&gt; tuple header and data */</span>
+<span class="p">}</span> <span class="n">HeapTupleData</span><span class="p">;</span>
+
+<span class="cm">/* referenced by HeapTupleData */</span>
+<span class="k">struct</span> <span class="n">HeapTupleHeaderData</span>
+<span class="p">{</span>
+    <span class="n">HeapTupleFields</span> <span class="n">t_heap</span><span class="p">;</span>
+
+    <span class="p">...</span>
+<span class="p">}</span>
+<span class="cm">/* referenced by HeapTupleHeaderData */</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">HeapTupleFields</span>
+<span class="p">{</span>
+    <span class="n">TransactionId</span> <span class="n">t_xmin</span><span class="p">;</span>        <span class="cm">/* inserting xact ID */</span>
+    <span class="n">TransactionId</span> <span class="n">t_xmax</span><span class="p">;</span>        <span class="cm">/* deleting or locking xact ID */</span>
+
+    <span class="p">...</span>
+<span class="p">}</span> <span class="n">HeapTupleFields</span><span class="p">;</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>上面的 <code>HeapTupleFields</code> 里面也记录了如事物一样的<code>xmin</code>之类的字段。Tuples 通过这种方式也记录了与自身相关联的事物信息。xmin是tuple数据第一次对外可见，就是执行插入操作的事物。xmax是tuple数据最后一次对外可见的事物id,也就是指删除这个tuple的操作。下面的图示会更清楚些:</p>
+<p><img src="https://brandur.org/assets/images/postgres-atomicity/heap-tuple-visibility.svg" alt=""></p>
+<p>最终，我们来看看 Snapshot 的数据结构:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">SnapshotData</span>
+<span class="p">{</span>
+    <span class="cm">/*
+</span><span class="cm">     * The remaining fields are used only for MVCC snapshots, and are normally
+</span><span class="cm">     * just zeroes in special snapshots.  (But xmin and xmax are used
+</span><span class="cm">     * specially by HeapTupleSatisfiesDirty.)
+</span><span class="cm">     *
+</span><span class="cm">     * An MVCC snapshot can never see the effects of XIDs &gt;= xmax. It can see
+</span><span class="cm">     * the effects of all older XIDs except those listed in the snapshot. xmin
+</span><span class="cm">     * is stored as an optimization to avoid needing to search the XID arrays
+</span><span class="cm">     * for most tuples.
+</span><span class="cm">     */</span>
+    <span class="n">TransactionId</span> <span class="n">xmin</span><span class="p">;</span>            <span class="cm">/* all XID &lt; xmin are visible to me */</span>
+    <span class="n">TransactionId</span> <span class="n">xmax</span><span class="p">;</span>            <span class="cm">/* all XID &gt;= xmax are invisible to me */</span>
+
+    <span class="cm">/*
+</span><span class="cm">     * For normal MVCC snapshot this contains the all xact IDs that are in
+</span><span class="cm">     * progress, unless the snapshot was taken during recovery in which case
+</span><span class="cm">     * it&#39;s empty. For historic MVCC snapshots, the meaning is inverted, i.e.
+</span><span class="cm">     * it contains *committed* transactions between xmin and xmax.
+</span><span class="cm">     *
+</span><span class="cm">     * note: all ids in xip[] satisfy xmin &lt;= xip[i] &lt; xmax
+</span><span class="cm">     */</span>
+    <span class="n">TransactionId</span> <span class="o">*</span><span class="n">xip</span><span class="p">;</span>
+    <span class="n">uint32</span>        <span class="n">xcnt</span><span class="p">;</span> <span class="cm">/* # of xact ids in xip[] */</span>
+
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这里的 xmin 跟事物的 xmin 计算方法类似。当一个 snapshot 被创建的时候，xid是正在运行的事物的最小的xid.xid &lt; xmin 的事物创建的tuples对于此 snapshot 都是可见的。</p>
+<p>xmax等于最后提交的一个事物的xid+1.xid &gt;= xmax 的事物所做的修改对于对于这个 snapshot 都是不可见的。
+<code>xip</code> 是snapshot创建时所有正在运行的事物的id列表。一些比xmin大的xid可能在snapshot创建时已经commited,所以只靠xmin来判断也不靠谱。</p>
+<p><img src="https://brandur.org/assets/images/postgres-atomicity/snapshot-creation.svg" alt=""></p>
+<h2 id="事物处理">事物处理</h2>
+<p>当一个事物开始执行语句时，会触发生成 snapshot 的操作:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">void</span>
+<span class="nf">exec_simple_query</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">query_string</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="p">...</span>
+
+    <span class="cm">/*
+</span><span class="cm">     * Set up a snapshot if parse analysis/planning will need one.
+</span><span class="cm">     */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">analyze_requires_snapshot</span><span class="p">(</span><span class="n">parsetree</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="n">PushActiveSnapshot</span><span class="p">(</span><span class="n">GetTransactionSnapshot</span><span class="p">());</span>
+        <span class="n">snapshot_set</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="p">...</span>
+<span class="p">}</span>
+
+<span class="n">Snapshot</span>
+<span class="nf">GetSnapshotData</span><span class="p">(</span><span class="n">Snapshot</span> <span class="n">snapshot</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="cm">/* xmax is always latestCompletedXid + 1 */</span>
+    <span class="n">xmax</span> <span class="o">=</span> <span class="n">ShmemVariableCache</span><span class="o">-&gt;</span><span class="n">latestCompletedXid</span><span class="p">;</span>
+    <span class="n">Assert</span><span class="p">(</span><span class="n">TransactionIdIsNormal</span><span class="p">(</span><span class="n">xmax</span><span class="p">));</span>
+    <span class="n">TransactionIdAdvance</span><span class="p">(</span><span class="n">xmax</span><span class="p">);</span>
+
+    <span class="p">...</span>
+
+    <span class="n">snapshot</span><span class="o">-&gt;</span><span class="n">xmax</span> <span class="o">=</span> <span class="n">xmax</span><span class="p">;</span>
+<span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>上面<code>GetSnapshotData</code> 里的代码设置了<code>xmax</code>的值。下面的片段设置了<code>xmin</code> 和 <code>xip</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cm">/*
+</span><span class="cm"> * Spin over procArray checking xid, xmin, and subxids.  The goal is
+</span><span class="cm"> * to gather all active xids, find the lowest xmin, and try to record
+</span><span class="cm"> * subxids.
+</span><span class="cm"> */</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="n">numProcs</span><span class="p">;</span> <span class="n">index</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">volatile</span> <span class="n">PGXACT</span> <span class="o">*</span><span class="n">pgxact</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">allPgXact</span><span class="p">[</span><span class="n">pgprocno</span><span class="p">];</span>
+    <span class="n">TransactionId</span> <span class="n">xid</span><span class="p">;</span>
+    <span class="n">xid</span> <span class="o">=</span> <span class="n">pgxact</span><span class="o">-&gt;</span><span class="n">xmin</span><span class="p">;</span> <span class="cm">/* fetch just once */</span>
+
+    <span class="cm">/*
+</span><span class="cm">     * If the transaction has no XID assigned, we can skip it; it
+</span><span class="cm">     * won&#39;t have sub-XIDs either.  If the XID is &gt;= xmax, we can also
+</span><span class="cm">     * skip it; such transactions will be treated as running anyway
+</span><span class="cm">     * (and any sub-XIDs will also be &gt;= xmax).
+</span><span class="cm">     */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">TransactionIdIsNormal</span><span class="p">(</span><span class="n">xid</span><span class="p">)</span>
+        <span class="o">||</span> <span class="o">!</span><span class="n">NormalTransactionIdPrecedes</span><span class="p">(</span><span class="n">xid</span><span class="p">,</span> <span class="n">xmax</span><span class="p">))</span>
+        <span class="k">continue</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">NormalTransactionIdPrecedes</span><span class="p">(</span><span class="n">xid</span><span class="p">,</span> <span class="n">xmin</span><span class="p">))</span>
+        <span class="n">xmin</span> <span class="o">=</span> <span class="n">xid</span><span class="p">;</span>
+
+    <span class="cm">/* Add XID to snapshot. */</span>
+    <span class="n">snapshot</span><span class="o">-&gt;</span><span class="n">xip</span><span class="p">[</span><span class="n">count</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">xid</span><span class="p">;</span>
+
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>当事务提交的时候:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">static</span> <span class="kt">void</span>
+<span class="nf">CommitTransaction</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="p">...</span>
+
+    <span class="cm">/*
+</span><span class="cm">     * We need to mark our XIDs as committed in pg_xact.  This is where we
+</span><span class="cm">     * durably commit.
+</span><span class="cm">     */</span>
+    <span class="n">latestXid</span> <span class="o">=</span> <span class="n">RecordTransactionCommit</span><span class="p">();</span>
+
+    <span class="cm">/*
+</span><span class="cm">     * Let others know about no transaction in progress by me. Note that this
+</span><span class="cm">     * must be done _before_ releasing locks we hold and _after_
+</span><span class="cm">     * RecordTransactionCommit.
+</span><span class="cm">     */</span>
+    <span class="n">ProcArrayEndTransaction</span><span class="p">(</span><span class="n">MyProc</span><span class="p">,</span> <span class="n">latestXid</span><span class="p">);</span>
+
+    <span class="p">...</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="n">TransactionId</span>
+<span class="nf">RecordTransactionCommit</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">bool</span> <span class="n">markXidCommitted</span> <span class="o">=</span> <span class="n">TransactionIdIsValid</span><span class="p">(</span><span class="n">xid</span><span class="p">);</span>
+
+    <span class="cm">/*
+</span><span class="cm">     * If we haven&#39;t been assigned an XID yet, we neither can, nor do we want
+</span><span class="cm">     * to write a COMMIT record.
+</span><span class="cm">     */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">markXidCommitted</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="p">...</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">XactLogCommitRecord</span><span class="p">(</span><span class="n">xactStopTimestamp</span><span class="p">,</span>
+                            <span class="n">nchildren</span><span class="p">,</span> <span class="n">children</span><span class="p">,</span> <span class="n">nrels</span><span class="p">,</span> <span class="n">rels</span><span class="p">,</span>
+                            <span class="n">nmsgs</span><span class="p">,</span> <span class="n">invalMessages</span><span class="p">,</span>
+                            <span class="n">RelcacheInitFileInval</span><span class="p">,</span> <span class="n">forceSyncCommit</span><span class="p">,</span>
+                            <span class="n">MyXactFlags</span><span class="p">,</span>
+                            <span class="n">InvalidTransactionId</span> <span class="cm">/* plain commit */</span> <span class="p">);</span>
+
+        <span class="p">....</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">((</span><span class="n">wrote_xlog</span> <span class="o">&amp;&amp;</span> <span class="n">markXidCommitted</span> <span class="o">&amp;&amp;</span>
+         <span class="n">synchronous_commit</span> <span class="o">&gt;</span> <span class="n">SYNCHRONOUS_COMMIT_OFF</span><span class="p">)</span> <span class="o">||</span>
+        <span class="n">forceSyncCommit</span> <span class="o">||</span> <span class="n">nrels</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">XLogFlush</span><span class="p">(</span><span class="n">XactLastRecEnd</span><span class="p">);</span>
+
+        <span class="cm">/*
+</span><span class="cm">         * Now we may update the CLOG, if we wrote a COMMIT record above
+</span><span class="cm">         */</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">markXidCommitted</span><span class="p">)</span>
+            <span class="n">TransactionIdCommitTree</span><span class="p">(</span><span class="n">xid</span><span class="p">,</span> <span class="n">nchildren</span><span class="p">,</span> <span class="n">children</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">...</span>
+<span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>这里的 xlog 是指 WAL.如果发生故障，pg可以通过WAL里面的内容来恢复数据。先写WAL，然后<code>TranscationIdCommitTree</code>再把事务的状态更新到<code>clog</code>中(commit log).如果一个事物没有xid,比如只读的，WAL和clog就没必要写入了。如果一个事物被中止，状态仍然会被同步到WAL和clog中，但数据不会被立即写入到磁盘中。因为即使crash了，也不会丢失信息。</p>
+<p>当事物完成后，需要通知整个系统:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">void</span>
+<span class="nf">ProcArrayEndTransaction</span><span class="p">(</span><span class="n">PGPROC</span> <span class="o">*</span><span class="n">proc</span><span class="p">,</span> <span class="n">TransactionId</span> <span class="n">latestXid</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="cm">/*
+</span><span class="cm">     * We must lock ProcArrayLock while clearing our advertised XID, so
+</span><span class="cm">     * that we do not exit the set of &#34;running&#34; transactions while someone
+</span><span class="cm">     * else is taking a snapshot.  See discussion in
+</span><span class="cm">     * src/backend/access/transam/README.
+</span><span class="cm">     */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">LWLockConditionalAcquire</span><span class="p">(</span><span class="n">ProcArrayLock</span><span class="p">,</span> <span class="n">LW_EXCLUSIVE</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="n">ProcArrayEndTransactionInternal</span><span class="p">(</span><span class="n">proc</span><span class="p">,</span> <span class="n">pgxact</span><span class="p">,</span> <span class="n">latestXid</span><span class="p">);</span>
+        <span class="n">LWLockRelease</span><span class="p">(</span><span class="n">ProcArrayLock</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">...</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span>
+<span class="nf">ProcArrayEndTransactionInternal</span><span class="p">(</span><span class="n">PGPROC</span> <span class="o">*</span><span class="n">proc</span><span class="p">,</span> <span class="n">PGXACT</span> <span class="o">*</span><span class="n">pgxact</span><span class="p">,</span>
+                                <span class="n">TransactionId</span> <span class="n">latestXid</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="p">...</span>
+
+    <span class="cm">/* Also advance global latestCompletedXid while holding the lock */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">TransactionIdPrecedes</span><span class="p">(</span><span class="n">ShmemVariableCache</span><span class="o">-&gt;</span><span class="n">latestCompletedXid</span><span class="p">,</span>
+                              <span class="n">latestXid</span><span class="p">))</span>
+        <span class="n">ShmemVariableCache</span><span class="o">-&gt;</span><span class="n">latestCompletedXid</span> <span class="o">=</span> <span class="n">latestXid</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</code></pre></td></tr></table>
+</div>
+</div><p>这里我们通过锁的方式独占地更新 <code>latestCompletedXid</code>的值，snapshot 创建的需要获取其值以设置 <code>xmax</code>.</p>
+<h2 id="links">Links</h2>
+<ol>
+<li><a href="https://brandur.org/postgres-atomicity">How Postgres Makes Transactions Atomic</a></li>
+<li><a href="https://stackoverflow.com/questions/54934087/can-i-rely-on-it-that-every-single-update-statement-in-postgresql-is-atomic">Can I rely on it that every single update statement in postgresql is atomic?</a></li>
+<li><a href="https://schecterdamien.github.io/2019/04/24/pg-mvcc/">PostgreSQL的事务隔离和MVCC</a></li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2020-10-27
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/postgresql/">postgresql</a>
+          <a href="/tags/notes/">notes</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/2020-10-26-00-ages/">
+            <span class="next-text nav-default">00后所处的环境</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
