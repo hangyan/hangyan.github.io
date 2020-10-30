@@ -3,7 +3,56 @@
   
   <url>
     <loc>http://yanhang.me/categories/</loc>
-    <lastmod>2020-10-27T15:33:02+08:00</lastmod>
+    <lastmod>2020-10-30T10:40:14+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/post/</loc>
+    <lastmod>2020-10-30T10:40:14+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/tags/</loc>
+    <lastmod>2020-10-30T10:40:14+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/post/2020-10-30-billboard/</loc>
+    <lastmod>2020-10-30T10:40:14+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/tags/%E4%BC%A0%E5%AA%92/</loc>
+    <lastmod>2020-10-30T10:40:14+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/</loc>
+    <lastmod>2020-10-30T10:40:14+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/tags/%E5%B9%BF%E5%91%8A/</loc>
+    <lastmod>2020-10-30T10:40:14+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/categories/%E7%A4%BE%E4%BC%9A/</loc>
+    <lastmod>2020-10-30T10:40:14+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -30,27 +79,6 @@
   </url>
   
   <url>
-    <loc>http://yanhang.me/post/</loc>
-    <lastmod>2020-10-27T15:33:02+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://yanhang.me/tags/</loc>
-    <lastmod>2020-10-27T15:33:02+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://yanhang.me/</loc>
-    <lastmod>2020-10-27T15:33:02+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
     <loc>http://yanhang.me/post/2020-10-27-postgres-tran/</loc>
     <lastmod>2020-10-27T15:33:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -66,13 +94,6 @@
   
   <url>
     <loc>http://yanhang.me/tags/%E7%A4%BE%E4%BC%9A/</loc>
-    <lastmod>2020-10-26T11:53:23+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://yanhang.me/categories/%E7%A4%BE%E4%BC%9A/</loc>
     <lastmod>2020-10-26T11:53:23+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -458,13 +479,6 @@
   
   <url>
     <loc>http://yanhang.me/post/2019-09-08-him/</loc>
-    <lastmod>2019-09-08T11:45:53+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://yanhang.me/tags/%E4%BC%A0%E5%AA%92/</loc>
     <lastmod>2019-09-08T11:45:53+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
