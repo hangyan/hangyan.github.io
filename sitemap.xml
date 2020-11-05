@@ -2,21 +2,28 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://yanhang.me/categories/</loc>
-    <lastmod>2020-11-03T15:25:36+08:00</lastmod>
+    <loc>http://yanhang.me/post/</loc>
+    <lastmod>2020-11-05T15:22:53+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>http://yanhang.me/post/</loc>
-    <lastmod>2020-11-03T15:25:36+08:00</lastmod>
+    <loc>http://yanhang.me/post/2020-11-05-farmpunk/</loc>
+    <lastmod>2020-11-05T15:22:53+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>http://yanhang.me/</loc>
+    <lastmod>2020-11-05T15:22:53+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/categories/</loc>
     <lastmod>2020-11-03T15:25:36+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
