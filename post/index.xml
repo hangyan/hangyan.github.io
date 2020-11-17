@@ -6,7 +6,16 @@
     <description>Recent content in Posts on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 05 Nov 2020 15:22:53 +0800</lastBuildDate><atom:link href="http://yanhang.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 17 Nov 2020 15:19:38 +0800</lastBuildDate><atom:link href="http://yanhang.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>etcd 的 clock diff 问题</title>
+      <link>http://yanhang.me/post/2020-11-17-etcd-time-diff/</link>
+      <pubDate>Tue, 17 Nov 2020 15:19:38 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-11-17-etcd-time-diff/</guid>
+      <description>最近碰到一个客户问题，最初始的现象是一个resource的处理逻辑一直不生效，看 k8s apiserver 的日志如下: 这里面没有 call webhook 相关的日志。主要的错误有两类，</description>
+    </item>
+    
     <item>
       <title>农业也朋克</title>
       <link>http://yanhang.me/post/2020-11-05-farmpunk/</link>
