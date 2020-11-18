@@ -113,115 +113,36 @@
           <section id="posts" class="posts">
     <article class="post">
   <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2019-08-03-helm-controller/">What is Helm Doing Wrong and How a Helm3 Controller Can Fix It</a></h1>
+    <h1 class="post-title"><a class="post-link" href="/post/2015-01-22-coreos-install/">CoreOS 安装及配置</a></h1>
     <div class="post-meta">
-      <span class="post-time"> 2019-08-03 </span>
+      <span class="post-time"> 2015-01-22 </span>
       <div class="post-category">
           <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
           </div>
-        <span class="more-meta"> 约 1393 字 </span>
-        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        <span class="more-meta"> 约 1636 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
     </div>
   </header>
   
   <div class="post-content">
     <div class="post-summary">
-      Helm is big success for sure, it&rsquo;s nearly the standard application package format in kubernetes.You only need to provide some metadata about your application&rsquo;s name, version, description….Helm can help you package up and upload to a central or custom chart repo.Just like npm,rpm,docker image, or whatever other package management system. About a year ago,
+      <p>本文所遵照的步骤是官网的 Installing to disk 方法,即刻录 ISO 镜像 -&gt; 启动 Coreos Live CD -&gt; 安装到硬盘的步骤，与一般的桌面 Linux 安装非常类似。但 coreos 安装时也有一些需要注意的地方:</p>
+<ol>
+<li>
+<p>cloud-config.yml</p>
+<p>这是 coreos 用来统一配置系统的地方，系统在每次启动时都会加载这个文件的配置，比
+如系统服务、网络设定、文件修改、用户设定等。这样做的好处是在部署集群的时候可
+以方便地使用相同的配置。在安装 coreos 时，需要指定好这个配置文件。实际操作时，
+可以提前将这个文件写好放在别的机器上，然后用 scp / wget (利用下面的 web server) 下载到 coreos 的 Live CD 即可，或者直接存在 Live CD 里更方便。</p>
+</li>
+<li>
+<p>GFW</p>
+<p>coreos 安装时需要从官网下载镜像，但网站被墙，所以实际安装的时候可能需要用代理来解决，缺点是速度慢。更方便的方法是提前下载好需要的文件并放在局域网内并搭建一个 web server，然后修改安装脚本的 server 即可。具体方法在后面详述。</p>
+</li>
+</ol>
     </div>
     <div class="read-more">
-      <a href="/post/2019-08-03-helm-controller/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2019-08-02-classic/">古典精神的衰落</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2019-08-02 </span>
-      <div class="post-category">
-          <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          </div>
-        <span class="more-meta"> 约 1160 字 </span>
-        <span class="more-meta"> 预计阅读 3 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      最近看了两部电影，《哪吒》和《疾速备战》。 《哪吒》从技术成熟度上来说，比之前的都好多的。导演似乎是周星驰的粉丝，充足的笑点吸引了不少小孩子。
-    </div>
-    <div class="read-more">
-      <a href="/post/2019-08-02-classic/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2019-07-27-poi/">《疑犯追踪》的有趣小知识</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2019-07-27 </span>
-      <div class="post-category">
-          <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          </div>
-        <span class="more-meta"> 约 705 字 </span>
-        <span class="more-meta"> 预计阅读 2 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      最近重温了一下《疑犯追踪》，有了一些新的感悟。感悟难以描述，但是一些有趣的知识可以记录下来。 气动管 以利亚有段时间利用气动管来传递信息，这种古
-    </div>
-    <div class="read-more">
-      <a href="/post/2019-07-27-poi/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2019-07-24-sinfonia-paper/">Sinfonia: a new paradigm for building scalable distributed systems</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2019-07-24 </span>
-      <div class="post-category">
-          <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          </div>
-        <span class="more-meta"> 约 2340 字 </span>
-        <span class="more-meta"> 预计阅读 5 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      论文链接: Sinfonia: a new paradigm for building scalable distributed systems Sinfornia 像是一个构建分布式系统的 SDK 。目前的市面上分布式系统已经非常多了，比如 etcd, zookeeper, ceph 等等。但他们都是分别实现的，彼此之间
-    </div>
-    <div class="read-more">
-      <a href="/post/2019-07-24-sinfonia-paper/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2019-07-19-waste-sorting-game/">垃圾分类模拟游戏设定</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2019-07-19 </span>
-      <div class="post-category">
-          <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          </div>
-        <span class="more-meta"> 约 444 字 </span>
-        <span class="more-meta"> 预计阅读 1 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      技术条件 Steam 上已经有无数的各种模拟器了，技术上实现的难度不大 可能的类似游戏 垃圾模拟器 冰霜朋克 优势 垃圾分类是全面话题，容易吸引云玩家以及游戏圈之
-    </div>
-    <div class="read-more">
-      <a href="/post/2019-07-19-waste-sorting-game/" class="read-more-link">阅读更多</a>
+      <a href="/post/2015-01-22-coreos-install/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>
@@ -229,14 +150,11 @@
     </section>
   
   <nav class="pagination">
-    <a class="prev" href="/page/8/">
+    <a class="prev" href="/page/20/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text">上一页</span>
       </a>
-    <a class="next" href="/page/10/">
-        <span class="next-text">下一页</span>
-        <i class="iconfont icon-right"></i>
-      </a>
+    
   </nav>
         </div>
         

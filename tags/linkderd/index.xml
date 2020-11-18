@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>linkderd on 工业革命</title>
+    <link>http://yanhang.me/tags/linkderd/</link>
+    <description>Recent content in linkderd on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 17 Nov 2020 18:48:42 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/linkderd/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Linkerd系列1 - Linkerd2-proxy</title>
+      <link>http://yanhang.me/post/2020-11-17-linkerd2-proxy/</link>
+      <pubDate>Tue, 17 Nov 2020 18:48:42 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-11-17-linkerd2-proxy/</guid>
+      <description>ServiceMesh这块属于 k8s 的一个大热门，但据我所知，落地的并不是太多。看文章大概理解为 overhead 以及部署都比较重，对一般的企业来讲，要考虑的东</description>
+    </item>
+    
+  </channel>
+</rss>
