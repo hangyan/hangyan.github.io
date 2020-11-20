@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>eBPF系列2 - XDP - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="XDP是指 eXpress data path, 基于 ebpf 技术上的 高性能 data path. 其主要的意图是在网络 packet 处理的早期(网卡驱动处, 在数据包到达RX queue之后, 用hook的方式)，让" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2020-11-17-ebpf-2-xdp/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="eBPF系列2 - XDP" />
+<meta property="og:description" content="XDP是指 eXpress data path, 基于 ebpf 技术上的 高性能 data path. 其主要的意图是在网络 packet 处理的早期(网卡驱动处, 在数据包到达RX queue之后, 用hook的方式)，让" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2020-11-17-ebpf-2-xdp/" />
+<meta property="article:published_time" content="2020-11-17T23:16:48+08:00" />
+<meta property="article:modified_time" content="2020-11-17T23:16:48+08:00" />
+<meta itemprop="name" content="eBPF系列2 - XDP">
+<meta itemprop="description" content="XDP是指 eXpress data path, 基于 ebpf 技术上的 高性能 data path. 其主要的意图是在网络 packet 处理的早期(网卡驱动处, 在数据包到达RX queue之后, 用hook的方式)，让">
+<meta itemprop="datePublished" content="2020-11-17T23:16:48+08:00" />
+<meta itemprop="dateModified" content="2020-11-17T23:16:48+08:00" />
+<meta itemprop="wordCount" content="1590">
+
+
+
+<meta itemprop="keywords" content="eBPF,kernel," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="eBPF系列2 - XDP"/>
+<meta name="twitter:description" content="XDP是指 eXpress data path, 基于 ebpf 技术上的 高性能 data path. 其主要的意图是在网络 packet 处理的早期(网卡驱动处, 在数据包到达RX queue之后, 用hook的方式)，让"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">eBPF系列2 - XDP</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-11-17 </span>
+        <div class="post-category">
+            <a href="/categories/ebpf/"> eBPF </a>
+            </div>
+          <span class="more-meta"> 约 1590 字 </span>
+          <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#python-示例程序">Python 示例程序</a></li>
+        <li><a href="#af_xdp">AF_XDP</a></li>
+        <li><a href="#links">Links</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>XDP是指 <code>eXpress data path</code>,  基于 ebpf 技术上的 高性能 data path. 其主要的意图是在网络 packet 处理的早期(网卡驱动处, 在数据包到达RX queue之后, 用hook的方式)，让用户可以编写 ebpf 程序来进行一些决策。 这个hook的位置早于所有的内存分配时期(sk_buffer)，也没有上下文切换,系统调用等开销, 所以对于性能的提升是很明显的。测试数据表明，在普通的硬件上， XDP 可以 dop 大概 2600w packets per cpu.</p>
+<p><img src="/images/ebpf/xdp-1.png" alt=""></p>
+<p>一个网络包的处理流程大致如下:</p>
+<ol>
+<li>网络包到达网卡</li>
+<li>从 NIC queue 拷贝到内存(DMA-backed ring buffer)中</li>
+<li>网卡驱动使用 NAPI look 触发  soft IRQs</li>
+<li>per cpu 特定线程处理网络包</li>
+<li>分配 socket_buffer(sk_buffer), 作为网络包的基本数据结构</li>
+<li>kernel 填充 metadata, clone sk_buffer 并且交给上层网络处理层</li>
+<li>IP layer 做校验, netfilter hook 处理</li>
+<li>如果 netfilter 未 drop 此包,交给更上层网络层处理</li>
+<li>&hellip;.</li>
+<li>最终数据被 copy 到 userspace (recv,read,poll等网络调用获取)</li>
+</ol>
+<p>其中, XDP hook 在数据到达 NIC RX queue 之后即触发(上面第二步之后).而 iptables 等的处理(上面第八步之后)非常靠后, 需要分配大量资源来处理网络包.</p>
+<p>XDP 程序 attch 到一个网卡的时候，有如下三种模式:</p>
+<ul>
+<li>Native XDP: 网卡驱动支持 XDP, 性能比较高</li>
+<li>Offloaded XDP: 网卡直接加载 XDP 程序，处理过程中不需要CPU参与。这个也需要网卡支持</li>
+<li>Generic XDP: 最通用的模式，加载到内核中作为正常网络路径的一部分</li>
+</ul>
+<p>插入的 ebpf 程序可以修改 packet data, 当程序返回时，可以决定这个 packet 后续的处理路径:</p>
+<ul>
+<li><code>XDP_PASS</code>: 继续按原有路径处理</li>
+<li><code>XDP_DROP</code>: 丢弃.这个可以用来在早期处理DOS攻击，userspace的程序可以分析网络pattern并且不断更新处理策略。性能与易用性兼得。</li>
+<li><code>XDP_ABORTED</code>: 丢弃并抛出异常</li>
+<li><code>XDP_TX</code>： 返回到收到这个 packet 的 NIC 上</li>
+<li><code>XDP_REDIRECT</code>: 重定向到另一个NIC或者到 user space 的 socket (<code>AF_XDP</code> address family，绕过了正常的网络栈）</li>
+</ul>
+<h2 id="python-示例程序">Python 示例程序</h2>
+<p>这个示例程序将发往 port 7999的包改为 7998</p>
+<p>main.py</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="kn">from</span> <span class="nn">bcc</span> <span class="kn">import</span> <span class="n">BPF</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">device</span> <span class="o">=</span> <span class="s2">&#34;lo&#34;</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">BPF</span><span class="p">(</span><span class="n">src_file</span><span class="o">=</span><span class="s2">&#34;filter.c&#34;</span><span class="p">)</span>
+<span class="n">fn</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">load_func</span><span class="p">(</span><span class="s2">&#34;udpfilter&#34;</span><span class="p">,</span> <span class="n">BPF</span><span class="o">.</span><span class="n">XDP</span><span class="p">)</span>
+<span class="n">b</span><span class="o">.</span><span class="n">attach_xdp</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+  <span class="n">b</span><span class="o">.</span><span class="n">trace_print</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+  <span class="k">pass</span>
+
+<span class="n">b</span><span class="o">.</span><span class="n">remove_xdp</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>说明:</p>
+<ul>
+<li>
+<p>python 文件用于加载 bpf 程序，真正的 bpf 程序实在 filter.c 中。</p>
+</li>
+<li>
+<p>BPF 程序被 attch 到了 lookback 接口上</p>
+</li>
+<li>
+<p><code>trace_print</code> 打印出 bpf 程序处理过程中的输出</p>
+</li>
+<li>
+<p>remove_xdp发生在程序退出时，用户从 lookback 接口上移除加载的 xdp 程序</p>
+</li>
+</ul>
+<p>filter.c:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define KBUILD_MODNAME &#34;filter&#34;
+</span><span class="cp">#include</span> <span class="cpf">&lt;linux/bpf.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;linux/if_ether.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;linux/ip.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;linux/in.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;linux/udp.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">udpfilter</span><span class="p">(</span><span class="k">struct</span> <span class="n">xdp_md</span> <span class="o">*</span><span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">bpf_trace_printk</span><span class="p">(</span><span class="s">&#34;got a packet</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="o">*</span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)(</span><span class="kt">long</span><span class="p">)</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">;</span>
+  <span class="kt">void</span> <span class="o">*</span><span class="n">data_end</span> <span class="o">=</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)(</span><span class="kt">long</span><span class="p">)</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">data_end</span><span class="p">;</span>
+  <span class="k">struct</span> <span class="n">ethhdr</span> <span class="o">*</span><span class="n">eth</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">((</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="n">eth</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">eth</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">data_end</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">iphdr</span> <span class="o">*</span><span class="n">ip</span> <span class="o">=</span> <span class="n">data</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">eth</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">((</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="n">ip</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">ip</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">data_end</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">ip</span><span class="o">-&gt;</span><span class="n">protocol</span> <span class="o">==</span> <span class="n">IPPROTO_UDP</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">struct</span> <span class="n">udphdr</span> <span class="o">*</span><span class="n">udp</span> <span class="o">=</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="n">ip</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">ip</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">((</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="n">udp</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">udp</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">data_end</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">udp</span><span class="o">-&gt;</span><span class="n">dest</span> <span class="o">==</span> <span class="n">ntohs</span><span class="p">(</span><span class="mi">7999</span><span class="p">))</span> <span class="p">{</span>
+            <span class="n">bpf_trace_printk</span><span class="p">(</span><span class="s">&#34;udp port 7999</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+            <span class="n">udp</span><span class="o">-&gt;</span><span class="n">dest</span> <span class="o">=</span> <span class="n">ntohs</span><span class="p">(</span><span class="mi">7998</span><span class="p">);</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="n">XDP_PASS</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>说明:</p>
+<ul>
+<li><code>xdp_md</code>结构体中包含了 packet data</li>
+<li>bpf_trace_printk 的输出会在 main.py 里的 trace_print 中反应出来</li>
+<li>指针方式确保了我们时原地修改了 packet data</li>
+</ul>
+<h2 id="af_xdp">AF_XDP</h2>
+<p>上面提到了 AF_XDP，他可以让XDP 程序可以将一个 packet 重定向到 user space 的内存空间里.</p>
+<p><img src="https://miro.medium.com/max/1202/0*I0DyVeTaVmU1ZILm.jpg" alt=""></p>
+<p>有一个比较接近的案例是 AF_PACKET/DPDK, 他们是通过在kernel和userspace共享内存来提高性能。而AF_XDP直能绕过很多 kernel stack 的步骤, 用最快的方式将 packet 传到 userspace.另外，它也提供了一些 zero-copy等功能。</p>
+<p>具体实现上来说，有一些比较独特的数据结构来的达成此目的。创建的时候，仍然是用 <code>socket</code> API, 使用 <code>AF_XDP</code> address family. 然后在 userspace的内存中创建一个叫 <code>UMEM</code> 的 array, 它是一块连续的内存空间，被分成相等的 <code>frames</code> ，每一个 frame 都可以用来存储一个 packet.</p>
+<p><img src="https://static.lwn.net/images/2018/af_xdp1.png" alt=""></p>
+<p>每个 frame 的 index 被叫做 <code>descriptor</code>, 程序创建一个叫 <code>fill queue</code> 的 circular buffer, 并通过 <code>mmap</code> 映射到 userspace. 之后程序可以要求 kernel 将一个 packet 放到一个指定的 frame中(将 frame 的 descriptor 放到 fill queue 中)</p>
+<p><img src="https://static.lwn.net/images/2018/af_xdp2.png" alt=""></p>
+<p><code>receive queue</code>: 类似 fill Q 的创建和映射方式。当一个 packet 被放到一个 frame 之后，他的 descriptor 会被放到 receive queue 中，<code>poll</code> 这样的API就是 wait 的 receive queue.</p>
+<p><img src="https://static.lwn.net/images/2018/af_xdp2.png" alt=""></p>
+<p>上面是接收端的情况。发送端的情况类似。 一个 <code>transmit queue</code>, 通过将 descriptor 放到 tranmit queue表示要发送，<code>complete queue</code> 用于存放已经发送完的 packet .</p>
+<p><img src="https://static.lwn.net/images/2018/af_xdp4.png" alt=""></p>
+<p>通过这个数据结构，就实现了userspace 和 kernel 的 zero-copy. UMEM 数组还可以被多个进程共享，fill queue 和 compeltion queue 只能有一个，但 receive queue 和 tranmit queue 每个进程都需要有自己的，</p>
+<p>AF_XDP最终的目的就是让user space code 可以高效地处理 packet, 尽量少的 kernel overhead.</p>
+<h2 id="links">Links</h2>
+<ol>
+<li><a href="https://en.wikipedia.org/wiki/Express_Data_Path">Express Data Path</a></li>
+<li><a href="https://duo.com/labs/tech-notes/writing-an-xdp-network-filter-with-ebpf">Writing an XDP Network Filter with eBPF</a></li>
+<li><a href="https://medium.com/pantheon-tech/af-xdp-and-its-potential-38485f267fe">AF_XDP and its potential | PANTHEON.tech</a></li>
+<li><a href="https://lwn.net/Articles/750845/">Accelerating networking with AF_XDP</a></li>
+<li><a href="https://en.wikipedia.org/wiki/New_API">New API</a></li>
+<li><a href="https://www.oreilly.com/library/view/understanding-linux-network/0596002556/ch10.html">Understanding Linux Network Internals by Christian Benvenuti</a></li>
+<li><a href="https://www.oreilly.com/library/view/understanding-the-linux/0596005652/ch04s07.html">Understanding the Linux Kernel</a></li>
+<li><a href="https://lwn.net/Articles/520076/">Software interrupts and realtime</a></li>
+<li><a href="https://sematext.com/blog/ebpf-and-xdp-for-processing-packets-at-bare-metal-speed/">eBPF and XDP for Processing Packets at Bare-metal Speed</a></li>
+<li><a href="https://pantheon.tech/what-is-af_xdp/">What Is XDP/AF_XDP and its potential </a></li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2020-11-17
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/ebpf/">eBPF</a>
+          <a href="/tags/kernel/">kernel</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/2020-11-17-linkerd2-proxy/">
+            <span class="next-text nav-default">Linkerd系列1 - Linkerd2-proxy</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
