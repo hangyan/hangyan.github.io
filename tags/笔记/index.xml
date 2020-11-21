@@ -6,7 +6,11 @@
     <description>Recent content in 笔记 on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 16 Oct 2020 17:44:06 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/%E7%AC%94%E8%AE%B0/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 16 Oct 2020 17:44:06 +0800</lastBuildDate>
+    
+	<atom:link href="http://yanhang.me/tags/%E7%AC%94%E8%AE%B0/index.xml" rel="self" type="application/rss+xml" />
+    
+    
     <item>
       <title>关于&lt;罪与罚&gt;</title>
       <link>http://yanhang.me/post/crime-and-punishment/</link>

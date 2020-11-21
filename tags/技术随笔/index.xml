@@ -6,7 +6,11 @@
     <description>Recent content in 技术随笔 on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 01 May 2019 19:03:04 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/%E6%8A%80%E6%9C%AF%E9%9A%8F%E7%AC%94/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 01 May 2019 19:03:04 +0000</lastBuildDate>
+    
+	<atom:link href="http://yanhang.me/tags/%E6%8A%80%E6%9C%AF%E9%9A%8F%E7%AC%94/index.xml" rel="self" type="application/rss+xml" />
+    
+    
     <item>
       <title>如何防止代码变成 SHIT</title>
       <link>http://yanhang.me/post/2019-05-01-great-code/</link>

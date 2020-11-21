@@ -6,7 +6,11 @@
     <description>Recent content in Git on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 12 Sep 2019 13:02:41 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/git/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 12 Sep 2019 13:02:41 +0000</lastBuildDate>
+    
+	<atom:link href="http://yanhang.me/tags/git/index.xml" rel="self" type="application/rss+xml" />
+    
+    
     <item>
       <title>Git 与 GitOps</title>
       <link>http://yanhang.me/post/2019-09-12-git/</link>

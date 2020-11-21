@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.78.2 with theme even" />
+<meta name="generator" content="Hugo 0.68.3 with theme even" />
 
 
 <link rel="canonical" href="http://yanhang.me/post/2019-05-07-gitlab-danger/" />
@@ -35,7 +35,7 @@
 
 
 
-<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link href="/sass/main.min.c7bc1becf36bcf6a9ebd25d2947e43a2eb745ddb0c9a32b43126fd7fa460c351.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
@@ -47,14 +47,13 @@
 <meta property="article:modified_time" content="2019-05-07T23:23:52+00:00" />
 <meta itemprop="name" content="在 Gitlab 中使用 Danger">
 <meta itemprop="description" content="Gitlab 社区版的 CI 功能非常好用，能够很方便的地做到代码的 lint/build/test/等等。不过社区版在多人协作上(比如 Merge Request)上阉割">
-<meta itemprop="datePublished" content="2019-05-07T23:23:52+00:00" />
-<meta itemprop="dateModified" content="2019-05-07T23:23:52+00:00" />
-<meta itemprop="wordCount" content="874">
+<meta itemprop="datePublished" content="2019-05-07T23:23:52&#43;00:00" />
+<meta itemprop="dateModified" content="2019-05-07T23:23:52&#43;00:00" />
+<meta itemprop="wordCount" content="873">
 
 
 
-<meta itemprop="keywords" content="工具,CI/CD,Gitlab," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="工具,CI/CD,Gitlab," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="在 Gitlab 中使用 Danger"/>
 <meta name="twitter:description" content="Gitlab 社区版的 CI 功能非常好用，能够很方便的地做到代码的 lint/build/test/等等。不过社区版在多人协作上(比如 Merge Request)上阉割"/>
 
@@ -126,7 +125,7 @@
         <div class="post-category">
             <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
             </div>
-          <span class="more-meta"> 约 874 字 </span>
+          <span class="more-meta"> 约 873 字 </span>
           <span class="more-meta"> 预计阅读 2 分钟 </span>
         
       </div>
@@ -187,13 +186,13 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">danger</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">only</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span>- <span class="l">merge_requests</span><span class="w">
-</span><span class="w">  </span><span class="nt">stage</span><span class="p">:</span><span class="w"> </span><span class="l">pre</span><span class="w">
-</span><span class="w">  </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">hangyan/danger</span><span class="w">
-</span><span class="w">  </span><span class="nt">script</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span>- <span class="l">danger --fail-on-errors=true</span><span class="w">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="k">danger</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="k">only</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- merge_requests<span class="w">
+</span><span class="w">  </span><span class="k">stage</span><span class="p">:</span><span class="w"> </span>pre<span class="w">
+</span><span class="w">  </span><span class="k">image</span><span class="p">:</span><span class="w"> </span>hangyan/danger<span class="w">
+</span><span class="w">  </span><span class="k">script</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- danger<span class="w"> </span>--fail-on-errors=<span class="kc">true</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
 </div><p>将其放在一个单独的 stage 中，一般在 MR 最开始的时候运行。<code>hangyan/danger</code>镜像的 Dockerfile 如下:</p>

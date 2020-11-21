@@ -6,7 +6,11 @@
     <description>Recent content in DevOps on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 11 Sep 2019 16:44:26 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/devops/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 11 Sep 2019 16:44:26 +0000</lastBuildDate>
+    
+	<atom:link href="http://yanhang.me/tags/devops/index.xml" rel="self" type="application/rss+xml" />
+    
+    
     <item>
       <title>GitOps</title>
       <link>http://yanhang.me/post/2019-09-11-gitops/</link>

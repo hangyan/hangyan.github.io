@@ -6,7 +6,11 @@
     <description>Recent content in 存储 on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 20 Apr 2019 22:35:17 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/%E5%AD%98%E5%82%A8/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 20 Apr 2019 22:35:17 +0800</lastBuildDate>
+    
+	<atom:link href="http://yanhang.me/tags/%E5%AD%98%E5%82%A8/index.xml" rel="self" type="application/rss+xml" />
+    
+    
     <item>
       <title>JFFS3 文件系统</title>
       <link>http://yanhang.me/post/2019-04-20-jffs3/</link>

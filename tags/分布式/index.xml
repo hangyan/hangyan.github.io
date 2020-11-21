@@ -6,7 +6,11 @@
     <description>Recent content in 分布式 on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 10 Sep 2019 14:51:05 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/%E5%88%86%E5%B8%83%E5%BC%8F/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 10 Sep 2019 14:51:05 +0000</lastBuildDate>
+    
+	<atom:link href="http://yanhang.me/tags/%E5%88%86%E5%B8%83%E5%BC%8F/index.xml" rel="self" type="application/rss+xml" />
+    
+    
     <item>
       <title>Raft 协议笔记</title>
       <link>http://yanhang.me/post/2019-09-10-raft-notes/</link>

@@ -6,7 +6,11 @@
     <description>Recent content in 电影 on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 02 Aug 2019 15:20:06 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/%E7%94%B5%E5%BD%B1/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 02 Aug 2019 15:20:06 +0000</lastBuildDate>
+    
+	<atom:link href="http://yanhang.me/tags/%E7%94%B5%E5%BD%B1/index.xml" rel="self" type="application/rss+xml" />
+    
+    
     <item>
       <title>古典精神的衰落</title>
       <link>http://yanhang.me/post/2019-08-02-classic/</link>

@@ -6,7 +6,11 @@
     <description>Recent content in 网络 on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 04 Apr 2019 20:56:03 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/%E7%BD%91%E7%BB%9C/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 04 Apr 2019 20:56:03 +0800</lastBuildDate>
+    
+	<atom:link href="http://yanhang.me/tags/%E7%BD%91%E7%BB%9C/index.xml" rel="self" type="application/rss+xml" />
+    
+    
     <item>
       <title>更安全的 DNS</title>
       <link>http://yanhang.me/post/2019-04-04-more-secure-dns/</link>

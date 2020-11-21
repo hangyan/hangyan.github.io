@@ -5,7 +5,11 @@
     <link>http://yanhang.me/tags/ci/cd/</link>
     <description>Recent content in CI/CD on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language><atom:link href="http://yanhang.me/tags/ci/cd/index.xml" rel="self" type="application/rss+xml" />
+    <language>zh-cn</language>
+    
+	<atom:link href="http://yanhang.me/tags/ci/cd/index.xml" rel="self" type="application/rss+xml" />
+    
+    
     <item>
       <title>失败博物馆 - Jenkins</title>
       <link>http://yanhang.me/post/2019-08-22-fuck-jenkins/</link>

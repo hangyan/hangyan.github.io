@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.78.2 with theme even" />
+<meta name="generator" content="Hugo 0.68.3 with theme even" />
 
 
 <link rel="canonical" href="http://yanhang.me/post/2019-04-20-jffs3/" />
@@ -35,7 +35,7 @@
 
 
 
-<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link href="/sass/main.min.c7bc1becf36bcf6a9ebd25d2947e43a2eb745ddb0c9a32b43126fd7fa460c351.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
@@ -47,14 +47,13 @@
 <meta property="article:modified_time" content="2019-04-20T22:35:17+08:00" />
 <meta itemprop="name" content="JFFS3 文件系统">
 <meta itemprop="description" content="闪存对文件系统的影响 闪存转换层 JFFS3 JFFS2 的问题 Index 的存储 The Journal Garbage collection Superblock Links 看完了闪存,继续看文件系统。网上搜了一圈，发现都是讲 Andriod 的目录结构的，讲文件系统本">
-<meta itemprop="datePublished" content="2019-04-20T22:35:17+08:00" />
-<meta itemprop="dateModified" content="2019-04-20T22:35:17+08:00" />
+<meta itemprop="datePublished" content="2019-04-20T22:35:17&#43;08:00" />
+<meta itemprop="dateModified" content="2019-04-20T22:35:17&#43;08:00" />
 <meta itemprop="wordCount" content="3034">
 
 
 
-<meta itemprop="keywords" content="存储,文件系统," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="存储,文件系统," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="JFFS3 文件系统"/>
 <meta name="twitter:description" content="闪存对文件系统的影响 闪存转换层 JFFS3 JFFS2 的问题 Index 的存储 The Journal Garbage collection Superblock Links 看完了闪存,继续看文件系统。网上搜了一圈，发现都是讲 Andriod 的目录结构的，讲文件系统本"/>
 
@@ -187,26 +186,26 @@
 <table>
 <thead>
 <tr>
-<th style="text-align:center"></th>
-<th style="text-align:center">闪存</th>
-<th style="text-align:center">磁盘</th>
+<th align="center"></th>
+<th align="center">闪存</th>
+<th align="center">磁盘</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">最小寻址单位(读)</td>
-<td style="text-align:center">字节</td>
-<td style="text-align:center">扇区</td>
+<td align="center">最小寻址单位(读)</td>
+<td align="center">字节</td>
+<td align="center">扇区</td>
 </tr>
 <tr>
-<td style="text-align:center">最小寻址单位(写)</td>
-<td style="text-align:center">NOR FLASH 是字节，NAND FLASH 是页，擦除是块</td>
-<td style="text-align:center">扇区</td>
+<td align="center">最小寻址单位(写)</td>
+<td align="center">NOR FLASH 是字节，NAND FLASH 是页，擦除是块</td>
+<td align="center">扇区</td>
 </tr>
 <tr>
-<td style="text-align:center">寿命</td>
-<td style="text-align:center">由擦写块的最大可擦写次数</td>
-<td style="text-align:center">机械故障</td>
+<td align="center">寿命</td>
+<td align="center">由擦写块的最大可擦写次数</td>
+<td align="center">机械故障</td>
 </tr>
 </tbody>
 </table>

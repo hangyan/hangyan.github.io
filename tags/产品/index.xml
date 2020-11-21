@@ -6,7 +6,11 @@
     <description>Recent content in 产品 on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 12 Sep 2020 12:30:28 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/%E4%BA%A7%E5%93%81/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 12 Sep 2020 12:30:28 +0800</lastBuildDate>
+    
+	<atom:link href="http://yanhang.me/tags/%E4%BA%A7%E5%93%81/index.xml" rel="self" type="application/rss+xml" />
+    
+    
     <item>
       <title>Hugo 的优点</title>
       <link>http://yanhang.me/post/fuck-hexo/</link>

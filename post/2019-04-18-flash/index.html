@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.78.2 with theme even" />
+<meta name="generator" content="Hugo 0.68.3 with theme even" />
 
 
 <link rel="canonical" href="http://yanhang.me/post/2019-04-18-flash/" />
@@ -35,7 +35,7 @@
 
 
 
-<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link href="/sass/main.min.c7bc1becf36bcf6a9ebd25d2947e43a2eb745ddb0c9a32b43126fd7fa460c351.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
@@ -47,14 +47,13 @@
 <meta property="article:modified_time" content="2019-04-18T21:01:13+08:00" />
 <meta itemprop="name" content="闪存">
 <meta itemprop="description" content="基本定义 NOR / NAND 写/擦除 eMMC / UFS Links 本来看华为新弄了 FS 和编译器，想学习下。但是目前似乎放出来的技术资料并不多，就先做下技术储备。先研究下他们做这个">
-<meta itemprop="datePublished" content="2019-04-18T21:01:13+08:00" />
-<meta itemprop="dateModified" content="2019-04-18T21:01:13+08:00" />
+<meta itemprop="datePublished" content="2019-04-18T21:01:13&#43;08:00" />
+<meta itemprop="dateModified" content="2019-04-18T21:01:13&#43;08:00" />
 <meta itemprop="wordCount" content="1309">
 
 
 
-<meta itemprop="keywords" content="存储,硬件," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="存储,硬件," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="闪存"/>
 <meta name="twitter:description" content="基本定义 NOR / NAND 写/擦除 eMMC / UFS Links 本来看华为新弄了 FS 和编译器，想学习下。但是目前似乎放出来的技术资料并不多，就先做下技术储备。先研究下他们做这个"/>
 
@@ -179,46 +178,46 @@
 <table>
 <thead>
 <tr>
-<th style="text-align:center"></th>
-<th style="text-align:center">NOR</th>
-<th style="text-align:center">NAND</th>
+<th align="center"></th>
+<th align="center">NOR</th>
+<th align="center">NAND</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">抹写速度</td>
-<td style="text-align:center">慢</td>
-<td style="text-align:center">快</td>
+<td align="center">抹写速度</td>
+<td align="center">慢</td>
+<td align="center">快</td>
 </tr>
 <tr>
-<td style="text-align:center">抹写次数</td>
-<td style="text-align:center">低</td>
-<td style="text-align:center">高 (10x)</td>
+<td align="center">抹写次数</td>
+<td align="center">低</td>
+<td align="center">高 (10x)</td>
 </tr>
 <tr>
-<td style="text-align:center">存取方式</td>
-<td style="text-align:center">随机</td>
-<td style="text-align:center">区块</td>
+<td align="center">存取方式</td>
+<td align="center">随机</td>
+<td align="center">区块</td>
 </tr>
 <tr>
-<td style="text-align:center">成本</td>
-<td style="text-align:center">高</td>
-<td style="text-align:center">低</td>
+<td align="center">成本</td>
+<td align="center">高</td>
+<td align="center">低</td>
 </tr>
 <tr>
-<td style="text-align:center">面积</td>
-<td style="text-align:center">大</td>
-<td style="text-align:center">小</td>
+<td align="center">面积</td>
+<td align="center">大</td>
+<td align="center">小</td>
 </tr>
 <tr>
-<td style="text-align:center">适用场景</td>
-<td style="text-align:center">微处理器</td>
-<td style="text-align:center">普通存储</td>
+<td align="center">适用场景</td>
+<td align="center">微处理器</td>
+<td align="center">普通存储</td>
 </tr>
 <tr>
-<td style="text-align:center">实际使用</td>
-<td style="text-align:center">BIOS/机顶盒</td>
-<td style="text-align:center">U 盘/SSD</td>
+<td align="center">实际使用</td>
+<td align="center">BIOS/机顶盒</td>
+<td align="center">U 盘/SSD</td>
 </tr>
 </tbody>
 </table>
@@ -238,29 +237,29 @@
 <table>
 <thead>
 <tr>
-<th style="text-align:center"></th>
+<th align="center"></th>
 <th>eMMC</th>
 <th>UFS</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">全拼</td>
+<td align="center">全拼</td>
 <td>embedded MultiMedia Card</td>
 <td>Universal Flash Storage</td>
 </tr>
 <tr>
-<td style="text-align:center">读写速度</td>
+<td align="center">读写速度</td>
 <td>50MB/S - 600MB/S</td>
 <td>780MB/S - 1.5GB/S</td>
 </tr>
 <tr>
-<td style="text-align:center">价格(仅作对比)</td>
+<td align="center">价格(仅作对比)</td>
 <td>67 - 145RMB</td>
 <td>285RMB</td>
 </tr>
 <tr>
-<td style="text-align:center">工作模式</td>
+<td align="center">工作模式</td>
 <td>半双工</td>
 <td>全双工模式</td>
 </tr>

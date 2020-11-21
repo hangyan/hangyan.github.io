@@ -6,7 +6,11 @@
     <description>Recent content in 企业 on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 31 Aug 2019 13:01:56 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/%E4%BC%81%E4%B8%9A/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 31 Aug 2019 13:01:56 +0000</lastBuildDate>
+    
+	<atom:link href="http://yanhang.me/tags/%E4%BC%81%E4%B8%9A/index.xml" rel="self" type="application/rss+xml" />
+    
+    
     <item>
       <title>科大讯飞</title>
       <link>http://yanhang.me/post/2019-08-31-iflytech/</link>
