@@ -6,7 +6,16 @@
     <description>Recent content in Kubernetes on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 17 Nov 2020 15:19:38 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 21 Nov 2020 10:51:37 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>OpenKruise 简介</title>
+      <link>http://yanhang.me/post/2020-11-21-open-kruise/</link>
+      <pubDate>Sat, 21 Nov 2020 10:51:37 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-11-21-open-kruise/</guid>
+      <description>Kubernetes 作为一个 building blocks 来说，已经逐渐趋于稳定。大家对于其功能的增强，已经逐渐开始以 CRD + Controller Pattern 为主。另一方面，仍然有不少尝试是针对像 Deployment/StatefulSet/DaemonSet 这样的原始功能的。</description>
+    </item>
+    
     <item>
       <title>etcd 的 clock diff 问题</title>
       <link>http://yanhang.me/post/2020-11-17-etcd-time-diff/</link>

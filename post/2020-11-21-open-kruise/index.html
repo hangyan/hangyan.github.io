@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>OpenKruise 简介 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="Kubernetes 作为一个 building blocks 来说，已经逐渐趋于稳定。大家对于其功能的增强，已经逐渐开始以 CRD &#43; Controller Pattern 为主。另一方面，仍然有不少尝试是针对像 Deployment/StatefulSet/DaemonSet 这样的原始功能的。" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.78.2 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2020-11-21-open-kruise/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.0074becbdedb84928d404df9b4b3851abbdf22bd7ec7dcccac5554e204a9ae64.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="OpenKruise 简介" />
+<meta property="og:description" content="Kubernetes 作为一个 building blocks 来说，已经逐渐趋于稳定。大家对于其功能的增强，已经逐渐开始以 CRD &#43; Controller Pattern 为主。另一方面，仍然有不少尝试是针对像 Deployment/StatefulSet/DaemonSet 这样的原始功能的。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2020-11-21-open-kruise/" />
+<meta property="article:published_time" content="2020-11-21T10:51:37+08:00" />
+<meta property="article:modified_time" content="2020-11-21T10:51:37+08:00" />
+<meta itemprop="name" content="OpenKruise 简介">
+<meta itemprop="description" content="Kubernetes 作为一个 building blocks 来说，已经逐渐趋于稳定。大家对于其功能的增强，已经逐渐开始以 CRD &#43; Controller Pattern 为主。另一方面，仍然有不少尝试是针对像 Deployment/StatefulSet/DaemonSet 这样的原始功能的。">
+<meta itemprop="datePublished" content="2020-11-21T10:51:37+08:00" />
+<meta itemprop="dateModified" content="2020-11-21T10:51:37+08:00" />
+<meta itemprop="wordCount" content="1732">
+
+
+
+<meta itemprop="keywords" content="Kubernetes," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="OpenKruise 简介"/>
+<meta name="twitter:description" content="Kubernetes 作为一个 building blocks 来说，已经逐渐趋于稳定。大家对于其功能的增强，已经逐渐开始以 CRD &#43; Controller Pattern 为主。另一方面，仍然有不少尝试是针对像 Deployment/StatefulSet/DaemonSet 这样的原始功能的。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">OpenKruise 简介</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-11-21 </span>
+        <div class="post-category">
+            <a href="/categories/kubernetes/"> Kubernetes </a>
+            </div>
+          <span class="more-meta"> 约 1732 字 </span>
+          <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#sidecarset">SidecarSet</a></li>
+        <li><a href="#broadcastjob">BroadcastJob</a></li>
+        <li><a href="#cloneset">CloneSet</a></li>
+        <li><a href="#advanced-statefulset">Advanced StatefulSet</a></li>
+        <li><a href="#advanced-daemonset">Advanced DaemonSet</a></li>
+        <li><a href="#uniteddeployment">UnitedDeployment</a></li>
+        <li><a href="#links">Links</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>Kubernetes 作为一个 building blocks 来说，已经逐渐趋于稳定。大家对于其功能的增强，已经逐渐开始以 CRD + Controller Pattern 为主。另一方面，仍然有不少尝试是针对像 Deployment/StatefulSet/DaemonSet 这样的原始功能的。OpenKruise项目就是专注于此。原生的三种 Workload 能满足于日常的需求，但并不完善。在 OpenKruise 项目中，我们可以看到，多种 Workload 之间提供的功能是有很多共性的，我们可以提炼出他们的一些共同的功能模块, 比如:</p>
+<ul>
+<li>分批升级</li>
+<li>灰度更新</li>
+<li>原地升级</li>
+<li>SideCar管理</li>
+<li>PVC管理</li>
+<li>Pod 固定名字</li>
+<li>&hellip;</li>
+</ul>
+<p>这些原子功能有些原生的 workload 已经具有，有些没有。OpenKruise项目通过将这些原子功能排列组合，提供了一些功能增强型的 workload.下面将一一介绍。</p>
+<h2 id="sidecarset">SidecarSet</h2>
+<p><code>SidecarSet</code> 定义了一些 sidecar 模板，然后通过 webhook 的方式注入到通过标签匹配的 Pod 中，这和 istio 等的方式比较像。它比较有用的地方在于，假设你希望给很多 Pod 注入一些通用的附加功能，比如 log, metrics或者init等功能，那么通过 SidecarSet 是一种比较好的方式。下面是一个 yaml 示例:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># sidecarset.yaml</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">SidecarSet</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">test-sidecarset</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">nginx</span><span class="w">
+</span><span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">rollingUpdate</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">maxUnavailable</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">
+</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">sidecar1</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">centos:6.7</span><span class="w">
+</span><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;sleep&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;999d&#34;</span><span class="p">]</span><span class="w"> </span><span class="c"># do nothing at all</span><span class="w">
+</span><span class="w">    </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">log-volume</span><span class="w">
+</span><span class="w">      </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/var/log</span><span class="w">
+</span><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w"> </span><span class="c"># this field will be merged into pod.spec.volumes</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">log-volume</span><span class="w">
+</span><span class="w">    </span><span class="nt">emptyDir</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">nginx</span><span class="w"> </span><span class="c"># matches the SidecarSet&#39;s selector</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">test-pod</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">app</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">nginx:1.15.1</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>这个示例给 <code>test-pod</code> 注入了一个 <code>sidecar1</code>, 同时也加入了一个 log-volume.
+另外，依据对 SidecarSet 不同字段的更新，相应的 Pod 有两种更新方式</p>
+<ul>
+<li>更新 image: 被注入的 Pod 会被原地升级</li>
+<li>更新其他字段： Pod 被重建时才会被更新</li>
+</ul>
+<h2 id="broadcastjob">BroadcastJob</h2>
+<p>类似于 DaemonSet, 但它是一次性的 Job, 适合做一些基础软件升级,巡检等周期性的任务.</p>
+<h2 id="cloneset">CloneSet</h2>
+<p>CloneSet 是对 Deployment 的一个功能增强,提供了如下能力:</p>
+<ol>
+<li>PVC模板: 从 StatefulSet 借鉴的功能, 也做了一些优化</li>
+<li>可以指定删除特定的 Pod 来缩容,通过在 spec 里指定名字的方式</li>
+<li>原地升级功能. 如果只是更新了 image 或者 pod 的 metadata, 支持原地升级</li>
+<li>分批灰度, 从 StatefulSet 的 partition 功能借鉴而来, 可以只更新部分 Pod</li>
+</ol>
+<p>其他功能及详细说明可参考: <a href="https://openkruise.io/zh-cn/docs/cloneset.html">CloneSet</a></p>
+<h2 id="advanced-statefulset">Advanced StatefulSet</h2>
+<p><code>Advanced StatefulSet</code> 是对普通的 StatefulSet 的一个功能增强，提供了如下功能:</p>
+<ul>
+<li><code>MaxUnavailable</code> 策略: StatefulSet 的升级策略是 one-by-one, <code>MaxUnavailable</code> 提供了并行升级的策略。</li>
+<li>原地升级: 如果更新的是镜像或者 metadata信息，那么可以支持原地升级</li>
+<li>无序升级: 不按 order 的升级，而是按预定义的优先级</li>
+</ul>
+<p>具体细节不再详述，可参考: <a href="https://openkruise.io/zh-cn/docs/advanced_statefulset.html">Advanced StatefulSet</a></p>
+<h2 id="advanced-daemonset">Advanced DaemonSet</h2>
+<p><code>Advanced Daemonset</code> 是对 DaemonSet 的一个增强。提供了如下功能:</p>
+<ul>
+<li>升级方式： DamonSet 的升级方式是先删除旧的再起新的，<code>Advanced DaemonSet</code> 提供了另一种方式，先起新的，再删旧的(参考Deployment的滚动升级)。也可以设置 <code>MaxSurge</code>.</li>
+<li>灰度升级: 通过标签选择，只升级部分节点上的 Pod</li>
+<li>分批灰度升级: 只更新部分数量的 Pod (参考 StatefulSet 的功能)</li>
+</ul>
+<p>可以看到,通过从其他的 workload 借来的一些功能， DaemonSet 的适用范围被大大增强了。</p>
+<p>更详细的信息可参考: <a href="https://openkruise.io/zh-cn/docs/advanced_daemonset.html">Advanced DaemonSet</a></p>
+<h2 id="uniteddeployment">UnitedDeployment</h2>
+<p><code>UnitedDeployment</code> 于 pod 的分布策略有关。这里先介绍下 Kubernetes 提供的 Pod 拓扑分布概念。AWS提供了像AZ这样的功能，其他的公有云和私有云也多多少少有类似的概念，当我们在部署 Pod 的时候，希望能将 Pod 均衡地部署到不同的AZ之中以保证可用性。如下示例的 Pod:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mypod</span><span class="w">
+</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">foo</span><span class="p">:</span><span class="w"> </span><span class="l">bar</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">topologySpreadConstraints</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">maxSkew</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="w">    </span><span class="nt">topologyKey</span><span class="p">:</span><span class="w"> </span><span class="l">zone</span><span class="w">
+</span><span class="w">    </span><span class="nt">whenUnsatisfiable</span><span class="p">:</span><span class="w"> </span><span class="l">DoNotSchedule</span><span class="w">
+</span><span class="w">    </span><span class="nt">labelSelector</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">foo</span><span class="p">:</span><span class="w"> </span><span class="l">bar</span><span class="w">
+</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">pause</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">k8s.gcr.io/pause:3.1</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>其中 <code>topologySpredConstraints</code> 表达了如下意图:</p>
+<ol>
+<li>以Node上的key为 <code>zone</code> 的标签为准划分Node为不同的Zone</li>
+<li><code>labelSelector</code> 选定的 Pod 作为同一类 Pod (同理 workload 的 pod 选择机制)</li>
+<li>不同 Zone 之间的 同类 Pod 的数量差距最多为1</li>
+<li>如果发现 Pod 找不到符合 topology 要求的机器,那么不调度</li>
+</ol>
+<p>我们也可以在 Scheduler 层面给一个集群定一个统一的 topology 策略,如下所示:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">kubescheduler.config.k8s.io/v1beta1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">KubeSchedulerConfiguration</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="nt">profiles</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">pluginConfig</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">PodTopologySpread</span><span class="w">
+</span><span class="w">        </span><span class="nt">args</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">defaultConstraints</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span>- <span class="nt">maxSkew</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="w">              </span><span class="nt">topologyKey</span><span class="p">:</span><span class="w"> </span><span class="l">topology.kubernetes.io/zone</span><span class="w">
+</span><span class="w">              </span><span class="nt">whenUnsatisfiable</span><span class="p">:</span><span class="w"> </span><span class="l">ScheduleAnyway</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>而 <code>UnitedDeployment</code> 使用另一种方式来处理这个问题,它给不同的 Zone 分配不同的 workload, 彼此共用一套 workload 模板.  每个 UnitedDeployment 下每个区域的 workload 被称为 subset，有一个期望的 replicas Pod 数量。 目前 subset 支持使用 StatefulSet 和 Advanced StatefulSet.</p>
+<p>下面看一个例子:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">UnitedDeployment</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">sample-ud</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">6</span><span class="w">
+</span><span class="w">  </span><span class="nt">revisionHistoryLimit</span><span class="p">:</span><span class="w"> </span><span class="m">10</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">sample</span><span class="w">
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">statefulSetTemplate</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">sample</span><span class="w">
+</span><span class="w">      </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">sample</span><span class="w">
+</span><span class="w">        </span><span class="nt">template</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">              </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">sample</span><span class="w">
+</span><span class="w">          </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span>- <span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">nginx:alpine</span><span class="w">
+</span><span class="w">              </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">nginx</span><span class="w">
+</span><span class="w">  </span><span class="nt">topology</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">subsets</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">subset-a</span><span class="w">
+</span><span class="w">      </span><span class="nt">nodeSelectorTerm</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">matchExpressions</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">node</span><span class="w">
+</span><span class="w">          </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l">In</span><span class="w">
+</span><span class="w">          </span><span class="nt">values</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="l">zone-a</span><span class="w">
+</span><span class="w">      </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">subset-b</span><span class="w">
+</span><span class="w">      </span><span class="nt">nodeSelectorTerm</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">matchExpressions</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">node</span><span class="w">
+</span><span class="w">          </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l">In</span><span class="w">
+</span><span class="w">          </span><span class="nt">values</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="l">zone-b</span><span class="w">
+</span><span class="w">      </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">50</span><span class="l">%</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">subset-c</span><span class="w">
+</span><span class="w">      </span><span class="nt">nodeSelectorTerm</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">matchExpressions</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">node</span><span class="w">
+</span><span class="w">          </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l">In</span><span class="w">
+</span><span class="w">          </span><span class="nt">values</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="l">zone-c</span><span class="w">
+</span><span class="w">  </span><span class="nt">updateStrategy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">manualUpdate</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">partitions</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">subset-a</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="w">        </span><span class="nt">subset-b</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="w">        </span><span class="nt">subset-c</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">Manual</span><span class="w">
+</span><span class="w"></span><span class="nn">...</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>这个例子中, 最终有六个 Pod, 分成了三个StatefulSet, 同样是以标签匹配来划分不同的 Zone. 注意 subset 的 <code>repliacs</code> 可以用百分比的形式表示.</p>
+<p>这个功能扩展开来,还可以支持多集群的场景.比如使用下面的 spec 定义:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="l">type Topology struct {</span><span class="w">
+</span><span class="w">  </span><span class="l">// ClusterRegistryQuerySpec is used to find the all the clusters that</span><span class="w">
+</span><span class="w">  </span><span class="l">// the workload may be deployed to. </span><span class="w">
+</span><span class="w">  </span><span class="l">ClusterRegistry *ClusterRegistryQuerySpec</span><span class="w">
+</span><span class="w">  </span><span class="l">// Contains the details of each subset including the target cluster name and</span><span class="w">
+</span><span class="w">  </span><span class="l">// the node selector in target cluster.</span><span class="w">
+</span><span class="w">  </span><span class="l">Subsets []Subset</span><span class="w">
+</span><span class="w"></span>}<span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="l">type ClusterRegistryQuerySpec struct {</span><span class="w">
+</span><span class="w">  </span><span class="l">// Namespaces that the cluster objects reside.</span><span class="w">
+</span><span class="w">  </span><span class="l">// If not specified, default namespace is used.</span><span class="w">
+</span><span class="w">  </span><span class="l">Namespaces []string</span><span class="w">
+</span><span class="w">  </span><span class="l">// Selector is the label matcher to find all qualified clusters.</span><span class="w">
+</span><span class="w">  </span><span class="l">Selector   map[string]string</span><span class="w">
+</span><span class="w">  </span><span class="l">// Describe the kind and APIversion of the cluster object.</span><span class="w">
+</span><span class="w">  </span><span class="l">ClusterType metav1.TypeMeta</span><span class="w">
+</span><span class="w"></span>}<span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="l">type Subset struct {</span><span class="w">
+</span><span class="w">  </span><span class="l">Name string</span><span class="w">
+</span><span class="w">
+</span><span class="w">  </span><span class="l">// The name of target cluster. The controller will validate that</span><span class="w">
+</span><span class="w">  </span><span class="l">// the TargetCluster exits based on Topology.ClusterRegistry.</span><span class="w">
+</span><span class="w">  </span><span class="l">TargetCluster *TargetCluster</span><span class="w">
+</span><span class="w">
+</span><span class="w">  </span><span class="l">// Indicate the node select strategy in the Subset.TargetCluster.</span><span class="w">
+</span><span class="w">  </span><span class="l">// If Subset.TargetCluster is not set, node selector strategy refers to</span><span class="w">
+</span><span class="w">  </span><span class="l">// current cluster.</span><span class="w">
+</span><span class="w">  </span><span class="l">NodeSelector corev1.NodeSelector</span><span class="w">
+</span><span class="w">
+</span><span class="w">  </span><span class="l">Replicas *intstr.IntOrString </span><span class="w">
+</span><span class="w"></span>}<span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="l">type TargetCluster struct {</span><span class="w">
+</span><span class="w">  </span><span class="l">// Namespace of the target cluster CRD</span><span class="w">
+</span><span class="w">  </span><span class="l">Namespace string</span><span class="w">
+</span><span class="w">  </span><span class="l">// Target cluster name</span><span class="w">
+</span><span class="w">  </span><span class="l">Name string</span><span class="w">
+</span><span class="w"></span>}<span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>利用了 kubernetes 的 clusterregistry API, 在 subset 里指定集群信息.</p>
+<p><img src="https://openkruise.io/img/uniteddeployment-2.png" alt=""></p>
+<h2 id="links">Links</h2>
+<ol>
+<li><a href="https://openkruise.io/en-us/blog/blog3.html">UnitedDeploymemt - Supporting Multi-domain Workload Management</a></li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2020-11-21
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/kubernetes/">Kubernetes</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/2020-11-17-ebpf-2-xdp/">
+            <span class="next-text nav-default">eBPF系列2 - XDP</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
