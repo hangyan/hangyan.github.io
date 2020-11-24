@@ -107,7 +107,7 @@
   website
 &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;也是同样的作用。但是它的实现上，第一次调用，看起来很正常，返回结果是第一个token.之后的循环调用，只用穿分隔符，不断地拿剩下的 token。 man page 里的说明是:&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;也是同样的作用。但是它的实现上，第一次调用，看起来很正常，返回结果是第一个token.之后的循环调用，只用传分隔符，不断地拿剩下的 token。 man page 里的说明是:&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;The strtok() function is used to isolate sequential tokens in a null-terminated string, str.  These tokens are separated in the string by at least one of
 the characters in sep.  The first time that strtok() is called, str should be specified; subsequent calls, wishing to obtain further tokens from the same
@@ -212,7 +212,7 @@ string, should pass a null pointer instead.  The separator string, sep, must be 
 &lt;span class=&#34;cm&#34;&gt;/* PATH is still &amp;#34;/usr/bin:/bin:/usr/sbin:/sbin&amp;#34; */&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;所以有些地方也建议不用用这个函数:&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;所以有些地方也建议不要用这个函数:&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Never use this function. This function modifies its first argument. The identity of the delimiting character is lost. This function cannot be used on constant strings.&lt;/p&gt;
 &lt;/blockquote&gt;
