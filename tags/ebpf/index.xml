@@ -6,11 +6,7 @@
     <description>Recent content in eBPF on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 17 Nov 2020 23:16:48 +0800</lastBuildDate>
-    
-	<atom:link href="http://yanhang.me/tags/ebpf/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Tue, 17 Nov 2020 23:16:48 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/ebpf/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>eBPF系列2 - XDP</title>
       <link>http://yanhang.me/post/2020-11-17-ebpf-2-xdp/</link>

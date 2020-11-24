@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.68.3 with theme even" />
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
 
 
 <link rel="canonical" href="http://yanhang.me/post/2020-09-07-docker-registry-gc/" />
@@ -47,13 +47,14 @@
 <meta property="article:modified_time" content="2020-09-07T18:13:47+00:00" />
 <meta itemprop="name" content="Docker 私有 Registry 的镜像 GC 问题">
 <meta itemprop="description" content="需求 一个轻量级的 docker registry 方案讨论 Harbor 的功能丰富，但是过于重量级了，与其他平台集成并不方便。Portus 类似。这一类产品都比较侧重 UI 和认证，一般都带">
-<meta itemprop="datePublished" content="2020-09-07T18:13:47&#43;00:00" />
-<meta itemprop="dateModified" content="2020-09-07T18:13:47&#43;00:00" />
+<meta itemprop="datePublished" content="2020-09-07T18:13:47+00:00" />
+<meta itemprop="dateModified" content="2020-09-07T18:13:47+00:00" />
 <meta itemprop="wordCount" content="942">
 
 
 
-<meta itemprop="keywords" content="Docker,Kubernetes," /><meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="Docker,Kubernetes," />
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Docker 私有 Registry 的镜像 GC 问题"/>
 <meta name="twitter:description" content="需求 一个轻量级的 docker registry 方案讨论 Harbor 的功能丰富，但是过于重量级了，与其他平台集成并不方便。Portus 类似。这一类产品都比较侧重 UI 和认证，一般都带"/>
 
@@ -235,20 +236,20 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">      </span><span class="k">containers</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="k">name</span><span class="p">:</span><span class="w"> </span>gc<span class="w">
-</span><span class="w">          </span><span class="k">image</span><span class="p">:</span><span class="w"> </span>docker-registry-pruner<span class="p">:</span>v1<span class="m">.0</span><span class="w">
-</span><span class="w">          </span><span class="k">imagePullPolicy</span><span class="p">:</span><span class="w"> </span>IfNotPresent<span class="w">
-</span><span class="w">          </span><span class="k">volumeMounts</span><span class="p">:</span><span class="w">
-</span><span class="w">            </span>- <span class="k">name</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;RELEASE-NAME-docker-registry-config&#34;</span><span class="w">
-</span><span class="w">              </span><span class="k">mountPath</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;/etc/docker/registry&#34;</span><span class="w">
-</span><span class="w">            </span>- <span class="k">name</span><span class="p">:</span><span class="w"> </span>data<span class="w">
-</span><span class="w">              </span><span class="k">mountPath</span><span class="p">:</span><span class="w"> </span>/var/lib/registry/<span class="w">
-</span><span class="w">          </span><span class="k">env</span><span class="p">:</span><span class="w">
-</span><span class="w">            </span>- <span class="k">name</span><span class="p">:</span><span class="w"> </span>REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY<span class="w">
-</span><span class="w">              </span><span class="k">value</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;/var/lib/registry&#34;</span><span class="w">
-</span><span class="w">            </span>- <span class="k">name</span><span class="p">:</span><span class="w"> </span>GC_PERIOD<span class="w">
-</span><span class="w">              </span><span class="k">value</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;604800&#34;</span><span class="w">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">gc</span><span class="w">
+</span><span class="w">          </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">docker-registry-pruner:v1.0</span><span class="w">
+</span><span class="w">          </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">IfNotPresent</span><span class="w">
+</span><span class="w">          </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;RELEASE-NAME-docker-registry-config&#34;</span><span class="w">
+</span><span class="w">              </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;/etc/docker/registry&#34;</span><span class="w">
+</span><span class="w">            </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">data</span><span class="w">
+</span><span class="w">              </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/var/lib/registry/</span><span class="w">
+</span><span class="w">          </span><span class="nt">env</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY</span><span class="w">
+</span><span class="w">              </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;/var/lib/registry&#34;</span><span class="w">
+</span><span class="w">            </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">GC_PERIOD</span><span class="w">
+</span><span class="w">              </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;604800&#34;</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
 </div><p>这部分就是 gc container 在 Deployment 里的配置。 它挂在的 volume 与 registry 的 Container 是类似的。关于默认 registry 的 配置，使用的是 helm 官方的 chart.</p>

@@ -6,11 +6,7 @@
     <description>Recent content in language on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 27 May 2019 22:28:38 +0000</lastBuildDate>
-    
-	<atom:link href="http://yanhang.me/tags/language/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Mon, 27 May 2019 22:28:38 +0000</lastBuildDate><atom:link href="http://yanhang.me/tags/language/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Golang 1.9 Release Note</title>
       <link>http://yanhang.me/post/2019-05-27-golang-release-note/</link>

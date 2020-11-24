@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.68.3 with theme even" />
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
 
 
 <link rel="canonical" href="http://yanhang.me/post/2017-08-18-kubernetes-note/" />
@@ -47,13 +47,14 @@
 <meta property="article:modified_time" content="2017-08-18T00:00:00+00:00" />
 <meta itemprop="name" content="Kubernetes 笔记">
 <meta itemprop="description" content="API 声明式的 API API Response 错误处理 Resource Version Version API Group Runtime config REGEX 字段格式 PATCH 与 PUT Events 交互 输出 输入 API 声明式的 API 声明式： 结果是什么 命令式: 做什么 声明式的操作，相对于命令式操">
-<meta itemprop="datePublished" content="2017-08-18T00:00:00&#43;00:00" />
-<meta itemprop="dateModified" content="2017-08-18T00:00:00&#43;00:00" />
+<meta itemprop="datePublished" content="2017-08-18T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2017-08-18T00:00:00+00:00" />
 <meta itemprop="wordCount" content="2208">
 
 
 
-<meta itemprop="keywords" content="架构,Kubernetes," /><meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="架构,Kubernetes," />
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Kubernetes 笔记"/>
 <meta name="twitter:description" content="API 声明式的 API API Response 错误处理 Resource Version Version API Group Runtime config REGEX 字段格式 PATCH 与 PUT Events 交互 输出 输入 API 声明式的 API 声明式： 结果是什么 命令式: 做什么 声明式的操作，相对于命令式操"/>
 
@@ -237,25 +238,25 @@
 </span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="k">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="k">annotations</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="k">flannel.alpha.coreos.com/backend-data</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;{&#34;VtepMAC&#34;:&#34;9a:98:da:a1:b9:5d&#34;}&#39;</span><span class="w">
-</span><span class="w">    </span><span class="k">flannel.alpha.coreos.com/backend-type</span><span class="p">:</span><span class="w"> </span>vxlan<span class="w">
-</span><span class="w">    </span><span class="k">flannel.alpha.coreos.com/kube-subnet-manager</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;true&#34;</span><span class="w">
-</span><span class="w">    </span><span class="k">flannel.alpha.coreos.com/public-ip</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
-</span><span class="w">    </span><span class="k">scheduler.alpha.kubernetes.io/taints</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;[]&#39;</span><span class="w">
-</span><span class="w">    </span><span class="k">volumes.kubernetes.io/controller-managed-attach-detach</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;true&#34;</span><span class="w">
-</span><span class="w">  </span><span class="k">creationTimestamp</span><span class="p">:</span><span class="w"> </span><span class="ld">2017-07-13T09:45:11Z</span><span class="w">
-</span><span class="w">  </span><span class="k">labels</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="k">beta.kubernetes.io/arch</span><span class="p">:</span><span class="w"> </span>amd64<span class="w">
-</span><span class="w">    </span><span class="k">beta.kubernetes.io/os</span><span class="p">:</span><span class="w"> </span>linux<span class="w">
-</span><span class="w">    </span><span class="k">ip</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
-</span><span class="w">    </span><span class="k">kubeadm.alpha.kubernetes.io/role</span><span class="p">:</span><span class="w"> </span>master<span class="w">
-</span><span class="w">    </span><span class="k">kubernetes.io/hostname</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
-</span><span class="w">  </span><span class="k">name</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
-</span><span class="w">  </span><span class="k">resourceVersion</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;3785002&#34;</span><span class="w">
-</span><span class="w">  </span><span class="k">selfLink</span><span class="p">:</span><span class="w"> </span>/api/v1/nodes172<span class="m">.18.0.4</span><span class="w">
-</span><span class="w">  </span><span class="k">uid</span><span class="p">:</span><span class="w"> </span>f6fc3022-67af<span class="m">-11e7</span>-b171-0017fa013946<span class="w">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">flannel.alpha.coreos.com/backend-data</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;{&#34;VtepMAC&#34;:&#34;9a:98:da:a1:b9:5d&#34;}&#39;</span><span class="w">
+</span><span class="w">    </span><span class="nt">flannel.alpha.coreos.com/backend-type</span><span class="p">:</span><span class="w"> </span><span class="l">vxlan</span><span class="w">
+</span><span class="w">    </span><span class="nt">flannel.alpha.coreos.com/kube-subnet-manager</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;true&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">flannel.alpha.coreos.com/public-ip</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
+</span><span class="w">    </span><span class="nt">scheduler.alpha.kubernetes.io/taints</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;[]&#39;</span><span class="w">
+</span><span class="w">    </span><span class="nt">volumes.kubernetes.io/controller-managed-attach-detach</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;true&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">creationTimestamp</span><span class="p">:</span><span class="w"> </span><span class="ld">2017-07-13T09:45:11Z</span><span class="w">
+</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">beta.kubernetes.io/arch</span><span class="p">:</span><span class="w"> </span><span class="l">amd64</span><span class="w">
+</span><span class="w">    </span><span class="nt">beta.kubernetes.io/os</span><span class="p">:</span><span class="w"> </span><span class="l">linux</span><span class="w">
+</span><span class="w">    </span><span class="nt">ip</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
+</span><span class="w">    </span><span class="nt">kubeadm.alpha.kubernetes.io/role</span><span class="p">:</span><span class="w"> </span><span class="l">master</span><span class="w">
+</span><span class="w">    </span><span class="nt">kubernetes.io/hostname</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
+</span><span class="w">  </span><span class="nt">resourceVersion</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;3785002&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">selfLink</span><span class="p">:</span><span class="w"> </span><span class="l">/api/v1/nodes172.18.0.4</span><span class="w">
+</span><span class="w">  </span><span class="nt">uid</span><span class="p">:</span><span class="w"> </span><span class="l">f6fc3022-67af-11e7-b171-0017fa013946</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
 </div><p>可以看到 flannel 用它来存储了一些自己需要的信息.</p>
@@ -377,7 +378,7 @@
 <pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">[</span>root@172 alauda<span class="o">]</span><span class="c1"># kubectl get no</span>
 NAME         STATUS         AGE
 172.18.0.4   Ready,master   38d
-<span class="o">[</span>root@172 alauda<span class="o">]</span>#
+<span class="o">[</span>root@172 alauda<span class="o">]</span><span class="c1">#</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>指定输出 yaml 格式的详情</p>
@@ -404,25 +405,25 @@ NAME         STATUS         AGE
 </span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml">...<span class="w">
-</span><span class="w"></span><span class="k">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="k">externalID</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
-</span><span class="w">  </span><span class="k">podCIDR</span><span class="p">:</span><span class="w"> </span><span class="m">10.1.0.0</span>/<span class="m">24</span><span class="w">
-</span><span class="w">  </span><span class="k">providerID</span><span class="p">:</span><span class="w"> </span>azure<span class="p">:</span>////2882C846-5C01-BE47-B19A-4C5DB5F26348<span class="w">
-</span><span class="w"></span><span class="k">status</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="k">addresses</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span>- <span class="k">address</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
-</span><span class="w">    </span><span class="k">type</span><span class="p">:</span><span class="w"> </span>LegacyHostIP<span class="w">
-</span><span class="w">  </span>- <span class="k">address</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
-</span><span class="w">    </span><span class="k">type</span><span class="p">:</span><span class="w"> </span>InternalIP<span class="w">
-</span><span class="w">  </span>- <span class="k">address</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
-</span><span class="w">    </span><span class="k">type</span><span class="p">:</span><span class="w"> </span>Hostname<span class="w">
-</span><span class="w">  </span><span class="k">allocatable</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="k">alpha.kubernetes.io/nvidia-gpu</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;0&#34;</span><span class="w">
-</span><span class="w">    </span><span class="k">cpu</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;16&#34;</span><span class="w">
-</span><span class="w">    </span><span class="k">memory</span><span class="p">:</span><span class="w"> </span>57710432Ki<span class="w">
-</span><span class="w">    </span><span class="k">pods</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;110&#34;</span><span class="w">
-</span><span class="w"></span>...<span class="w">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nn">...</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">externalID</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
+</span><span class="w">  </span><span class="nt">podCIDR</span><span class="p">:</span><span class="w"> </span><span class="m">10.1.0.0</span><span class="l">/24</span><span class="w">
+</span><span class="w">  </span><span class="nt">providerID</span><span class="p">:</span><span class="w"> </span><span class="l">azure:////2882C846-5C01-BE47-B19A-4C5DB5F26348</span><span class="w">
+</span><span class="w"></span><span class="nt">status</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">addresses</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">LegacyHostIP</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">InternalIP</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.4</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">Hostname</span><span class="w">
+</span><span class="w">  </span><span class="nt">allocatable</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">alpha.kubernetes.io/nvidia-gpu</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;0&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;16&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l">57710432Ki</span><span class="w">
+</span><span class="w">    </span><span class="nt">pods</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;110&#34;</span><span class="w">
+</span><span class="w"></span><span class="nn">...</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
 </div><p>指定输出 json 格式的详情</p>

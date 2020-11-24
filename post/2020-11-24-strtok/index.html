@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>C语言中的 strtok 函数 - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="在看一个项目的代码时，发现了它用到了strtok 这个API, 它的作用是 split 一个字符串。这个功能在各个语言都很常见，而且接口也大同小异，比如 Golang: 1" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2020-11-24-strtok/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.c7bc1becf36bcf6a9ebd25d2947e43a2eb745ddb0c9a32b43126fd7fa460c351.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="C语言中的 strtok 函数" />
+<meta property="og:description" content="在看一个项目的代码时，发现了它用到了strtok 这个API, 它的作用是 split 一个字符串。这个功能在各个语言都很常见，而且接口也大同小异，比如 Golang: 1" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2020-11-24-strtok/" />
+<meta property="article:published_time" content="2020-11-24T13:22:33+08:00" />
+<meta property="article:modified_time" content="2020-11-24T13:22:33+08:00" />
+<meta itemprop="name" content="C语言中的 strtok 函数">
+<meta itemprop="description" content="在看一个项目的代码时，发现了它用到了strtok 这个API, 它的作用是 split 一个字符串。这个功能在各个语言都很常见，而且接口也大同小异，比如 Golang: 1">
+<meta itemprop="datePublished" content="2020-11-24T13:22:33+08:00" />
+<meta itemprop="dateModified" content="2020-11-24T13:22:33+08:00" />
+<meta itemprop="wordCount" content="749">
+
+
+
+<meta itemprop="keywords" content="c," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="C语言中的 strtok 函数"/>
+<meta name="twitter:description" content="在看一个项目的代码时，发现了它用到了strtok 这个API, 它的作用是 split 一个字符串。这个功能在各个语言都很常见，而且接口也大同小异，比如 Golang: 1"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">C语言中的 strtok 函数</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-11-24 </span>
+        <div class="post-category">
+            <a href="/categories/language/"> Language </a>
+            </div>
+          <span class="more-meta"> 约 749 字 </span>
+          <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents"></nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>在看一个项目的代码时，发现了它用到了<code>strtok</code> 这个API, 它的作用是 split 一个字符串。这个功能在各个语言都很常见，而且接口也大同小异，比如 Golang:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-golang" data-lang="golang"><span class="nx">s</span> <span class="o">:=</span> <span class="nx">strings</span><span class="p">.</span><span class="nf">Split</span><span class="p">(</span><span class="s">&#34;a,b,c&#34;</span><span class="p">,</span> <span class="s">&#34;,&#34;</span><span class="p">)</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+<span class="c1">// Output: [a b c]
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Python:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="n">txt</span> <span class="o">=</span> <span class="s2">&#34;hello, my name is Peter, I am 26 years old&#34;</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">txt</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&#34;, &#34;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> 
+</code></pre></td></tr></table>
+</div>
+</div><p>而 <code>strtok</code> 的接口就比较奇怪了，看一个例子:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="n">Live</span> <span class="n">Demo</span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="n">main</span> <span class="p">()</span> <span class="p">{</span>
+   <span class="kt">char</span> <span class="n">str</span><span class="p">[</span><span class="mi">80</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#34;This is - www.tutorialspoint.com - website&#34;</span><span class="p">;</span>
+   <span class="k">const</span> <span class="kt">char</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#34;-&#34;</span><span class="p">;</span>
+   <span class="kt">char</span> <span class="o">*</span><span class="n">token</span><span class="p">;</span>
+   
+   <span class="cm">/* get the first token */</span>
+   <span class="n">token</span> <span class="o">=</span> <span class="n">strtok</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="n">s</span><span class="p">);</span>
+   
+   <span class="cm">/* walk through other tokens */</span>
+   <span class="k">while</span><span class="p">(</span> <span class="n">token</span> <span class="o">!=</span> <span class="nb">NULL</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">printf</span><span class="p">(</span> <span class="s">&#34; %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">token</span> <span class="p">);</span>
+    
+      <span class="n">token</span> <span class="o">=</span> <span class="n">strtok</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="n">s</span><span class="p">);</span>
+   <span class="p">}</span>
+   
+   <span class="k">return</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>输出为:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">This is 
+  www.tutorialspoint.com 
+  website
+</code></pre></td></tr></table>
+</div>
+</div><p>也是同样的作用。但是它的实现上，第一次调用，看起来很正常，返回结果是第一个token.之后的循环调用，只用穿分隔符，不断地拿剩下的 token。 man page 里的说明是:</p>
+<blockquote>
+<p>The strtok() function is used to isolate sequential tokens in a null-terminated string, str.  These tokens are separated in the string by at least one of
+the characters in sep.  The first time that strtok() is called, str should be specified; subsequent calls, wishing to obtain further tokens from the same
+string, should pass a null pointer instead.  The separator string, sep, must be supplied each time, and may change between calls.</p>
+</blockquote>
+<p>这里是一个示例的 <code>strtok</code> 实现:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c">
+<span class="kt">char</span> <span class="o">*</span>
+<span class="nf">strtok</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">delim</span><span class="p">)</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">;</span>            <span class="cm">/* string to search for tokens */</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">delim</span><span class="p">;</span>  <span class="cm">/* delimiting characters */</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="kt">char</span> <span class="o">*</span><span class="n">lasts</span><span class="p">;</span>
+    <span class="k">register</span> <span class="kt">int</span> <span class="n">ch</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">s</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+	<span class="n">s</span> <span class="o">=</span> <span class="n">lasts</span><span class="p">;</span>
+    <span class="k">do</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="p">((</span><span class="n">ch</span> <span class="o">=</span> <span class="o">*</span><span class="n">s</span><span class="o">++</span><span class="p">)</span> <span class="o">==</span> <span class="sc">&#39;\0&#39;</span><span class="p">)</span>
+	    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">strchr</span><span class="p">(</span><span class="n">delim</span><span class="p">,</span> <span class="n">ch</span><span class="p">));</span>
+    <span class="o">--</span><span class="n">s</span><span class="p">;</span>
+    <span class="n">lasts</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="n">strcspn</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">delim</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">lasts</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+	<span class="o">*</span><span class="n">lasts</span><span class="o">++</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">s</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>它在内部用了一个 static 变量来记录上一次的信息，所以也是不可重入的,也不是线程安全的。这函数应该是比较老了，当时线程的library可能还不存在，可重入性也没那么重要。
+另外，它也修改了传入的 str。所以有些地方建议在token之前，copy一份数据再调用<code>strtok</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">char</span> <span class="o">*</span><span class="n">token</span><span class="p">;</span>
+<span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span> <span class="o">=</span> <span class="n">getenv</span><span class="p">(</span><span class="s">&#34;PATH&#34;</span><span class="p">);</span>
+<span class="cm">/* PATH is something like &#34;/usr/bin:/bin:/usr/sbin:/sbin&#34; */</span>
+ 
+<span class="kt">char</span> <span class="o">*</span><span class="n">copy</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="n">strlen</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">copy</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+  <span class="cm">/* Handle error */</span>
+<span class="p">}</span>
+<span class="n">strcpy</span><span class="p">(</span><span class="n">copy</span><span class="p">,</span> <span class="n">path</span><span class="p">);</span>
+<span class="n">token</span> <span class="o">=</span> <span class="n">strtok</span><span class="p">(</span><span class="n">copy</span><span class="p">,</span> <span class="s">&#34;:&#34;</span><span class="p">);</span>
+<span class="n">puts</span><span class="p">(</span><span class="n">token</span><span class="p">);</span>
+ 
+<span class="k">while</span> <span class="p">(</span><span class="n">token</span> <span class="o">=</span> <span class="n">strtok</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#34;:&#34;</span><span class="p">))</span> <span class="p">{</span>
+  <span class="n">puts</span><span class="p">(</span><span class="n">token</span><span class="p">);</span>
+<span class="p">}</span>
+ 
+<span class="n">free</span><span class="p">(</span><span class="n">copy</span><span class="p">);</span>
+<span class="n">copy</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+ 
+<span class="n">printf</span><span class="p">(</span><span class="s">&#34;PATH: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">path</span><span class="p">);</span>
+<span class="cm">/* PATH is still &#34;/usr/bin:/bin:/usr/sbin:/sbin&#34; */</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>所以有些地方也建议不用用这个函数:</p>
+<blockquote>
+<p>Never use this function. This function modifies its first argument. The identity of the delimiting character is lost. This function cannot be used on constant strings.</p>
+</blockquote>
+<p>(The Linux Programmer&rsquo;s Manual (man) page on strtok(3))</p>
+<p>只能感叹说 C/C++的很多 library 设计真是太古老了。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2020-11-24
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/c/">c</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/2020-11-21-open-kruise/">
+            <span class="next-text nav-default">OpenKruise 简介</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

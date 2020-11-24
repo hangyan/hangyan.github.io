@@ -6,11 +6,7 @@
     <description>Recent content in ServiceMesh on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 17 Nov 2020 18:48:42 +0800</lastBuildDate>
-    
-	<atom:link href="http://yanhang.me/categories/servicemesh/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Tue, 17 Nov 2020 18:48:42 +0800</lastBuildDate><atom:link href="http://yanhang.me/categories/servicemesh/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Linkerd系列1 - Linkerd2-proxy</title>
       <link>http://yanhang.me/post/2020-11-17-linkerd2-proxy/</link>

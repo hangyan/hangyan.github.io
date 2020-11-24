@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.68.3 with theme even" />
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
 
 
 <link rel="canonical" href="http://yanhang.me/post/2019-08-03-helm-controller/" />
@@ -47,13 +47,14 @@
 <meta property="article:modified_time" content="2019-08-03T11:26:30+00:00" />
 <meta itemprop="name" content="What is Helm Doing Wrong and How a Helm3 Controller Can Fix It">
 <meta itemprop="description" content="Helm is big success for sure, it&rsquo;s nearly the standard application package format in kubernetes.You only need to provide some metadata about your application&rsquo;s name, version, description….Helm can help you package up and upload to a central or custom chart repo.Just like npm,rpm,docker image, or whatever other package management system. About a year ago,">
-<meta itemprop="datePublished" content="2019-08-03T11:26:30&#43;00:00" />
-<meta itemprop="dateModified" content="2019-08-03T11:26:30&#43;00:00" />
+<meta itemprop="datePublished" content="2019-08-03T11:26:30+00:00" />
+<meta itemprop="dateModified" content="2019-08-03T11:26:30+00:00" />
 <meta itemprop="wordCount" content="1393">
 
 
 
-<meta itemprop="keywords" content="Kubernetes,docker,helm," /><meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="Kubernetes,docker,helm," />
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="What is Helm Doing Wrong and How a Helm3 Controller Can Fix It"/>
 <meta name="twitter:description" content="Helm is big success for sure, it&rsquo;s nearly the standard application package format in kubernetes.You only need to provide some metadata about your application&rsquo;s name, version, description….Helm can help you package up and upload to a central or custom chart repo.Just like npm,rpm,docker image, or whatever other package management system. About a year ago,"/>
 
@@ -227,12 +228,12 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="k">kind</span><span class="p">:</span><span class="w"> </span>HelmRequest<span class="w">
-</span><span class="w"></span><span class="k">apiVersion</span><span class="p">:</span><span class="w"> </span>app.alauda.io/v1alpha1<span class="w">
-</span><span class="w"></span><span class="k">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="k">name</span><span class="p">:</span><span class="w"> </span>nginx-ingress<span class="w">
-</span><span class="w"></span><span class="k">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="k">chart</span><span class="p">:</span><span class="w"> </span>stable/nginx-ingress<span class="w">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">HelmRequest</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">app.alauda.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">nginx-ingress</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">chart</span><span class="p">:</span><span class="w"> </span><span class="l">stable/nginx-ingress</span><span class="w">
 </span><span class="w">  
 </span></code></pre></td></tr></table>
 </div>
@@ -255,19 +256,19 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="k">apiVersion</span><span class="p">:</span><span class="w"> </span>app.alauda.io/v1alpha1<span class="w">
-</span><span class="w"></span><span class="k">kind</span><span class="p">:</span><span class="w"> </span>HelmRequest<span class="w">
-</span><span class="w"></span><span class="k">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="k">finalizers</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span>- captain.alauda.io<span class="w">
-</span><span class="w">  </span><span class="k">name</span><span class="p">:</span><span class="w"> </span>nginx-ingress<span class="w">
-</span><span class="w">  </span><span class="k">namespace</span><span class="p">:</span><span class="w"> </span>default<span class="w">
-</span><span class="w"></span><span class="k">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="k">chart</span><span class="p">:</span><span class="w"> </span>stable/nginx-ingress<span class="w">
-</span><span class="w">  </span><span class="k">namespace</span><span class="p">:</span><span class="w"> </span>default<span class="w">
-</span><span class="w">  </span><span class="k">releaseName</span><span class="p">:</span><span class="w"> </span>nginx-ingress<span class="w">
-</span><span class="w">  </span><span class="k">clusterName</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;&#34;</span><span class="w">
-</span><span class="w">  </span><span class="k">installToAllClusters</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">app.alauda.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">HelmRequest</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">finalizers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="l">captain.alauda.io</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">nginx-ingress</span><span class="w">
+</span><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">chart</span><span class="p">:</span><span class="w"> </span><span class="l">stable/nginx-ingress</span><span class="w">
+</span><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
+</span><span class="w">  </span><span class="nt">releaseName</span><span class="p">:</span><span class="w"> </span><span class="l">nginx-ingress</span><span class="w">
+</span><span class="w">  </span><span class="nt">clusterName</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">installToAllClusters</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
 </span><span class="w">
 </span></code></pre></td></tr></table>
 </div>

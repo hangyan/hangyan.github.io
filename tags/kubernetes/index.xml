@@ -6,11 +6,7 @@
     <description>Recent content in Kubernetes on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 21 Nov 2020 10:51:37 +0800</lastBuildDate>
-    
-	<atom:link href="http://yanhang.me/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Sat, 21 Nov 2020 10:51:37 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>OpenKruise 简介</title>
       <link>http://yanhang.me/post/2020-11-21-open-kruise/</link>

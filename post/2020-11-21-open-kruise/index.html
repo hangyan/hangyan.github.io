@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.68.3 with theme even" />
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
 
 
 <link rel="canonical" href="http://yanhang.me/post/2020-11-21-open-kruise/" />
@@ -47,13 +47,14 @@
 <meta property="article:modified_time" content="2020-11-21T10:51:37+08:00" />
 <meta itemprop="name" content="OpenKruise 简介">
 <meta itemprop="description" content="Kubernetes 作为一个 building blocks 来说，已经逐渐趋于稳定。大家对于其功能的增强，已经逐渐开始以 CRD &#43; Controller Pattern 为主。另一方面，仍然有不少尝试是针对像 Deployment/StatefulSet/DaemonSet 这样的原始功能的。">
-<meta itemprop="datePublished" content="2020-11-21T10:51:37&#43;08:00" />
-<meta itemprop="dateModified" content="2020-11-21T10:51:37&#43;08:00" />
-<meta itemprop="wordCount" content="1596">
+<meta itemprop="datePublished" content="2020-11-21T10:51:37+08:00" />
+<meta itemprop="dateModified" content="2020-11-21T10:51:37+08:00" />
+<meta itemprop="wordCount" content="1733">
 
 
 
-<meta itemprop="keywords" content="Kubernetes," /><meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="Kubernetes," />
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="OpenKruise 简介"/>
 <meta name="twitter:description" content="Kubernetes 作为一个 building blocks 来说，已经逐渐趋于稳定。大家对于其功能的增强，已经逐渐开始以 CRD &#43; Controller Pattern 为主。另一方面，仍然有不少尝试是针对像 Deployment/StatefulSet/DaemonSet 这样的原始功能的。"/>
 
@@ -125,7 +126,7 @@
         <div class="post-category">
             <a href="/categories/kubernetes/"> Kubernetes </a>
             </div>
-          <span class="more-meta"> 约 1596 字 </span>
+          <span class="more-meta"> 约 1733 字 </span>
           <span class="more-meta"> 预计阅读 4 分钟 </span>
         
       </div>
@@ -192,27 +193,27 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># sidecarset.yaml</span><span class="w">
-</span><span class="w"></span><span class="k">apiVersion</span><span class="p">:</span><span class="w"> </span>apps.kruise.io/v1alpha1<span class="w">
-</span><span class="w"></span><span class="k">kind</span><span class="p">:</span><span class="w"> </span>SidecarSet<span class="w">
-</span><span class="w"></span><span class="k">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="k">name</span><span class="p">:</span><span class="w"> </span>test-sidecarset<span class="w">
-</span><span class="w"></span><span class="k">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="k">selector</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="k">matchLabels</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="k">app</span><span class="p">:</span><span class="w"> </span>nginx<span class="w">
-</span><span class="w">  </span><span class="k">strategy</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="k">rollingUpdate</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="k">maxUnavailable</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">
-</span><span class="w">  </span><span class="k">containers</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span>- <span class="k">name</span><span class="p">:</span><span class="w"> </span>sidecar1<span class="w">
-</span><span class="w">    </span><span class="k">image</span><span class="p">:</span><span class="w"> </span>centos<span class="p">:</span><span class="m">6.7</span><span class="w">
-</span><span class="w">    </span><span class="k">command</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;sleep&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;999d&#34;</span><span class="p">]</span><span class="w"> </span><span class="c"># do nothing at all</span><span class="w">
-</span><span class="w">    </span><span class="k">volumeMounts</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span>- <span class="k">name</span><span class="p">:</span><span class="w"> </span>log-volume<span class="w">
-</span><span class="w">      </span><span class="k">mountPath</span><span class="p">:</span><span class="w"> </span>/var/log<span class="w">
-</span><span class="w">  </span><span class="k">volumes</span><span class="p">:</span><span class="w"> </span><span class="c"># this field will be merged into pod.spec.volumes</span><span class="w">
-</span><span class="w">  </span>- <span class="k">name</span><span class="p">:</span><span class="w"> </span>log-volume<span class="w">
-</span><span class="w">    </span><span class="k">emptyDir</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">SidecarSet</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">test-sidecarset</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">nginx</span><span class="w">
+</span><span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">rollingUpdate</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">maxUnavailable</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">
+</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">sidecar1</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">centos:6.7</span><span class="w">
+</span><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;sleep&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;999d&#34;</span><span class="p">]</span><span class="w"> </span><span class="c"># do nothing at all</span><span class="w">
+</span><span class="w">    </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">log-volume</span><span class="w">
+</span><span class="w">      </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/var/log</span><span class="w">
+</span><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w"> </span><span class="c"># this field will be merged into pod.spec.volumes</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">log-volume</span><span class="w">
+</span><span class="w">    </span><span class="nt">emptyDir</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
 </span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
@@ -229,16 +230,16 @@
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="k">apiVersion</span><span class="p">:</span><span class="w"> </span>v1<span class="w">
-</span><span class="w"></span><span class="k">kind</span><span class="p">:</span><span class="w"> </span>Pod<span class="w">
-</span><span class="w"></span><span class="k">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="k">labels</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="k">app</span><span class="p">:</span><span class="w"> </span>nginx<span class="w"> </span><span class="c"># matches the SidecarSet&#39;s selector</span><span class="w">
-</span><span class="w">  </span><span class="k">name</span><span class="p">:</span><span class="w"> </span>test-pod<span class="w">
-</span><span class="w"></span><span class="k">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="k">containers</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span>- <span class="k">name</span><span class="p">:</span><span class="w"> </span>app<span class="w">
-</span><span class="w">    </span><span class="k">image</span><span class="p">:</span><span class="w"> </span>nginx<span class="p">:</span><span class="m">1.15.1</span><span class="w">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">nginx # matches the SidecarSet&#39;s selector</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">test-pod</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">app</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">nginx:1.15.1</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
 </div><p>这个示例给 <code>test-pod</code> 注入了一个 <code>sidecar1</code>, 同时也加入了一个 log-volume.
@@ -298,23 +299,23 @@
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="k">kind</span><span class="p">:</span><span class="w"> </span>Pod<span class="w">
-</span><span class="w"></span><span class="k">apiVersion</span><span class="p">:</span><span class="w"> </span>v1<span class="w">
-</span><span class="w"></span><span class="k">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="k">name</span><span class="p">:</span><span class="w"> </span>mypod<span class="w">
-</span><span class="w">  </span><span class="k">labels</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="k">foo</span><span class="p">:</span><span class="w"> </span>bar<span class="w">
-</span><span class="w"></span><span class="k">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="k">topologySpreadConstraints</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span>- <span class="k">maxSkew</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
-</span><span class="w">    </span><span class="k">topologyKey</span><span class="p">:</span><span class="w"> </span>zone<span class="w">
-</span><span class="w">    </span><span class="k">whenUnsatisfiable</span><span class="p">:</span><span class="w"> </span>DoNotSchedule<span class="w">
-</span><span class="w">    </span><span class="k">labelSelector</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="k">matchLabels</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="k">foo</span><span class="p">:</span><span class="w"> </span>bar<span class="w">
-</span><span class="w">  </span><span class="k">containers</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span>- <span class="k">name</span><span class="p">:</span><span class="w"> </span>pause<span class="w">
-</span><span class="w">    </span><span class="k">image</span><span class="p">:</span><span class="w"> </span>k8s.gcr.io/pause<span class="p">:</span><span class="m">3.1</span><span class="w">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mypod</span><span class="w">
+</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">foo</span><span class="p">:</span><span class="w"> </span><span class="l">bar</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">topologySpreadConstraints</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">maxSkew</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="w">    </span><span class="nt">topologyKey</span><span class="p">:</span><span class="w"> </span><span class="l">zone</span><span class="w">
+</span><span class="w">    </span><span class="nt">whenUnsatisfiable</span><span class="p">:</span><span class="w"> </span><span class="l">DoNotSchedule</span><span class="w">
+</span><span class="w">    </span><span class="nt">labelSelector</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">foo</span><span class="p">:</span><span class="w"> </span><span class="l">bar</span><span class="w">
+</span><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">pause</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">k8s.gcr.io/pause:3.1</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
 </div><p>其中 <code>topologySpredConstraints</code> 表达了如下意图:</p>
@@ -340,17 +341,17 @@
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="k">apiVersion</span><span class="p">:</span><span class="w"> </span>kubescheduler.config.k8s.io/v1beta1<span class="w">
-</span><span class="w"></span><span class="k">kind</span><span class="p">:</span><span class="w"> </span>KubeSchedulerConfiguration<span class="w">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">kubescheduler.config.k8s.io/v1beta1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">KubeSchedulerConfiguration</span><span class="w">
 </span><span class="w">
-</span><span class="w"></span><span class="k">profiles</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span>- <span class="k">pluginConfig</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="k">name</span><span class="p">:</span><span class="w"> </span>PodTopologySpread<span class="w">
-</span><span class="w">        </span><span class="k">args</span><span class="p">:</span><span class="w">
-</span><span class="w">          </span><span class="k">defaultConstraints</span><span class="p">:</span><span class="w">
-</span><span class="w">            </span>- <span class="k">maxSkew</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
-</span><span class="w">              </span><span class="k">topologyKey</span><span class="p">:</span><span class="w"> </span>topology.kubernetes.io/zone<span class="w">
-</span><span class="w">              </span><span class="k">whenUnsatisfiable</span><span class="p">:</span><span class="w"> </span>ScheduleAnyway<span class="w">
+</span><span class="w"></span><span class="nt">profiles</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">pluginConfig</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">PodTopologySpread</span><span class="w">
+</span><span class="w">        </span><span class="nt">args</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">defaultConstraints</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span>- <span class="nt">maxSkew</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="w">              </span><span class="nt">topologyKey</span><span class="p">:</span><span class="w"> </span><span class="l">topology.kubernetes.io/zone</span><span class="w">
+</span><span class="w">              </span><span class="nt">whenUnsatisfiable</span><span class="p">:</span><span class="w"> </span><span class="l">ScheduleAnyway</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
 </div><p>而 <code>UnitedDeployment</code> 使用另一种方式来处理这个问题,它给不同的 Zone 分配不同的 workload, 彼此共用一套 workload 模板.  每个 UnitedDeployment 下每个区域的 workload 被称为 subset，有一个期望的 replicas Pod 数量。 目前 subset 支持使用 StatefulSet 和 Advanced StatefulSet.</p>
@@ -419,66 +420,66 @@
 </span><span class="lnt">60
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="k">apiVersion</span><span class="p">:</span><span class="w"> </span>apps.kruise.io/v1alpha1<span class="w">
-</span><span class="w"></span><span class="k">kind</span><span class="p">:</span><span class="w"> </span>UnitedDeployment<span class="w">
-</span><span class="w"></span><span class="k">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="k">name</span><span class="p">:</span><span class="w"> </span>sample-ud<span class="w">
-</span><span class="w"></span><span class="k">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="k">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">6</span><span class="w">
-</span><span class="w">  </span><span class="k">revisionHistoryLimit</span><span class="p">:</span><span class="w"> </span><span class="m">10</span><span class="w">
-</span><span class="w">  </span><span class="k">selector</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="k">matchLabels</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="k">app</span><span class="p">:</span><span class="w"> </span>sample<span class="w">
-</span><span class="w">  </span><span class="k">template</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="k">statefulSetTemplate</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="k">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="k">labels</span><span class="p">:</span><span class="w">
-</span><span class="w">          </span><span class="k">app</span><span class="p">:</span><span class="w"> </span>sample<span class="w">
-</span><span class="w">      </span><span class="k">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="k">selector</span><span class="p">:</span><span class="w">
-</span><span class="w">          </span><span class="k">matchLabels</span><span class="p">:</span><span class="w">
-</span><span class="w">            </span><span class="k">app</span><span class="p">:</span><span class="w"> </span>sample<span class="w">
-</span><span class="w">        </span><span class="k">template</span><span class="p">:</span><span class="w">
-</span><span class="w">          </span><span class="k">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">            </span><span class="k">labels</span><span class="p">:</span><span class="w">
-</span><span class="w">              </span><span class="k">app</span><span class="p">:</span><span class="w"> </span>sample<span class="w">
-</span><span class="w">          </span><span class="k">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">            </span><span class="k">containers</span><span class="p">:</span><span class="w">
-</span><span class="w">            </span>- <span class="k">image</span><span class="p">:</span><span class="w"> </span>nginx<span class="p">:</span>alpine<span class="w">
-</span><span class="w">              </span><span class="k">name</span><span class="p">:</span><span class="w"> </span>nginx<span class="w">
-</span><span class="w">  </span><span class="k">topology</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="k">subsets</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span>- <span class="k">name</span><span class="p">:</span><span class="w"> </span>subset-a<span class="w">
-</span><span class="w">      </span><span class="k">nodeSelectorTerm</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="k">matchExpressions</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="k">key</span><span class="p">:</span><span class="w"> </span>node<span class="w">
-</span><span class="w">          </span><span class="k">operator</span><span class="p">:</span><span class="w"> </span>In<span class="w">
-</span><span class="w">          </span><span class="k">values</span><span class="p">:</span><span class="w">
-</span><span class="w">          </span>- zone-a<span class="w">
-</span><span class="w">      </span><span class="k">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
-</span><span class="w">    </span>- <span class="k">name</span><span class="p">:</span><span class="w"> </span>subset-b<span class="w">
-</span><span class="w">      </span><span class="k">nodeSelectorTerm</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="k">matchExpressions</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="k">key</span><span class="p">:</span><span class="w"> </span>node<span class="w">
-</span><span class="w">          </span><span class="k">operator</span><span class="p">:</span><span class="w"> </span>In<span class="w">
-</span><span class="w">          </span><span class="k">values</span><span class="p">:</span><span class="w">
-</span><span class="w">          </span>- zone-b<span class="w">
-</span><span class="w">      </span><span class="k">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">50</span>%<span class="w">
-</span><span class="w">    </span>- <span class="k">name</span><span class="p">:</span><span class="w"> </span>subset-c<span class="w">
-</span><span class="w">      </span><span class="k">nodeSelectorTerm</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="k">matchExpressions</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="k">key</span><span class="p">:</span><span class="w"> </span>node<span class="w">
-</span><span class="w">          </span><span class="k">operator</span><span class="p">:</span><span class="w"> </span>In<span class="w">
-</span><span class="w">          </span><span class="k">values</span><span class="p">:</span><span class="w">
-</span><span class="w">          </span>- zone-c<span class="w">
-</span><span class="w">  </span><span class="k">updateStrategy</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="k">manualUpdate</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="k">partitions</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="k">subset-a</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
-</span><span class="w">        </span><span class="k">subset-b</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
-</span><span class="w">        </span><span class="k">subset-c</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
-</span><span class="w">    </span><span class="k">type</span><span class="p">:</span><span class="w"> </span>Manual<span class="w">
-</span><span class="w"></span>...<span class="w">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps.kruise.io/v1alpha1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">UnitedDeployment</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">sample-ud</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">6</span><span class="w">
+</span><span class="w">  </span><span class="nt">revisionHistoryLimit</span><span class="p">:</span><span class="w"> </span><span class="m">10</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">sample</span><span class="w">
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">statefulSetTemplate</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">sample</span><span class="w">
+</span><span class="w">      </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">sample</span><span class="w">
+</span><span class="w">        </span><span class="nt">template</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">              </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">sample</span><span class="w">
+</span><span class="w">          </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span>- <span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">nginx:alpine</span><span class="w">
+</span><span class="w">              </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">nginx</span><span class="w">
+</span><span class="w">  </span><span class="nt">topology</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">subsets</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">subset-a</span><span class="w">
+</span><span class="w">      </span><span class="nt">nodeSelectorTerm</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">matchExpressions</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">node</span><span class="w">
+</span><span class="w">          </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l">In</span><span class="w">
+</span><span class="w">          </span><span class="nt">values</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="l">zone-a</span><span class="w">
+</span><span class="w">      </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">subset-b</span><span class="w">
+</span><span class="w">      </span><span class="nt">nodeSelectorTerm</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">matchExpressions</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">node</span><span class="w">
+</span><span class="w">          </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l">In</span><span class="w">
+</span><span class="w">          </span><span class="nt">values</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="l">zone-b</span><span class="w">
+</span><span class="w">      </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">50</span><span class="l">%</span><span class="w">
+</span><span class="w">    </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">subset-c</span><span class="w">
+</span><span class="w">      </span><span class="nt">nodeSelectorTerm</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">matchExpressions</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">node</span><span class="w">
+</span><span class="w">          </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l">In</span><span class="w">
+</span><span class="w">          </span><span class="nt">values</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="l">zone-c</span><span class="w">
+</span><span class="w">  </span><span class="nt">updateStrategy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">manualUpdate</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">partitions</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">subset-a</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="w">        </span><span class="nt">subset-b</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="w">        </span><span class="nt">subset-c</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">Manual</span><span class="w">
+</span><span class="w"></span><span class="nn">...</span><span class="w">
 </span></code></pre></td></tr></table>
 </div>
 </div><p>这个例子中, 最终有六个 Pod, 分成了三个StatefulSet, 同样是以标签匹配来划分不同的 Zone. 注意 subset 的 <code>repliacs</code> 可以用百分比的形式表示.</p>
@@ -527,45 +528,45 @@
 </span><span class="lnt">40
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-yaml" data-lang="yaml">type<span class="w"> </span>Topology<span class="w"> </span>struct<span class="w"> </span>{<span class="w">
-</span><span class="w">  </span>//<span class="w"> </span>ClusterRegistryQuerySpec<span class="w"> </span>is<span class="w"> </span>used<span class="w"> </span>to<span class="w"> </span>find<span class="w"> </span>the<span class="w"> </span>all<span class="w"> </span>the<span class="w"> </span>clusters<span class="w"> </span>that<span class="w">
-</span><span class="w">  </span>//<span class="w"> </span>the<span class="w"> </span>workload<span class="w"> </span>may<span class="w"> </span>be<span class="w"> </span>deployed<span class="w"> </span>to.<span class="w"> 
-</span><span class="w">  </span>ClusterRegistry<span class="w"> </span><span class="cp">*ClusterRegistryQuerySpec</span><span class="w">
-</span><span class="w">  </span>//<span class="w"> </span>Contains<span class="w"> </span>the<span class="w"> </span>details<span class="w"> </span>of<span class="w"> </span>each<span class="w"> </span>subset<span class="w"> </span>including<span class="w"> </span>the<span class="w"> </span>target<span class="w"> </span>cluster<span class="w"> </span>name<span class="w"> </span>and<span class="w">
-</span><span class="w">  </span>//<span class="w"> </span>the<span class="w"> </span>node<span class="w"> </span>selector<span class="w"> </span>in<span class="w"> </span>target<span class="w"> </span>cluster.<span class="w">
-</span><span class="w">  </span>Subsets<span class="w"> </span><span class="p">[]</span>Subset<span class="w">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="l">type Topology struct {</span><span class="w">
+</span><span class="w">  </span><span class="l">// ClusterRegistryQuerySpec is used to find the all the clusters that</span><span class="w">
+</span><span class="w">  </span><span class="l">// the workload may be deployed to. </span><span class="w">
+</span><span class="w">  </span><span class="l">ClusterRegistry *ClusterRegistryQuerySpec</span><span class="w">
+</span><span class="w">  </span><span class="l">// Contains the details of each subset including the target cluster name and</span><span class="w">
+</span><span class="w">  </span><span class="l">// the node selector in target cluster.</span><span class="w">
+</span><span class="w">  </span><span class="l">Subsets []Subset</span><span class="w">
 </span><span class="w"></span>}<span class="w">
 </span><span class="w">
-</span><span class="w"></span>type<span class="w"> </span>ClusterRegistryQuerySpec<span class="w"> </span>struct<span class="w"> </span>{<span class="w">
-</span><span class="w">  </span>//<span class="w"> </span>Namespaces<span class="w"> </span>that<span class="w"> </span>the<span class="w"> </span>cluster<span class="w"> </span>objects<span class="w"> </span>reside.<span class="w">
-</span><span class="w">  </span>//<span class="w"> </span>If<span class="w"> </span>not<span class="w"> </span>specified<span class="p">,</span><span class="w"> </span>default<span class="w"> </span>namespace<span class="w"> </span>is<span class="w"> </span>used.<span class="w">
-</span><span class="w">  </span>Namespaces<span class="w"> </span><span class="p">[]</span>string<span class="w">
-</span><span class="w">  </span>//<span class="w"> </span>Selector<span class="w"> </span>is<span class="w"> </span>the<span class="w"> </span>label<span class="w"> </span>matcher<span class="w"> </span>to<span class="w"> </span>find<span class="w"> </span>all<span class="w"> </span>qualified<span class="w"> </span>clusters.<span class="w">
-</span><span class="w">  </span>Selector<span class="w">   </span>map<span class="p">[</span>string<span class="p">]</span>string<span class="w">
-</span><span class="w">  </span>//<span class="w"> </span>Describe<span class="w"> </span>the<span class="w"> </span>kind<span class="w"> </span>and<span class="w"> </span>APIversion<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>cluster<span class="w"> </span>object.<span class="w">
-</span><span class="w">  </span>ClusterType<span class="w"> </span>metav1.TypeMeta<span class="w">
+</span><span class="w"></span><span class="l">type ClusterRegistryQuerySpec struct {</span><span class="w">
+</span><span class="w">  </span><span class="l">// Namespaces that the cluster objects reside.</span><span class="w">
+</span><span class="w">  </span><span class="l">// If not specified, default namespace is used.</span><span class="w">
+</span><span class="w">  </span><span class="l">Namespaces []string</span><span class="w">
+</span><span class="w">  </span><span class="l">// Selector is the label matcher to find all qualified clusters.</span><span class="w">
+</span><span class="w">  </span><span class="l">Selector   map[string]string</span><span class="w">
+</span><span class="w">  </span><span class="l">// Describe the kind and APIversion of the cluster object.</span><span class="w">
+</span><span class="w">  </span><span class="l">ClusterType metav1.TypeMeta</span><span class="w">
 </span><span class="w"></span>}<span class="w">
 </span><span class="w">
-</span><span class="w"></span>type<span class="w"> </span>Subset<span class="w"> </span>struct<span class="w"> </span>{<span class="w">
-</span><span class="w">  </span>Name<span class="w"> </span>string<span class="w">
+</span><span class="w"></span><span class="l">type Subset struct {</span><span class="w">
+</span><span class="w">  </span><span class="l">Name string</span><span class="w">
 </span><span class="w">
-</span><span class="w">  </span>//<span class="w"> </span>The<span class="w"> </span>name<span class="w"> </span>of<span class="w"> </span>target<span class="w"> </span>cluster.<span class="w"> </span>The<span class="w"> </span>controller<span class="w"> </span>will<span class="w"> </span>validate<span class="w"> </span>that<span class="w">
-</span><span class="w">  </span>//<span class="w"> </span>the<span class="w"> </span>TargetCluster<span class="w"> </span>exits<span class="w"> </span>based<span class="w"> </span>on<span class="w"> </span>Topology.ClusterRegistry.<span class="w">
-</span><span class="w">  </span>TargetCluster<span class="w"> </span><span class="cp">*TargetCluster</span><span class="w">
+</span><span class="w">  </span><span class="l">// The name of target cluster. The controller will validate that</span><span class="w">
+</span><span class="w">  </span><span class="l">// the TargetCluster exits based on Topology.ClusterRegistry.</span><span class="w">
+</span><span class="w">  </span><span class="l">TargetCluster *TargetCluster</span><span class="w">
 </span><span class="w">
-</span><span class="w">  </span>//<span class="w"> </span>Indicate<span class="w"> </span>the<span class="w"> </span>node<span class="w"> </span>select<span class="w"> </span>strategy<span class="w"> </span>in<span class="w"> </span>the<span class="w"> </span>Subset.TargetCluster.<span class="w">
-</span><span class="w">  </span>//<span class="w"> </span>If<span class="w"> </span>Subset.TargetCluster<span class="w"> </span>is<span class="w"> </span>not<span class="w"> </span>set<span class="p">,</span><span class="w"> </span>node<span class="w"> </span>selector<span class="w"> </span>strategy<span class="w"> </span>refers<span class="w"> </span>to<span class="w">
-</span><span class="w">  </span>//<span class="w"> </span>current<span class="w"> </span>cluster.<span class="w">
-</span><span class="w">  </span>NodeSelector<span class="w"> </span>corev1.NodeSelector<span class="w">
+</span><span class="w">  </span><span class="l">// Indicate the node select strategy in the Subset.TargetCluster.</span><span class="w">
+</span><span class="w">  </span><span class="l">// If Subset.TargetCluster is not set, node selector strategy refers to</span><span class="w">
+</span><span class="w">  </span><span class="l">// current cluster.</span><span class="w">
+</span><span class="w">  </span><span class="l">NodeSelector corev1.NodeSelector</span><span class="w">
 </span><span class="w">
-</span><span class="w">  </span>Replicas<span class="w"> </span><span class="cp">*intstr.IntOrString</span><span class="w"> 
+</span><span class="w">  </span><span class="l">Replicas *intstr.IntOrString </span><span class="w">
 </span><span class="w"></span>}<span class="w">
 </span><span class="w">
-</span><span class="w"></span>type<span class="w"> </span>TargetCluster<span class="w"> </span>struct<span class="w"> </span>{<span class="w">
-</span><span class="w">  </span>//<span class="w"> </span>Namespace<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>target<span class="w"> </span>cluster<span class="w"> </span>CRD<span class="w">
-</span><span class="w">  </span>Namespace<span class="w"> </span>string<span class="w">
-</span><span class="w">  </span>//<span class="w"> </span>Target<span class="w"> </span>cluster<span class="w"> </span>name<span class="w">
-</span><span class="w">  </span>Name<span class="w"> </span>string<span class="w">
+</span><span class="w"></span><span class="l">type TargetCluster struct {</span><span class="w">
+</span><span class="w">  </span><span class="l">// Namespace of the target cluster CRD</span><span class="w">
+</span><span class="w">  </span><span class="l">Namespace string</span><span class="w">
+</span><span class="w">  </span><span class="l">// Target cluster name</span><span class="w">
+</span><span class="w">  </span><span class="l">Name string</span><span class="w">
 </span><span class="w"></span>}<span class="w">
 </span></code></pre></td></tr></table>
 </div>
@@ -598,7 +599,11 @@
           <a href="/tags/kubernetes/">Kubernetes</a>
           </div>
       <nav class="post-nav">
-        
+        <a class="prev" href="/post/2020-11-24-strtok/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">C语言中的 strtok 函数</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
         <a class="next" href="/post/2020-11-17-ebpf-2-xdp/">
             <span class="next-text nav-default">eBPF系列2 - XDP</span>
             <span class="next-text nav-mobile">下一篇</span>

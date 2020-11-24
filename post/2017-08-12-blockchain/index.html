@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.68.3 with theme even" />
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
 
 
 <link rel="canonical" href="http://yanhang.me/post/2017-08-12-blockchain/" />
@@ -47,13 +47,14 @@
 <meta property="article:modified_time" content="2017-08-12T21:37:39+08:00" />
 <meta itemprop="name" content="Blockchain">
 <meta itemprop="description" content="介绍 区块结构 头结构 区块结构 创世区块 分叉 Proof-of-work(工作量证明) 邮件 Header Bitcoin REF 介绍 区块链是由一串使用密码学方法产生的数据块组成的，">
-<meta itemprop="datePublished" content="2017-08-12T21:37:39&#43;08:00" />
-<meta itemprop="dateModified" content="2017-08-12T21:37:39&#43;08:00" />
-<meta itemprop="wordCount" content="2099">
+<meta itemprop="datePublished" content="2017-08-12T21:37:39+08:00" />
+<meta itemprop="dateModified" content="2017-08-12T21:37:39+08:00" />
+<meta itemprop="wordCount" content="2098">
 
 
 
-<meta itemprop="keywords" content="blockchain," /><meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="blockchain," />
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Blockchain"/>
 <meta name="twitter:description" content="介绍 区块结构 头结构 区块结构 创世区块 分叉 Proof-of-work(工作量证明) 邮件 Header Bitcoin REF 介绍 区块链是由一串使用密码学方法产生的数据块组成的，"/>
 
@@ -125,7 +126,7 @@
         <div class="post-category">
             <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
             </div>
-          <span class="more-meta"> 约 2099 字 </span>
+          <span class="more-meta"> 约 2098 字 </span>
           <span class="more-meta"> 预计阅读 5 分钟 </span>
         
       </div>
@@ -270,7 +271,7 @@
 <p><img src="https://hangyan.github.io/images/blockchain/bc.png" alt=""></p>
 <p>如上图所示，绿色区块为创世区块。黑色区块为主区块(主链条),紫色的称为 <code>orphan blocks</code>. 主链条的累积工作量是最大的，并不总是区块长度(高度)最长的。</p>
 <h1 id="proof-of-work工作量证明">Proof-of-work(工作量证明)</h1>
-<p>区块链从第一个区块开始，依赖于旷工们去拓展链条的长度。矿工们都进行一些数学计算，谁先算出一个合法的目标数值就可以宣称自己挖到了一个新的 Block.这种检验的方式可以成为“工作量证明&rdquo;（以下简称为 POW).POW 在 blockchain 之前就已存在，应用于垃圾邮件过滤以及防范拒绝服务攻击扥等。其基本原理都是相同的，但不同的系统会应用不同的 hash 算法以及进行不同长度的难度调整。下面以垃圾邮件的过滤为例来简要说明一下:</p>
+<p>区块链从第一个区块开始，依赖于旷工们去拓展链条的长度。矿工们都进行一些数学计算，谁先算出一个合法的目标数值就可以宣称自己挖到了一个新的 Block.这种检验的方式可以成为“工作量证明&quot;（以下简称为 POW).POW 在 blockchain 之前就已存在，应用于垃圾邮件过滤以及防范拒绝服务攻击扥等。其基本原理都是相同的，但不同的系统会应用不同的 hash 算法以及进行不同长度的难度调整。下面以垃圾邮件的过滤为例来简要说明一下:</p>
 <h2 id="邮件-header">邮件 Header</h2>
 <p>基本原理: 发送邮件的人需要在邮件的 Header 里加一条，里面是一个字符串，字符串里包含了发送的时间，接受者邮件，以及一个随机数等。这个字符串的哈希值必须符合一定的条件(前置 N 位为 0).有了这样的要求，发送者必须经过暴力破解方式来尝试出一个合法的值,需要消耗一定的计算量。对于接受者来说，它可以很快地检验出来这个字符串是否满足要求(hash 函数的单项特性).对于前者来说，增加 N 之后计算难度会成指数级增长，而对于后者来说校验时间是固定的。对于普通的邮件接收来说，这两个时间都是可以忽略不计(通常在 s 级之内)的。 但对于垃圾邮件的发送者来说，因为他需要发送大量的邮件，这个时间累积起来就很可观了。所以可以有效地进行垃圾邮件的过滤。</p>
 <p>Header 格式如下</p>

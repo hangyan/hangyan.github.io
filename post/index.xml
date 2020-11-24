@@ -6,10 +6,15 @@
     <description>Recent content in Posts on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 21 Nov 2020 10:51:37 +0800</lastBuildDate>
-    
-	<atom:link href="http://yanhang.me/post/index.xml" rel="self" type="application/rss+xml" />
-    
+    <lastBuildDate>Tue, 24 Nov 2020 13:22:33 +0800</lastBuildDate><atom:link href="http://yanhang.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>C语言中的 strtok 函数</title>
+      <link>http://yanhang.me/post/2020-11-24-strtok/</link>
+      <pubDate>Tue, 24 Nov 2020 13:22:33 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-11-24-strtok/</guid>
+      <description>在看一个项目的代码时，发现了它用到了strtok 这个API, 它的作用是 split 一个字符串。这个功能在各个语言都很常见，而且接口也大同小异，比如 Golang: 1</description>
+    </item>
     
     <item>
       <title>OpenKruise 简介</title>

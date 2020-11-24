@@ -24,7 +24,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.68.3 with theme even" />
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
 
 
 <link rel="canonical" href="http://yanhang.me/post/2015-04-03-docker-source-code-part6-image-delete/" />
@@ -52,13 +52,14 @@
 <meta itemprop="description" content="本篇的主要内容是关于如何删除镜像的.听起来是挺简单的一件事,但是docker本身的删除
 策略定义并不清除，而且在实际的使用过程中,似乎总是与我们预计的结果不符,比如磁盘空间并没有被释放.所以在此单列一篇,详细解析镜
 像删除的过程.">
-<meta itemprop="datePublished" content="2015-04-03T21:37:39&#43;08:00" />
-<meta itemprop="dateModified" content="2015-04-03T21:37:39&#43;08:00" />
+<meta itemprop="datePublished" content="2015-04-03T21:37:39+08:00" />
+<meta itemprop="dateModified" content="2015-04-03T21:37:39+08:00" />
 <meta itemprop="wordCount" content="3134">
 
 
 
-<meta itemprop="keywords" content="docker," /><meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="docker," />
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="docker 源码分析(6) -- 镜像删除"/>
 <meta name="twitter:description" content="本篇的主要内容是关于如何删除镜像的.听起来是挺简单的一件事,但是docker本身的删除
 策略定义并不清除，而且在实际的使用过程中,似乎总是与我们预计的结果不符,比如磁盘空间并没有被释放.所以在此单列一篇,详细解析镜
