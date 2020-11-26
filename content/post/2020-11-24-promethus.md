@@ -1,7 +1,7 @@
 ---
 title: "Promethus 的高可用方案"
 date: 2020-11-24T16:22:28+08:00
-draft: false
+draft: true
 categories: [Kubernetes]
 tags: [promethus]
 ---
@@ -39,11 +39,15 @@ Promethus 本身对高可用方案的支持很弱，所以目前的各个方案�
 
 缺点就是要改代码，或许可以用独立进程来控制promethus实例的启停，不过还是比较麻烦。而且对于大型集群来说，一个 working 的实例压力还是太大了。
 
+
+## Federation
 Promethus 还提供了一种联邦方案，用于对数据进行分片:
 
 ![](/images/k8s/prom/prom-fed.png)
 
 不同的 Promethus 实例负责不同的数据指标，最终有上层的实例进行数据汇总。具体怎么分，要看具体业务。比如上万个节点的监控数据，单个实例可能压力就比较大，可以按 hash 取模 + relabel 的方式进行均分。当然更常见的场景是按功能分区，每个实例抓取不同组件的指标。
+
+
 
 
 ## Push Mode
