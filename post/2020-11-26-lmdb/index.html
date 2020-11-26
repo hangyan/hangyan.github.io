@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>KV系列1 - LMDB - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="注: 本文仅为笔记，不怎么通顺和严谨。 KV系列属于一个大规模场景的必备品，而且通常很多公司会选择自研，一方面是各种不同产品均有局限，而大家的需" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.75.1 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2020-11-26-lmdb/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.c7bc1becf36bcf6a9ebd25d2947e43a2eb745ddb0c9a32b43126fd7fa460c351.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="KV系列1 - LMDB" />
+<meta property="og:description" content="注: 本文仅为笔记，不怎么通顺和严谨。 KV系列属于一个大规模场景的必备品，而且通常很多公司会选择自研，一方面是各种不同产品均有局限，而大家的需" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2020-11-26-lmdb/" />
+<meta property="article:published_time" content="2020-11-26T14:41:44+08:00" />
+<meta property="article:modified_time" content="2020-11-26T14:41:44+08:00" />
+<meta itemprop="name" content="KV系列1 - LMDB">
+<meta itemprop="description" content="注: 本文仅为笔记，不怎么通顺和严谨。 KV系列属于一个大规模场景的必备品，而且通常很多公司会选择自研，一方面是各种不同产品均有局限，而大家的需">
+<meta itemprop="datePublished" content="2020-11-26T14:41:44+08:00" />
+<meta itemprop="dateModified" content="2020-11-26T14:41:44+08:00" />
+<meta itemprop="wordCount" content="2514">
+
+
+
+<meta itemprop="keywords" content="lmdb,storage,notes," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="KV系列1 - LMDB"/>
+<meta name="twitter:description" content="注: 本文仅为笔记，不怎么通顺和严谨。 KV系列属于一个大规模场景的必备品，而且通常很多公司会选择自研，一方面是各种不同产品均有局限，而大家的需"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">KV系列1 - LMDB</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-11-26 </span>
+        <div class="post-category">
+            <a href="/categories/kv/"> KV </a>
+            </div>
+          <span class="more-meta"> 约 2514 字 </span>
+          <span class="more-meta"> 预计阅读 6 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#lmdb">LMDB</a></li>
+        <li><a href="#cloudflare-的实践">Cloudflare 的实践</a></li>
+        <li><a href="#links">Links</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>注: 本文仅为笔记，不怎么通顺和严谨。</p>
+<p>KV系列属于一个大规模场景的必备品，而且通常很多公司会选择自研，一方面是各种不同产品均有局限，而大家的需求都有差别。另一方面社区已经有一些比较好的 building blocks，可以方便地进行组装和修改。最常见的情境是，分布式KV的开发 = 选一个底层kv存储 + 一个分布式协议。比如TiDB,ETCD等等。最近看 cloudflare 的 <a href="https://blog.cloudflare.com/introducing-quicksilver-configuration-distribution-at-internet-scale/">blog</a>, 也是类似的场景。他们选的是 LMDB + 自研的分布式策略(称不上算法，比较简单)，也很好的满足了自己的需求。</p>
+<h2 id="lmdb">LMDB</h2>
+<p>全称是<code> Lightning Memory-Mapped Database</code>, 使用内存映射文件，读写性能比较高。</p>
+<p>LMDB的一些特性:</p>
+<ul>
+<li>支持APPEND模式，提高写操作的性能</li>
+<li>支持多进程/线程同时访问。这种场景下读性能可以随着实例数增加而线性提升。</li>
+<li>单独写不block读, 读也不 block 写。</li>
+<li>不需要 transcation log, 提高了写性能。</li>
+</ul>
+<p>实现上来讲，利用内存映射是一大特色。通常的文件读取操作，通过<code>read</code>系统调用，要先把数据从硬盘 copy 到内核，然后再拷贝到用户空间。而 <code>mmap</code>， 不直接进行数据拷贝，而是在缺页中断时进行处理。而且是直接拷贝到用户态，所以会比 <code>read</code> 效率高些。另外，这种内存映射是只读的，也避免了程序错误破坏存储结构。写操作则是通过 write 系统调用完成，由系统来保证数据一致性。其他细节：</p>
+<ul>
+<li>使用 B+ tree.</li>
+<li>LMDB只允许单个写，性能有所降低，但是不再需要WAL日志，以及其他种种并发控制的冲突及代价。</li>
+<li>LMDB中，数据的基本操作单元是页，COW也是以页为单位。</li>
+<li>如果写操作比较多，那么数据版本也会很多，旧数据会占用大量空间。LMDB会将旧的页插入到一棵B+tree当中，然后等没有事物再用到它之后就可以重复利用。这样省去了定期清理操作，但是无法保证数据可以恢复到任意时刻了。</li>
+<li>数据访问可以直接返回内存指针，避免内存拷贝。</li>
+<li>COW保证存储结构一直是合法的。系统崩溃不会导致数据库处于一个不一致的状态。最坏的情况只是丢失了一些未提交的数据。根据一些学界的研究，尚没有发现因为使用 LMDB 导致数据损坏的案例。</li>
+</ul>
+<p><img src="http://wiki.dreamrunner.org/public_html/C-C++/Library-Notes/Files/lmdb-arch.svg" alt=""></p>
+<p>LMDB中事物的实现思路如下:</p>
+<ul>
+<li>Atom（A）: LMDB中通过txn数据结构和cursor数据结构的控制，通过将脏页列表放入 dirtylist中，当txn进行提交时再一次性统一刷新到磁盘中或者abort时都不提交保证事务要不全成功、要不全失败。对于长事务，若页面spill到磁盘，因为COW技术，这些页面未与整棵B-Tree的rootpage产生关联，因此后续的事务还是不能访问到这些页面，同样保证了事务的原子性。</li>
+<li>Consistency(C): 有如上的操作,保证其数据就是一致的，不存在因为多线程同时写数据导致数据产生错误的情况。</li>
+<li>Isolation（I）：事务隔离通过锁控制（MUTEX），LMDB支持的锁互斥是进程级别/线程级别，支持的隔离方式为锁表支持，读读之间不锁，写等待读完成之后开始，读等待写完成后开始.</li>
+<li>Duration（D）:LMDB中，没有使用WAL、undo/redo log等技术来保证系统崩溃时数据库的可用性，其保证数据持续可用的技术是COW技术和只有一线程写技术。假如LMDB或者系统崩溃时，只有读操作，那么数据本来就没有发生变化，因此数据将不可能遭到破坏。假如崩溃时，有一个线程在进行写操作，则只需要判断最后的页面号与成功提交到数据库中的页面号是否一致，若不一致则说明写操作没有完成，则最后一个事务写失败，数据在最后一个成功的页面前的是正确的，后续的属于崩溃事务的，不能用，这样就保证了数据只要序列化到磁盘则一定可用，要不其就是还没有遵循ACI原则序列化到磁盘</li>
+</ul>
+<p>总结来看，LMDB是一个极为优秀的产品。即使作者声称它主要是为了读场景而不是写场景，但实测的结果都不错。BUG少，稳定性强。</p>
+<h2 id="cloudflare-的实践">Cloudflare 的实践</h2>
+<p>Cloudflare 需要一个分布式的 KV Storage 来存储用户配置信息，当用户做了改动之后，能很快地分发到所有的数据中心。最开始用的是<code>Kyoto Tycoon datastore</code>, 在使用过程中发现了不少问题，最终切换到了 LMDB.</p>
+<p>需求整理:</p>
+<p>用户可以修改他们的配置数据，然后cloudflare会下发这些配置数据到每个区域的每个机器上。它期望的是每个数据中心即使与中控服务断了连接仍然可以独立服务。结构大致如下所示：</p>
+<p><img src="https://lh5.googleusercontent.com/JEfOupQNshJRIkh-msed0XhcFgvUQEQudziSa3kwJ8wZdb1YBVzQMkzHcmIzvlHqOW_lLj4j9tGdebdlPMpGryZuBE5Bt2PddVQzRykGm5bOhQWN1zvaHABdPBg15ru2vjrPNKAV" alt=""></p>
+<p>由中控节点先下发到各个数据中心的 Management Node, 然后再下发到各个work node 上。每个 work node 都依赖于下发的 config store 来做决断。</p>
+<p>最开始，使用的就是 KT(Kyoto Tycoon datastore)。然后发现了的问题如下:</p>
+<ul>
+<li>读写并发时，读性能下降的很快。排查发现是 flush to disk 的时候 block了。之前的解决办法只能是 disbale fsync, 只在 process shutdown的时候同步数据，代价就是数据损坏的可能性大大加大。数据量太大的情况下，shutdown 也会变得很慢，容易被 systemd kill 了。</li>
+<li>跟上一条相关，数据一致性的问题。如果无法正常的 shutdown, 那么数据库容易损坏数据，尤其是在关闭 fsync 的情况下。KT 自带了一个修复的功能，但数据量大的情况下效率太低。所以 cloudflare 采取的策略是不修复，直接从健康的 node 上复制数据，代价就是运维成本大大增加了。</li>
+<li>数据同步的问题。机器从 management node 获取的 transaction log 可能是不全的，因为中间有一些被GC了而无法找回。</li>
+<li>不支持多进程同事访问一个数据库文件。这导致无法无缝升级。</li>
+</ul>
+<p>这些问题无法通过运维手段来改善之后，cloudflare 就计划换 storage engine, 其考虑因为主要有如下几个：</p>
+<ul>
+<li>支持运行时的 snapshot.LMDB 的架构做 snapshot 比较容易</li>
+<li>读比写更频繁。</li>
+<li>支出多进程并发访问</li>
+<li>数据一致性好</li>
+</ul>
+<p>LMDB在这几个方面支持的都比较好。但 LMDB 本身并不是一个分布式存储系统，还是需要 cloudflare 自己再其之上封装一层来达到其目的。首先就是复制协议上的改善，不再是KT那种基于时间戳的，而是基于递增数字:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-text" data-lang="text">&lt; 0023 SET “hello” “world”
+&lt; 0024 SET “lorem” “ipsum”
+&lt; 0025 DEL “42”…
+</code></pre></td></tr></table>
+</div>
+</div><p>这样更容易确保数据一致性。另外因为写不频繁，可以由单一的数据中心来执行写操作，而且尽量使用 batch.其他方面的改进有:</p>
+<ul>
+<li>transaction log(就是上面的同步协议里的内容) 也存在LMDB中</li>
+<li>大 value 数据由程序切片和组装</li>
+<li>支持 kv的 checksum</li>
+<li>snappy 压缩 transcation log.</li>
+<li>每个节点配置一些 primary server 和 secondary server. 前者用来同步数据。如果前者数据太老或者有问题，那么从后者同步。secondary server的数据一般会保留的更久。</li>
+<li>升级时在client支持retry.并通过hand off sockets来执行新老程序交接。</li>
+</ul>
+<h2 id="links">Links</h2>
+<ol>
+<li><a href="https://en.wikipedia.org/wiki/Lightning_Memory-Mapped_Database">Lightning Memory-Mapped Database</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/70359311">lmdb 数据库</a></li>
+<li><a href="http://wiki.dreamrunner.org/public_html/C-C++/Library-Notes/LMDB.html">Symas Lightning Memory-Mapped Database (LMDB) Notes</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Lightning_Memory-Mapped_Database#cite_note-79">Lightning Memory-Mapped Database</a></li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2020-11-26
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/lmdb/">lmdb</a>
+          <a href="/tags/storage/">storage</a>
+          <a href="/tags/notes/">notes</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/2020-11-24-strtok/">
+            <span class="next-text nav-default">C语言中的 strtok 函数</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

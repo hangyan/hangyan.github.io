@@ -2,14 +2,70 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://yanhang.me/tags/c/</loc>
-    <lastmod>2020-11-24T13:22:33+08:00</lastmod>
+    <loc>http://yanhang.me/categories/</loc>
+    <lastmod>2020-11-26T14:41:44+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>http://yanhang.me/categories/</loc>
+    <loc>http://yanhang.me/categories/kv/</loc>
+    <lastmod>2020-11-26T14:41:44+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/post/2020-11-26-lmdb/</loc>
+    <lastmod>2020-11-26T14:41:44+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/tags/lmdb/</loc>
+    <lastmod>2020-11-26T14:41:44+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/tags/notes/</loc>
+    <lastmod>2020-11-26T14:41:44+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/post/</loc>
+    <lastmod>2020-11-26T14:41:44+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/tags/storage/</loc>
+    <lastmod>2020-11-26T14:41:44+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/tags/</loc>
+    <lastmod>2020-11-26T14:41:44+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/</loc>
+    <lastmod>2020-11-26T14:41:44+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/tags/c/</loc>
     <lastmod>2020-11-24T13:22:33+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -24,27 +80,6 @@
   
   <url>
     <loc>http://yanhang.me/categories/language/</loc>
-    <lastmod>2020-11-24T13:22:33+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://yanhang.me/post/</loc>
-    <lastmod>2020-11-24T13:22:33+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://yanhang.me/tags/</loc>
-    <lastmod>2020-11-24T13:22:33+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://yanhang.me/</loc>
     <lastmod>2020-11-24T13:22:33+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -199,13 +234,6 @@
   
   <url>
     <loc>http://yanhang.me/categories/database/</loc>
-    <lastmod>2020-10-27T15:33:02+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://yanhang.me/tags/notes/</loc>
     <lastmod>2020-10-27T15:33:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>

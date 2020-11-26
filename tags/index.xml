@@ -6,7 +6,34 @@
     <description>Recent content in Tags on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 24 Nov 2020 13:22:33 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 26 Nov 2020 14:41:44 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>lmdb</title>
+      <link>http://yanhang.me/tags/lmdb/</link>
+      <pubDate>Thu, 26 Nov 2020 14:41:44 +0800</pubDate>
+      
+      <guid>http://yanhang.me/tags/lmdb/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>notes</title>
+      <link>http://yanhang.me/tags/notes/</link>
+      <pubDate>Thu, 26 Nov 2020 14:41:44 +0800</pubDate>
+      
+      <guid>http://yanhang.me/tags/notes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>storage</title>
+      <link>http://yanhang.me/tags/storage/</link>
+      <pubDate>Thu, 26 Nov 2020 14:41:44 +0800</pubDate>
+      
+      <guid>http://yanhang.me/tags/storage/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>c</title>
       <link>http://yanhang.me/tags/c/</link>
@@ -94,15 +121,6 @@
       <pubDate>Fri, 30 Oct 2020 10:40:14 +0800</pubDate>
       
       <guid>http://yanhang.me/tags/%E5%B9%BF%E5%91%8A/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>notes</title>
-      <link>http://yanhang.me/tags/notes/</link>
-      <pubDate>Tue, 27 Oct 2020 15:33:02 +0800</pubDate>
-      
-      <guid>http://yanhang.me/tags/notes/</guid>
       <description></description>
     </item>
     

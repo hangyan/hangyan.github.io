@@ -6,7 +6,16 @@
     <description>Recent content in Posts on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 24 Nov 2020 13:22:33 +0800</lastBuildDate><atom:link href="http://yanhang.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 26 Nov 2020 14:41:44 +0800</lastBuildDate><atom:link href="http://yanhang.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>KV系列1 - LMDB</title>
+      <link>http://yanhang.me/post/2020-11-26-lmdb/</link>
+      <pubDate>Thu, 26 Nov 2020 14:41:44 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-11-26-lmdb/</guid>
+      <description>注: 本文仅为笔记，不怎么通顺和严谨。 KV系列属于一个大规模场景的必备品，而且通常很多公司会选择自研，一方面是各种不同产品均有局限，而大家的需</description>
+    </item>
+    
     <item>
       <title>C语言中的 strtok 函数</title>
       <link>http://yanhang.me/post/2020-11-24-strtok/</link>
