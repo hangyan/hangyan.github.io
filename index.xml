@@ -6,7 +6,329 @@
         <description>Recent content on 工业革命</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
-        <lastBuildDate>Thu, 26 Nov 2020 14:41:44 +0800</lastBuildDate><atom:link href="http://yanhang.me/index.xml" rel="self" type="application/rss+xml" />
+        <lastBuildDate>Fri, 27 Nov 2020 11:18:00 +0800</lastBuildDate><atom:link href="http://yanhang.me/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>io_uring 介绍</title>
+            <link>http://yanhang.me/post/2020-11-27-io_uring/</link>
+            <pubDate>Fri, 27 Nov 2020 11:18:00 +0800</pubDate>
+            
+            <guid>http://yanhang.me/post/2020-11-27-io_uring/</guid>
+            <description>&lt;p&gt;这几年内核带来了很多革命性的新特性。一个是 ebpf, 现在主要被广泛应用于网络处理，性能分析等领域。另一个是 io_uring, 带来了真正的全异步IO。本文将对 io_uring 做简要介绍。&lt;/p&gt;
+&lt;h2 id=&#34;总览&#34;&gt;总览&lt;/h2&gt;
+&lt;p&gt;在 io_uring 之前，只有 aio 这个异步框架。为什么要重新弄一套，是因为 aio 自身限制比较多，比如:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;只支持 &lt;code&gt;direct_io&lt;/code&gt;.而O_DIRECT要求bypass缓存和size对齐等，直接影响了很多场景的使用。而对buffered IO，其表现为同步。&lt;/li&gt;
+&lt;li&gt;即使满足了所有异步IO的约束，有时候还是可能会被阻塞，例如，等待元数据IO，或者存储设备的请求槽位都正在使用等等。&lt;/li&gt;
+&lt;li&gt;存在额外的开销，每个IO提交需要拷贝64+8字节，每个IO完成需要拷贝32字节，这在某些场景下影响很可观。在使用完成event的时候需要非常小心，否则容易丢事件。IO总是需要至少2个系统调用（submit + wait-for-completion)，在spectre/meltdown开启下性能下降非常严重。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;aio本身扩展性也很差，很多基于aio的开发也经常需要用dirty hack的方式来满足自己的需求。Linux 自己对它的评价也不好:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;So I think this is ridiculously ugly.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;AIO is a horrible ad-hoc design, with the main excuse being  “other, less gifted people, made that design, and we are implementing it for compatibility because database people — who seldom have any shred  of taste — actually use it”.&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;还有一个需要注意的地方是上面提到的&lt;code&gt;spectre/meltdown&lt;/code&gt; 攻击，为了应对这两个问题，一方面内核不再在用户态和内核间共享地址页表，每次异常、IO、系统调用，都要把内核页表重新装进来。另一方面，如果为了安全起见，指令预测也得关掉，性能能直接下降10%。这个因为导致系统调用的成本比之前更高。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://developers.mattermost.com/blog/2020-05-20-hands-on-iouring-go/syscall.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;所以，高效的异步io基本上就是如下几个思路:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;少做或者不做系统调用&lt;/li&gt;
+&lt;li&gt;zero copy&lt;/li&gt;
+&lt;li&gt;lock free&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;io_uring在这几方面做的都比较好，对应的它分别用了以下几个技术:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ring_buffer. 将内核和userspace分别想象为生产者/消费者,通过两个ring_buffer通信&lt;/li&gt;
+&lt;li&gt;mmap&lt;/li&gt;
+&lt;li&gt;内存屏障&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://kernel.taobao.org/2020/08/Introduction_to_IO_uring/1.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;sqcq&#34;&gt;SQ/CQ&lt;/h2&gt;
+&lt;p&gt;用到的两个ring_buffer分别叫 submission queue 和 completion queue.SQ是 application 生产，内核消费，CQ相反。这两个 ring_buffer 通过 mmap 在用户/内核态都可以访问。&lt;/p&gt;
+&lt;p&gt;用户程序往SQ里推送的数据叫SQE(submission queue entry).假设我们现在想读取一个文件，其内容大致如下:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;opcode: 选定我们要执行的系统调用，&lt;code&gt;readv&lt;/code&gt;, 对应一个 opcode叫 &lt;code&gt;IORING_OP_READV&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;flags: 参数,可以用来调整 io_uring 的各种行为&lt;/li&gt;
+&lt;li&gt;fd: 涉及到的文件&lt;/li&gt;
+&lt;li&gt;address: 对于读取文件来说，这里指的是读取到的数据将要存放的目标地址&lt;/li&gt;
+&lt;li&gt;length: 数据的长度&lt;/li&gt;
+&lt;li&gt;user data: 一个用户将 SQE 和 CQE(completion queue entry)关联起来的标识符。因为异步IO事件是无序的，我们需要某种方式将二者关联起来。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;对CQE来说，包含如下内容:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;user data: 如上所介绍&lt;/li&gt;
+&lt;li&gt;result: &lt;code&gt;readv&lt;/code&gt; 的返回结果&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://developers.mattermost.com/blog/2020-05-20-hands-on-iouring-go/queues.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;上图画出了一个大致的示意图。需要注意的是 SQ 与 CQ 有些区别。SQE并不是直接存放在 SQ中，而是存了其 index 到 SQ种，这样能给用户 appilcation 更高的自由度。
+下面用伪代码的方式展示了 SQ 和 CQ 的处理操作:&lt;/p&gt;
+&lt;p&gt;SQ:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;io_uring_sqe&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sqe&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;tail&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;index&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;tail&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sqring&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;→&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tail&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;index&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;tail&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sqring&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;→&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ring_mask&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;sqe&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sqring&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;→&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sqes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;index&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
+&lt;span class=&#34;cm&#34;&gt;/* this call fills in the sqe entries for this IO */&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;init_io&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sqe&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;span class=&#34;cm&#34;&gt;/* fill the sqe index into the SQ ring array */&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;sqring&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;→&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;array&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;index&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;index&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;tail&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;++&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;write_barrier&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;sqring&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;→&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tail&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;tail&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;write_barrier&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;CQ:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;head&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;head&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cqring&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;→&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;head&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;read_barrier&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;head&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;!=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cqring&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;→&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tail&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;io_uring_cqe&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cqe&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;index&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;index&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;head&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cqring&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;→&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mask&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;cqe&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cqring&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;→&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cqes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;index&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
+&lt;span class=&#34;cm&#34;&gt;/* process completed cqe here */&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;
+&lt;span class=&#34;cm&#34;&gt;/* we&amp;#39;ve now consumed this entry */&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;head&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;++&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;cqring&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;→&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;head&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;head&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;write_barrier&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;注意其中内存屏障的使用。&lt;/p&gt;
+&lt;h2 id=&#34;系统调用&#34;&gt;系统调用&lt;/h2&gt;
+&lt;p&gt;io_uring 一共提供了 3 个系统调用：&lt;code&gt;io_uring_setup()&lt;/code&gt;，&lt;code&gt;io_uring_enter()&lt;/code&gt;，以及io_uring_register()，位于 &lt;code&gt;fs/io_uring.c&lt;/code&gt;。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;/**
+ * io_uring_setup - setup a context for performing asynchronous I/O
+ */
+int io_uring_setup(u32 entries, struct io_uring_params *p);
+/**
+ * io_uring_enter - initiate and/or complete asynchronous I/O
+ */
+int io_uring_enter(int fd, unsigned int to_submit, unsigned int min_complete,
+                   unsigned int flags, sigset_t *sig)
+ 
+/**
+ * io_uring_register - register files or user buffers for asynchronous I/O
+ */
+int io_uring_register(int fd, unsigned int opcode, void *arg,
+                      unsigned int nr_args)
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;io_uring_setup&#34;&gt;io_uring_setup&lt;/h3&gt;
+&lt;p&gt;初始化uring.两个参数分别是:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;entries： 这个io_uring包含的 entry 数量&lt;/li&gt;
+&lt;li&gt;params: io_uring的参数，userspace/kernel都可以读写。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;函数返回一个关于 io_uring 的 fd&lt;/p&gt;
+&lt;h3 id=&#34;io_uring_enter&#34;&gt;io_uring_enter&lt;/h3&gt;
+&lt;p&gt;提交IO请求:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;fd: u_ring的fd&lt;/li&gt;
+&lt;li&gt;to_submit： 要提交多少个请求&lt;/li&gt;
+&lt;li&gt;min_complete: 函数要返回的话需要等待多少个CQ&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;to_submit 和 min_complete 意味着这个函数既可以用来提交，也可以等待，或者二者皆可。&lt;/p&gt;
+&lt;h2 id=&#34;polled-mode&#34;&gt;Polled Mode&lt;/h2&gt;
+&lt;p&gt;对于很多应用来说，比如延迟敏感型或者高IOPS型，如果继续用中断的方式处理IO, 数据来的时候，driver 通知 kernel 来处理，过于低效了。这种情况下用主动的 poll 效果会更好，io_uring 提供了两种方式&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;userspace 的 poll: io_uring_setup的时候使用 &lt;code&gt;IORING_SETUP_IOPOLL&lt;/code&gt;, 然后在 io_uring_enter 的时候使用 &lt;code&gt;IORING_ENTER_GETEVENTS&lt;/code&gt;参数&lt;/li&gt;
+&lt;li&gt;kernel-side polling: 当前应用更新 SQ ring 并填充一个新的 sqe，内核线程 sqthread 会自动完成提交，这样应用无需每次调用  io_uring_enter() 系统调用来提交 IO。应用可通过 &lt;code&gt;IORING_SETUP_SQ_AFF&lt;/code&gt; 和 sq_thread_cpu  绑定特定的 CPU。 同时，为了节省无 IO 场景的 CPU 开销，该内核线程会在一段时间空闲后自动睡眠。应用在下发新的 IO 时，通过  &lt;code&gt;IORING_ENTER_SQ_WAKEUP&lt;/code&gt; 唤醒该内核线程，用户态可以通过 sqring 的 flags 变量获取 SQ 线程的状态。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在 kernel-side polling的情况下，IO不需要系统调用。&lt;/p&gt;
+&lt;h3 id=&#34;spdk相关&#34;&gt;SPDK相关&lt;/h3&gt;
+&lt;p&gt;因为近几年的硬件性能的持续提升，尤其比如网卡和SSD等，旧有的很多IO优化逻辑可能已经不适用了。比如我们看下面的一个对比图:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://pic4.zhimg.com/80/v2-96ea33657a9b991d8bbe9466bcfaf27f_1440w.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;这是 Intel 的 Optane SSD做的测试。我们可以看见在中间那一列，Storage with Optane SSD，随机读取的硬件延迟已经接近操作系统和文件系统带来的延迟，甚至 Linux VFS 本身会变成 CPU 瓶颈。其实背后的原因也很简单，过去由于 VFS 本身在 CPU 上的开销（比如锁）相比过去的 IO 来说太小了，但是现在这些新硬件本身的 IO 延迟已经低到让文件系统本身开销的比例不容忽视了。&lt;/p&gt;
+&lt;p&gt;网卡方面也是，现在主流的数据中心基本上开始提供 10GbE 甚至 25GbE 的网络。万兆网卡的吞吐差不多每秒 1488 万帧，处理一个包的时间在百纳秒的级别，基本相当于一个 L2 Cache Miss 的时间。所以如何减小内核协议栈处理带来的内核-用户态频繁内存拷贝的开销，成为一个很重要的课题。新硬件的提升，基本上在软件层的优化都是 kenrel bypass.比如网络方面的DPDK:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://pic3.zhimg.com/80/v2-7f6f2f849d9b95397ad4a67be9959f22_1440w.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;数据包直接从网卡到了 DPDK，绕过了操作系统的内核驱动、协议栈和 Socket Library。DPDK 内部维护了一个叫做 UIO Framework 的用户态驱动 (PMD)，通过 ring queue 等技术实现内核到用户态的 zero-copy 数据交换，避免了 Syscall 和内核切换带来的 cache miss，而且在多核架构上通过多线程和绑核，极大提升了报文处理效率.&lt;/p&gt;
+&lt;p&gt;而对于SSD存储来说，Intel 的开发套件: SPDK, 也是采用类似的优化方式。首先，将设备驱动代码运行在用户态，避免内核上下文切换和中断将会节省大量的处理开销，允许更多的时钟周期被用来做实际的数据存储。无论存储算法（去冗，加密，压缩，空白块存储）多么复杂，浪费更少的时钟周期总是意味着更好的性能和时延。在传统的I/O模型中，应用程序提交读写请求后进入睡眠状态，一旦I/O完成，中断就会将其唤醒。轮询的工作方式则不同，应用程序提交读写请求后继续执行其他工作，以一定的时间间隔回头检查I/O是否已经完成。这种方式避免了中断带来的延迟和开销，并使得应用程序提高了I/O效率。在机械硬盘时代，中断开销只占整个I/O时间的很小的百分比，因此给系统带来了巨大的效率提升。然而，在固态设备时代，持续引入更低时延的持久化设备，中断开销成为了整个I/O时间中不可忽视的部分。这个问题在更低时延的设备上只会越来越严重。系统已经能够每秒处理数百万个I/O，所以消除数百万个事务的这种开销，能够快速地复制到多个core中。数据包和数据块被立即分发，因为等待花费的时间变小，使得时延更低，一致性时延更多（抖动更少），吞吐量也得到了提高。&lt;/p&gt;
+&lt;p&gt;而内核当然也不是说跟不上时代，&lt;a href=&#34;https://yanhang.me/post/2020-11-17-ebpf-2-xdp/&#34;&gt;XDP&lt;/a&gt;及 io_uring 便是对应的解决方案。下面是一个 io_uring 与 SPDK 的性能对比:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://mlog.club/api/img/proxy?url=https%3A%2F%2Fmmbiz.qpic.cn%2Fmmbiz_png%2FbDZYPQUwvDlMia3EY1LnWnU2SJXic4ia7RGjFMUmpudzbvlcibnyhboialh8SK3eDibzDibWyGCh4fibJFBKe9InEKUy7w%2F640%3Fwx_fmt%3Dpng&#34; alt=&#34;&#34;&gt;
+(测试环境：神龙裸金属实例，96 CPU 503 G，本地盘为三星 PM963。)&lt;/p&gt;
+&lt;p&gt;io_uring 在开启 iopoll 后与 SPDK 接近，甚至在 queue depth 较高时性能更好。当然可能跟 intel 的 Optane SSD还是有点就差距，但对普通硬件来说，io_uring 已经能带来相当大的性能提升了。&lt;/p&gt;
+&lt;h2 id=&#34;其他高级功能&#34;&gt;其他高级功能&lt;/h2&gt;
+&lt;h3 id=&#34;fixed-files&#34;&gt;Fixed Files&lt;/h3&gt;
+&lt;p&gt;IORING_REGISTER_FILES /  IORING_REGISTER_FILES_UPDATE / IORING_UNREGISTER_FILES，通过  io_uring_register() 系统调用提前注册一组 file，缓解每次 IO 操作因 fget() / fput() 带来的开销。&lt;/p&gt;
+&lt;h3 id=&#34;fixed-buffers&#34;&gt;Fixed Buffers&lt;/h3&gt;
+&lt;p&gt;IORING_REGISTER_BUFFERS / IORING_UNREGISTER_BUFFERS，通过 io_uring_register() 系统调用注册一组固定的 IO  buffers，当应用重用这些 IO buffers 时，只需要 map / unmap 一次即可，而不是每次 IO  都要去做，减少get_user_pages() / put_page() 带来的开销。&lt;/p&gt;
+&lt;h3 id=&#34;linked-sqe&#34;&gt;Linked SQE&lt;/h3&gt;
+&lt;p&gt;IOSQE_IO_LINK，建立 sqe 序列之间的关联，这在诸如 copy 之类的操作中非常有用。使用 linked sqe 后，copy  操作的写请求链接在读请求之后，应用程序无需等待读请求数据返回后再下发写请求，而是共享了同一个 buffer，避免了上下文切换的开销。&lt;/p&gt;
+&lt;h2 id=&#34;与-epoll-的对比&#34;&gt;与 epoll 的对比&lt;/h2&gt;
+&lt;p&gt;epoll 通常的编程模型如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;epoll_event&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ev&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+
+&lt;span class=&#34;cm&#34;&gt;/* for accept(2) */&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;ev&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;events&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;EPOLLIN&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;ev&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fd&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sock_listen_fd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;epoll_ctl&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;epollfd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;EPOLL_CTL_ADD&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sock_listen_fd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ev&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+
+&lt;span class=&#34;cm&#34;&gt;/* for recv(2) */&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;ev&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;events&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;EPOLLIN&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;EPOLLET&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;ev&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fd&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sock_conn_fd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;epoll_ctl&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;epollfd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;EPOLL_CTL_ADD&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sock_conn_fd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ev&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;n&#34;&gt;new_events&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;epoll_wait&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;epollfd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;events&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;MAX_EVENTS&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;new_events&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;++&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;cm&#34;&gt;/* process every events */&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;将fd通过epoll_ctl进行注册，当该fd上有事件ready, 在epoll_wait返回时可以获知完成的事件，然后依次调用每个事件的handler, 每个handler里调用recv(2), send(2)等进行消息收发。&lt;/p&gt;
+&lt;p&gt;io_uring的编程模型如下(这里用到了liburing提供的一些接口):&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* 用sqe对一次recv操作进行描述 */&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;io_uring_sqe&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sqe&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;io_uring_get_sqe&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ring&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;io_uring_prep_recv&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sqe&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;fd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;bufs&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;size&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+
+&lt;span class=&#34;cm&#34;&gt;/* 提交该sqe, 也就是提交recv操作 */&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;io_uring_submit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ring&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+
+&lt;span class=&#34;cm&#34;&gt;/* 等待完成的事件 */&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;io_uring_submit_and_wait&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ring&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;cqe_count&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;io_uring_peek_batch_cqe&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ring&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cqes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;sizeof&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cqes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;sizeof&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cqes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]));&lt;/span&gt;   
+&lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cqe_count&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;++&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;io_uring_cqe&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cqe&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cqes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
+    &lt;span class=&#34;cm&#34;&gt;/* 依次处理reap每一个io请求，然后可以调用请求对应的handler */&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;阿里做过一些关于 二者性能数据的一些对比(echo_server场景)&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://kernel.taobao.org/2020/09/New_Weapon_for_High_Concurrency_Network_Programming/1.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;(&lt;strong&gt;在meltdown和spectre漏洞修复场景下测试&lt;/strong&gt;)&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://kernel.taobao.org/2020/09/New_Weapon_for_High_Concurrency_Network_Programming/2.png&#34; alt=&#34;img&#34;&gt;)&lt;/p&gt;
+&lt;p&gt;可以看到:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;io_uring可以极大的减少用户态到内核态的切换次数，在连接数超过300时，io_uring用户态到内核态的切换次数基本可以忽略不计&lt;/li&gt;
+&lt;li&gt;连接数1000及以上时，io_uring的性能优势开始体现，io_uring的极限性能单core在24万qps左右，而epoll单core只能达到20万qps左右，收益在20%左右&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;参考项目&#34;&gt;参考项目&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/agnivade/frodo&#34;&gt;frodo: 一个参考的go 封装&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/OpenAnolis/io_uring-echo-server&#34;&gt;echo server对比程序&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/axboe/liburing&#34;&gt;liburing: io_uring 的封装lib&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;links&#34;&gt;Links&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://zhuanlan.zhihu.com/p/62682475&#34;&gt;AIO 的新归宿：io_uring&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://lwn.net/Articles/810414/&#34;&gt;The rapid growth of io_uring&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.scylladb.com/2020/05/05/how-io_uring-and-ebpf-will-revolutionize-programming-in-linux/&#34;&gt;How io_uring and eBPF Will Revolutionize Programming in Linux&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://developers.mattermost.com/blog/hands-on-iouring-go/&#34;&gt;Getting Hands-on with io_uring using Go&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://zhuanlan.zhihu.com/p/32784852&#34;&gt;给程序员解释Spectre和Meltdown漏洞&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://kernel.taobao.org/2020/09/New_Weapon_for_High_Concurrency_Network_Programming/&#34;&gt;io_uring，高并发网络编程新利器&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://kernel.taobao.org/2020/08/Introduction_to_IO_uring/&#34;&gt;下一代异步 IO io_uring 技术解密&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://mlog.club/article/5722657&#34;&gt;io_uring 新异步 IO 机制，性能提升超 150%，堪比 SPDK &lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        </item>
+        
         <item>
             <title>KV系列1 - LMDB</title>
             <link>http://yanhang.me/post/2020-11-26-lmdb/</link>

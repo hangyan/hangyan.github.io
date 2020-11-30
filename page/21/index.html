@@ -45,7 +45,7 @@
 <meta property="og:description" content="CyberLife." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="http://yanhang.me/" />
-<meta property="og:updated_time" content="2020-11-26T14:41:44+08:00" />
+<meta property="og:updated_time" content="2020-11-27T11:18:00+08:00" />
 <meta itemprop="name" content="工业革命">
 <meta itemprop="description" content="CyberLife.">
 <meta name="twitter:card" content="summary"/>
@@ -111,6 +111,31 @@
       <div class="content-wrapper">
         <div id="content" class="content">
           <section id="posts" class="posts">
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/2015-01-30-docker-source-code-part2-start-and-args/">docker 源码分析(2) -- 主程序及命令行参数解析</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2015-01-30 </span>
+      <div class="post-category">
+          <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+          </div>
+        <span class="more-meta"> 约 4618 字 </span>
+        <span class="more-meta"> 预计阅读 10 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <p>研究一个大项目的源码，最好是从<code>main</code>函数入口，一步一步与实际程序相结合，将实际代
+码与相应相印证。所以本篇的主要内容就是 docker 主程序的启动流程以及命令行参数解析的
+过程。</p>
+    </div>
+    <div class="read-more">
+      <a href="/post/2015-01-30-docker-source-code-part2-start-and-args/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
     <article class="post">
   <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/2015-01-30-modern-dev-tools/">现代化的开发人员实用工具</a></h1>
@@ -216,42 +241,6 @@
   </div>
 </article>
 
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2015-01-22-coreos-install/">CoreOS 安装及配置</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2015-01-22 </span>
-      <div class="post-category">
-          <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          </div>
-        <span class="more-meta"> 约 1636 字 </span>
-        <span class="more-meta"> 预计阅读 4 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <p>本文所遵照的步骤是官网的 Installing to disk 方法,即刻录 ISO 镜像 -&gt; 启动 Coreos Live CD -&gt; 安装到硬盘的步骤，与一般的桌面 Linux 安装非常类似。但 coreos 安装时也有一些需要注意的地方:</p>
-<ol>
-<li>
-<p>cloud-config.yml</p>
-<p>这是 coreos 用来统一配置系统的地方，系统在每次启动时都会加载这个文件的配置，比
-如系统服务、网络设定、文件修改、用户设定等。这样做的好处是在部署集群的时候可
-以方便地使用相同的配置。在安装 coreos 时，需要指定好这个配置文件。实际操作时，
-可以提前将这个文件写好放在别的机器上，然后用 scp / wget (利用下面的 web server) 下载到 coreos 的 Live CD 即可，或者直接存在 Live CD 里更方便。</p>
-</li>
-<li>
-<p>GFW</p>
-<p>coreos 安装时需要从官网下载镜像，但网站被墙，所以实际安装的时候可能需要用代理来解决，缺点是速度慢。更方便的方法是提前下载好需要的文件并放在局域网内并搭建一个 web server，然后修改安装脚本的 server 即可。具体方法在后面详述。</p>
-</li>
-</ol>
-    </div>
-    <div class="read-more">
-      <a href="/post/2015-01-22-coreos-install/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
     </section>
   
   <nav class="pagination">
@@ -259,7 +248,10 @@
         <i class="iconfont icon-left"></i>
         <span class="prev-text">上一页</span>
       </a>
-    
+    <a class="next" href="/page/22/">
+        <span class="next-text">下一页</span>
+        <i class="iconfont icon-right"></i>
+      </a>
   </nav>
         </div>
         

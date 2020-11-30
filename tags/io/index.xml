@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>io on 工业革命</title>
+    <link>http://yanhang.me/tags/io/</link>
+    <description>Recent content in io on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 27 Nov 2020 11:18:00 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>io_uring 介绍</title>
+      <link>http://yanhang.me/post/2020-11-27-io_uring/</link>
+      <pubDate>Fri, 27 Nov 2020 11:18:00 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-11-27-io_uring/</guid>
+      <description>这几年内核带来了很多革命性的新特性。一个是 ebpf, 现在主要被广泛应用于网络处理，性能分析等领域。另一个是 io_uring, 带来了真正的全异步IO。本文将对 io_uring 做简要</description>
+    </item>
+    
+  </channel>
+</rss>
