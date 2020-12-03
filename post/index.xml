@@ -6,7 +6,16 @@
     <description>Recent content in Posts on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 03 Dec 2020 15:18:08 +0800</lastBuildDate><atom:link href="http://yanhang.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 03 Dec 2020 16:27:39 +0800</lastBuildDate><atom:link href="http://yanhang.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>算法笔记(1): 链表及其应用</title>
+      <link>http://yanhang.me/post/2020-12-03-alg-linked-list/</link>
+      <pubDate>Thu, 03 Dec 2020 16:27:39 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2020-12-03-alg-linked-list/</guid>
+      <description>最近准备系统的过一遍算法。一是因为看的很多项目最终多多少少都会涉及到算法，如果提前了解好会理解的更深入。二是之前也没有系统的看过，最近想定一</description>
+    </item>
+    
     <item>
       <title>《原神》的问题</title>
       <link>http://yanhang.me/post/2020-12-03-yuan-shen/</link>
