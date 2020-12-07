@@ -151,5 +151,23 @@
       <description></description>
     </item>
     
+    <item>
+      <title>Filesystem</title>
+      <link>http://yanhang.me/categories/filesystem/</link>
+      <pubDate>Sat, 20 Apr 2019 22:35:17 +0800</pubDate>
+      
+      <guid>http://yanhang.me/categories/filesystem/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Storage</title>
+      <link>http://yanhang.me/categories/storage/</link>
+      <pubDate>Thu, 18 Apr 2019 21:01:13 +0800</pubDate>
+      
+      <guid>http://yanhang.me/categories/storage/</guid>
+      <description></description>
+    </item>
+    
   </channel>
 </rss>

@@ -124,7 +124,7 @@
       <div class="post-meta">
         <span class="post-time"> 2019-04-20 </span>
         <div class="post-category">
-            <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
+            <a href="/categories/filesystem/"> Filesystem </a>
             </div>
           <span class="more-meta"> 约 3034 字 </span>
           <span class="more-meta"> 预计阅读 7 分钟 </span>
@@ -180,7 +180,7 @@
 <li><a href="#links">Links</a></li>
 </ul>
 <!-- tocstop -->
-<p>看完了<a href="https://yanhang.me/posts/flash/">闪存</a>,继续看文件系统。网上搜了一圈，发现都是讲 Andriod 的目录结构的，讲文件系统本身的少。目前能确认的是历史上曾经用过 ext4,yaffs,yaffs2 等。
+<p>看完了<a href="https://yanhang.me/post/2019-04-18-flash/">闪存</a>,继续看文件系统。网上搜了一圈，发现都是讲 Andriod 的目录结构的，讲文件系统本身的少。目前能确认的是历史上曾经用过 ext4,yaffs,yaffs2 等。
 估计目前主流的应该是 ext4。不过在搜索的时候先发现了一篇讲 jffs3 的，它在嵌入式系统上应用比较广泛，也是针对 Flash 存储特定设计的文件系统。不太确定现在的使用范围，但是拿出来研究下还是不错的。</p>
 <h2 id="闪存对文件系统的影响">闪存对文件系统的影响</h2>
 <p>闪存跟磁盘有很多不同的地方，在设计文件系统的时候，二者有很多不同的考量。简单的对比表格如下</p>

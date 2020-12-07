@@ -6015,7 +6015,7 @@ particular line.
 &lt;li&gt;&lt;a href=&#34;#links&#34;&gt;Links&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;!-- tocstop --&gt;
-&lt;p&gt;看完了&lt;a href=&#34;https://yanhang.me/posts/flash/&#34;&gt;闪存&lt;/a&gt;,继续看文件系统。网上搜了一圈，发现都是讲 Andriod 的目录结构的，讲文件系统本身的少。目前能确认的是历史上曾经用过 ext4,yaffs,yaffs2 等。
+&lt;p&gt;看完了&lt;a href=&#34;https://yanhang.me/post/2019-04-18-flash/&#34;&gt;闪存&lt;/a&gt;,继续看文件系统。网上搜了一圈，发现都是讲 Andriod 的目录结构的，讲文件系统本身的少。目前能确认的是历史上曾经用过 ext4,yaffs,yaffs2 等。
 估计目前主流的应该是 ext4。不过在搜索的时候先发现了一篇讲 jffs3 的，它在嵌入式系统上应用比较广泛，也是针对 Flash 存储特定设计的文件系统。不太确定现在的使用范围，但是拿出来研究下还是不错的。&lt;/p&gt;
 &lt;h2 id=&#34;闪存对文件系统的影响&#34;&gt;闪存对文件系统的影响&lt;/h2&gt;
 &lt;p&gt;闪存跟磁盘有很多不同的地方，在设计文件系统的时候，二者有很多不同的考量。简单的对比表格如下&lt;/p&gt;
