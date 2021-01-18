@@ -3,7 +3,7 @@ title: "Linkerd系列1 - Linkerd2-proxy"
 date: 2020-11-17T18:48:42+08:00
 draft: false
 categories: [ServiceMesh]
-tags: [linkderd, proxy, lb]
+tags: [linkderd, proxy, LB]
 ---
 
 ServiceMesh这块属于 k8s 的一个大热门，但据我所知，落地的并不是太多。看文章大概理解为 overhead 以及部署都比较重，对一般的企业来讲，要考虑的东西比较多，所以落地难度比较大。有的建议是说，先上 envoy，其他的先搁置，这也是个思路。envoy 轻量级一些，可以先作为一个 proxy 去体验一下 ServiceMesh 架构下的 proxy 设计。然后再逐步看看怎么引入 ServiceMesh.
