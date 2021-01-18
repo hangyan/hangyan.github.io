@@ -3,34 +3,62 @@
   
   <url>
     <loc>http://yanhang.me/categories/</loc>
-    <lastmod>2020-12-25T13:17:12+08:00</lastmod>
+    <lastmod>2021-01-18T13:33:12+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/tags/lb/</loc>
+    <lastmod>2021-01-18T13:33:12+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/post/2021-lb-1-bandaid/</loc>
+    <lastmod>2021-01-18T13:33:12+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/tags/network/</loc>
+    <lastmod>2021-01-18T13:33:12+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/categories/network/</loc>
+    <lastmod>2021-01-18T13:33:12+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>http://yanhang.me/post/</loc>
-    <lastmod>2020-12-25T13:17:12+08:00</lastmod>
+    <lastmod>2021-01-18T13:33:12+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>http://yanhang.me/tags/</loc>
-    <lastmod>2020-12-25T13:17:12+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://yanhang.me/post/2020-12-15-country-in-cyberpunk/</loc>
-    <lastmod>2020-12-25T13:17:12+08:00</lastmod>
+    <lastmod>2021-01-18T13:33:12+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>http://yanhang.me/</loc>
+    <lastmod>2021-01-18T13:33:12+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/post/2020-12-15-country-in-cyberpunk/</loc>
     <lastmod>2020-12-25T13:17:12+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -249,13 +277,6 @@
   <url>
     <loc>http://yanhang.me/tags/kernel/</loc>
     <lastmod>2020-11-17T23:16:48+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://yanhang.me/tags/lb/</loc>
-    <lastmod>2020-11-17T18:48:42+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>

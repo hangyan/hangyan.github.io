@@ -6,7 +6,26 @@
         <description>Recent content on 工业革命</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
-        <lastBuildDate>Fri, 25 Dec 2020 13:17:12 +0800</lastBuildDate><atom:link href="http://yanhang.me/index.xml" rel="self" type="application/rss+xml" />
+        <lastBuildDate>Mon, 18 Jan 2021 13:33:12 +0800</lastBuildDate><atom:link href="http://yanhang.me/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>LB系列1 - Bandaid</title>
+            <link>http://yanhang.me/post/2021-lb-1-bandaid/</link>
+            <pubDate>Mon, 18 Jan 2021 13:33:12 +0800</pubDate>
+            
+            <guid>http://yanhang.me/post/2021-lb-1-bandaid/</guid>
+            <description>&lt;p&gt;很多大厂的LB都是自研的，而且设计考量都不相同。本文介绍 Dropbox自研的LB，名字叫 Bandaid.参考链接: &lt;a href=&#34;https://dropbox.tech/infrastructure/meet-bandaid-the-dropbox-service-proxy&#34;&gt;Meet Bandaid, the Dropbox service proxy&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;queue设计&#34;&gt;Queue设计&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;https://dropbox.tech/cms/content/dam/dropbox/tech-blog/en-us/2018/03/1st.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Bandaid 处理 Queue 中的 Request 的思路是后近先出(Last in, First out)。当系统负载不高的时候，Queue中的数据其实不多，那么先进后出或者后进先出其实区别不大。如果负载过高，考虑到先进的排队太久，可能很快就timeout了，还不如优先处理后进来的 request.&lt;/p&gt;
+&lt;h2 id=&#34;user-space的-read-queue&#34;&gt;User Space的 Read Queue&lt;/h2&gt;
+&lt;p&gt;Read Requests 会被放到一个用户态的 Queue 中，而不是 kernel 里的 queue中。这样做的原因是， 可以在用户态提前关闭已经被 client close的 request, 而不是等到真正的request经由 kernel, 然后 application 在处理的时候才发现 request 已经 close 了。尤其是 client 一般还带有重试，很容易把 Kernel queue打满。User Space 的 Queue 能够通过处理只把正常的 request 传给后面。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://dropbox.tech/cms/content/dam/dropbox/tech-blog/en-us/2018/03/2nd.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;权重以及-route划分&#34;&gt;权重以及 Route划分&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;https://dropbox.tech/cms/content/dam/dropbox/tech-blog/en-us/2018/03/4th.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;精细程度可以做到按照 Route 将一个 Service 的重要的 Route 以及不重要的 Route 按权重定向到不同的 Backend上。不同的 Queue 可以有不同的权重，rate limit, 并发度。&lt;/p&gt;
+</description>
+        </item>
+        
         <item>
             <title>乡关何处 ---- 赛博朋克世界的牺牲品</title>
             <link>http://yanhang.me/post/2020-12-15-country-in-cyberpunk/</link>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Network on 工业革命</title>
+    <link>http://yanhang.me/tags/network/</link>
+    <description>Recent content in Network on 工业革命</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 18 Jan 2021 13:33:12 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/network/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>LB系列1 - Bandaid</title>
+      <link>http://yanhang.me/post/2021-lb-1-bandaid/</link>
+      <pubDate>Mon, 18 Jan 2021 13:33:12 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2021-lb-1-bandaid/</guid>
+      <description>很多大厂的LB都是自研的，而且设计考量都不相同。本文介绍 Dropbox自研的LB，名字叫 Bandaid.参考链接: Meet Bandaid, the Dropbox service proxy. Queue设计</description>
+    </item>
+    
+  </channel>
+</rss>
