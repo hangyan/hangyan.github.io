@@ -3,7 +3,49 @@
   
   <url>
     <loc>http://yanhang.me/categories/</loc>
-    <lastmod>2021-01-18T13:33:12+08:00</lastmod>
+    <lastmod>2021-02-01T15:14:06+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/post/</loc>
+    <lastmod>2021-02-01T15:14:06+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/tags/</loc>
+    <lastmod>2021-02-01T15:14:06+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/</loc>
+    <lastmod>2021-02-01T15:14:06+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/tags/%E6%B8%B8%E6%88%8F/</loc>
+    <lastmod>2021-02-01T15:14:06+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/categories/%E6%B8%B8%E6%88%8F/</loc>
+    <lastmod>2021-02-01T15:14:06+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/post/2021-sgqyv7/</loc>
+    <lastmod>2021-02-01T15:14:06+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -37,35 +79,7 @@
   </url>
   
   <url>
-    <loc>http://yanhang.me/post/</loc>
-    <lastmod>2021-01-18T13:33:12+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://yanhang.me/tags/</loc>
-    <lastmod>2021-01-18T13:33:12+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://yanhang.me/</loc>
-    <lastmod>2021-01-18T13:33:12+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
     <loc>http://yanhang.me/post/2020-12-15-country-in-cyberpunk/</loc>
-    <lastmod>2020-12-25T13:17:12+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://yanhang.me/tags/%E6%B8%B8%E6%88%8F/</loc>
     <lastmod>2020-12-25T13:17:12+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -136,13 +150,6 @@
   
   <url>
     <loc>http://yanhang.me/post/2020-12-03-yuan-shen/</loc>
-    <lastmod>2020-12-03T15:18:08+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://yanhang.me/categories/%E6%B8%B8%E6%88%8F/</loc>
     <lastmod>2020-12-03T15:18:08+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>

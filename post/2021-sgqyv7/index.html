@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>LB系列1 - Bandaid - 工业革命</title>
+  <title>重温三国群英传7 - 工业革命</title>
   <meta name="renderer" content="webkit" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="涯余" /><meta name="description" content="很多大厂的LB都是自研的，而且设计考量都不相同。本文介绍 Dropbox自研的LB，名字叫 Bandaid.参考链接: Meet Bandaid, the Dropbox service proxy. Queue设计" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+<meta name="author" content="涯余" /><meta name="description" content="三国群英传8上了之后，看评价不好一直没买，趁机补齐了1-7,然后玩了一遍。曾经也是年轻时候的回忆，大学的时候放假时在一个朋友家玩，每天一两个" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
 
 
 
@@ -26,7 +26,7 @@
 <meta name="generator" content="Hugo 0.75.1 with theme even" />
 
 
-<link rel="canonical" href="http://yanhang.me/post/2021-lb-1-bandaid/" />
+<link rel="canonical" href="http://yanhang.me/post/2021-sgqyv7/" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -39,24 +39,24 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
-<meta property="og:title" content="LB系列1 - Bandaid" />
-<meta property="og:description" content="很多大厂的LB都是自研的，而且设计考量都不相同。本文介绍 Dropbox自研的LB，名字叫 Bandaid.参考链接: Meet Bandaid, the Dropbox service proxy. Queue设计" />
+<meta property="og:title" content="重温三国群英传7" />
+<meta property="og:description" content="三国群英传8上了之后，看评价不好一直没买，趁机补齐了1-7,然后玩了一遍。曾经也是年轻时候的回忆，大学的时候放假时在一个朋友家玩，每天一两个" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://yanhang.me/post/2021-lb-1-bandaid/" />
-<meta property="article:published_time" content="2021-01-18T13:33:12+08:00" />
-<meta property="article:modified_time" content="2021-01-18T13:33:12+08:00" />
-<meta itemprop="name" content="LB系列1 - Bandaid">
-<meta itemprop="description" content="很多大厂的LB都是自研的，而且设计考量都不相同。本文介绍 Dropbox自研的LB，名字叫 Bandaid.参考链接: Meet Bandaid, the Dropbox service proxy. Queue设计">
-<meta itemprop="datePublished" content="2021-01-18T13:33:12+08:00" />
-<meta itemprop="dateModified" content="2021-01-18T13:33:12+08:00" />
-<meta itemprop="wordCount" content="414">
+<meta property="og:url" content="http://yanhang.me/post/2021-sgqyv7/" />
+<meta property="article:published_time" content="2021-02-01T15:14:06+08:00" />
+<meta property="article:modified_time" content="2021-02-01T15:14:06+08:00" />
+<meta itemprop="name" content="重温三国群英传7">
+<meta itemprop="description" content="三国群英传8上了之后，看评价不好一直没买，趁机补齐了1-7,然后玩了一遍。曾经也是年轻时候的回忆，大学的时候放假时在一个朋友家玩，每天一两个">
+<meta itemprop="datePublished" content="2021-02-01T15:14:06+08:00" />
+<meta itemprop="dateModified" content="2021-02-01T15:14:06+08:00" />
+<meta itemprop="wordCount" content="1014">
 
 
 
-<meta itemprop="keywords" content="LB,Network," />
+<meta itemprop="keywords" content="游戏," />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="LB系列1 - Bandaid"/>
-<meta name="twitter:description" content="很多大厂的LB都是自研的，而且设计考量都不相同。本文介绍 Dropbox自研的LB，名字叫 Bandaid.参考链接: Meet Bandaid, the Dropbox service proxy. Queue设计"/>
+<meta name="twitter:title" content="重温三国群英传7"/>
+<meta name="twitter:description" content="三国群英传8上了之后，看评价不好一直没买，趁机补齐了1-7,然后玩了一遍。曾经也是年轻时候的回忆，大学的时候放假时在一个朋友家玩，每天一两个"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -119,15 +119,15 @@
           <article class="post">
     
     <header class="post-header">
-      <h1 class="post-title">LB系列1 - Bandaid</h1>
+      <h1 class="post-title">重温三国群英传7</h1>
 
       <div class="post-meta">
-        <span class="post-time"> 2021-01-18 </span>
+        <span class="post-time"> 2021-02-01 </span>
         <div class="post-category">
-            <a href="/categories/network/"> Network </a>
+            <a href="/categories/%E6%B8%B8%E6%88%8F/"> 游戏 </a>
             </div>
-          <span class="more-meta"> 约 414 字 </span>
-          <span class="more-meta"> 预计阅读 1 分钟 </span>
+          <span class="more-meta"> 约 1014 字 </span>
+          <span class="more-meta"> 预计阅读 3 分钟 </span>
         
       </div>
     </header>
@@ -135,30 +135,28 @@
     <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">文章目录</h2>
   <div class="post-toc-content always-active">
-    <nav id="TableOfContents">
-  <ul>
-    <li>
-      <ul>
-        <li><a href="#queue设计">Queue设计</a></li>
-        <li><a href="#user-space的-read-queue">User Space的 Read Queue</a></li>
-        <li><a href="#权重以及-route划分">权重以及 Route划分</a></li>
-      </ul>
-    </li>
-  </ul>
-</nav>
+    <nav id="TableOfContents"></nav>
   </div>
 </div>
     <div class="post-content">
-      <p>很多大厂的LB都是自研的，而且设计考量都不相同。本文介绍 Dropbox自研的LB，名字叫 Bandaid.参考链接: <a href="https://dropbox.tech/infrastructure/meet-bandaid-the-dropbox-service-proxy">Meet Bandaid, the Dropbox service proxy</a>.</p>
-<h2 id="queue设计">Queue设计</h2>
-<p><img src="https://dropbox.tech/cms/content/dam/dropbox/tech-blog/en-us/2018/03/1st.png" alt=""></p>
-<p>Bandaid 处理 Queue 中的 Request 的思路是后近先出(Last in, First out)。当系统负载不高的时候，Queue中的数据其实不多，那么先进后出或者后进先出其实区别不大。如果负载过高，考虑到先进的排队太久，可能很快就timeout了，还不如优先处理后进来的 request.</p>
-<h2 id="user-space的-read-queue">User Space的 Read Queue</h2>
-<p>Read Requests 会被放到一个用户态的 Queue 中，而不是 kernel 里的 queue中。这样做的原因是， 可以在用户态提前关闭已经被 client close的 request, 而不是等到真正的request经由 kernel, 然后 application 在处理的时候才发现 request 已经 close 了。尤其是 client 一般还带有重试，很容易把 Kernel queue打满。User Space 的 Queue 能够通过处理只把正常的 request 传给后面。</p>
-<p><img src="https://dropbox.tech/cms/content/dam/dropbox/tech-blog/en-us/2018/03/2nd.png" alt=""></p>
-<h2 id="权重以及-route划分">权重以及 Route划分</h2>
-<p><img src="https://dropbox.tech/cms/content/dam/dropbox/tech-blog/en-us/2018/03/4th.png" alt=""></p>
-<p>精细程度可以做到按照 Route 将一个 Service 的重要的 Route 以及不重要的 Route 按权重定向到不同的 Backend上。不同的 Queue 可以有不同的权重，rate limit, 并发度。</p>
+      <p>三国群英传8上了之后，看评价不好一直没买，趁机补齐了1-7,然后玩了一遍。曾经也是年轻时候的回忆，大学的时候放假时在一个朋友家玩，每天一两个小时，连着打了一个多月还是没通关。这次也是花了不少时间，有两个晚上没睡着。
+整体来说，7还不如5，但也还算不错。这次玩发现了策略类游戏的一些经验，估计其他游戏也适用。后续准备买《戴森球计划》体验一下。</p>
+<p><img src="https://img.douxie.com/upload/images/200902/2009021709501953.JPG" alt=""></p>
+<p>总的来说就是：一定要经营好大后方。第一次匆忙的玩的时候没注意到这个问题，部队不少，但是没有稳定的后方，大部队一直来回奔波作战，预备兵也补充不上。重开之后，慢慢发现正确的策略应该是</p>
+<ul>
+<li>从开局的一个城市，打的过程中，尽量在附近选定一遍区域，有较少的关卡和港口，然后将招降的大量降将放上去,占据要道，多征兵。</li>
+<li>内部的城镇，每个城镇放少量部队即可，依武将数量而定。然后先征兵，后开发，再搜查。一般城镇刚打下都有一些剩余财富，用这些钱先尽量多征些预备兵，预备兵比较多的时候开始开发城镇，积攒财富。中间一般也会有其他武将慕名来投奔，或者是现有武将的家属来投奔。财富和预备兵比较多的时候可以开始换成搜查，一般可以搜查到一些新武将和物品</li>
+<li>保留一个稳定且能不断扩充的精锐机动部队，能够一直攻城掠地</li>
+<li>关卡都是战略重地，基本上是各大区域的咽喉要道，能控制一个区域的出入口。优先派重兵把手。</li>
+<li>精锐部队的兵力折损会比较高，除了原地补充兵力之外，可以在每次内政时间从大后方往前线运输兵力及钱粮，预备兵的运输折损比较高，一般直接运输大量的钱即可，这样在本地征兵会很快</li>
+<li>后方产出的精品武器及坐骑可以不断地给前线武将更新</li>
+<li>7代山贼的设定比较有趣，勒索比较频繁。刚开始我不太理解，一直拒绝勒索。后期后方财富多的时候，就一直要啥给啥，然后过一段时间之后，山贼就开始回馈各种精良装备和坐骑了</li>
+<li>军团出征，一定要是军师+武将的搭配。军师都是高智力，军师技多。武将一般都是高武力，负责带重兵以及亲自作战</li>
+<li>7代的兵种相克没那么明显了。但是兵种搭配仍然还是很重要，远程+近程的合理搭配即可。铁骑基本上是王者。</li>
+<li>武将的本性很难改，比如吕布，总是忠诚度很低，给钱给彩宝美女也没啥大用。可以不管，或者直接斩了。优先选用对本国认同度比较高的武将</li>
+<li>武将的作战习性也不一样，吴国多熟悉水战，西凉多熟悉沙漠地形，南蛮多熟悉山林地形，不同的地形及天气可以派不同的部队及军师搭配</li>
+</ul>
+<p>差不多就这么多，下一目标是全战三国。估计策略也是适用的。总体来说，很多地方的设定还是很符合常理和历史的。</p>
 
     </div>
 
@@ -170,7 +168,7 @@
   <p class="copyright-item">
     <span class="item-title">上次更新</span>
     <span class="item-content">
-        2021-01-18
+        2021-02-01
         
     </span>
   </p>
@@ -179,17 +177,12 @@
 </div>
 <footer class="post-footer">
       <div class="post-tags">
-          <a href="/tags/lb/">LB</a>
-          <a href="/tags/network/">Network</a>
+          <a href="/tags/%E6%B8%B8%E6%88%8F/">游戏</a>
           </div>
       <nav class="post-nav">
-        <a class="prev" href="/post/2021-sgqyv7/">
-            <i class="iconfont icon-left"></i>
-            <span class="prev-text nav-default">重温三国群英传7</span>
-            <span class="prev-text nav-mobile">上一篇</span>
-          </a>
-        <a class="next" href="/post/2020-12-15-country-in-cyberpunk/">
-            <span class="next-text nav-default">乡关何处 ---- 赛博朋克世界的牺牲品</span>
+        
+        <a class="next" href="/post/2021-lb-1-bandaid/">
+            <span class="next-text nav-default">LB系列1 - Bandaid</span>
             <span class="next-text nav-mobile">下一篇</span>
             <i class="iconfont icon-right"></i>
           </a>
