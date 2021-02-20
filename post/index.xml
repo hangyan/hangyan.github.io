@@ -6,7 +6,16 @@
     <description>Recent content in Posts on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 01 Feb 2021 15:14:06 +0800</lastBuildDate><atom:link href="http://yanhang.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 18 Feb 2021 15:25:47 +0800</lastBuildDate><atom:link href="http://yanhang.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Kubernetes 的 Server-Side Apply</title>
+      <link>http://yanhang.me/post/2021-ssa/</link>
+      <pubDate>Thu, 18 Feb 2021 15:25:47 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2021-ssa/</guid>
+      <description>从 Kubernetes 1.18 开始,可以看到一个明显的变化就是资源的 YAML 在 metadata 部分多了很多信息: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 apiVersion:v1kind:Namespacemetadata:creationTimestamp:&amp;#34;2021-02-18T03:03:40Z&amp;#34;managedFields:- apiVersion:v1fieldsType:FieldsV1fieldsV1:f:status:f:phase:{}manager:kube-apiserveroperation:Updatetime:&amp;#34;2021-02-18T03:03:40Z&amp;#34;name:defaultresourceVersion:&amp;#34;199&amp;#34;uid:2f4536b5-7302-4dc1-9620-052a567c917cspec:finalizers:- kubernetesstatus:phase:Active 比如这个 NS 的例子, 其中大</description>
+    </item>
+    
     <item>
       <title>重温三国群英传7</title>
       <link>http://yanhang.me/post/2021-sgqyv7/</link>

@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Kubernetes 的 Server-Side Apply - 工业革命</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="涯余" /><meta name="description" content="从 Kubernetes 1.18 开始,可以看到一个明显的变化就是资源的 YAML 在 metadata 部分多了很多信息: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 apiVersion:v1kind:Namespacemetadata:creationTimestamp:&amp;#34;2021-02-18T03:03:40Z&amp;#34;managedFields:- apiVersion:v1fieldsType:FieldsV1fieldsV1:f:status:f:phase:{}manager:kube-apiserveroperation:Updatetime:&amp;#34;2021-02-18T03:03:40Z&amp;#34;name:defaultresourceVersion:&amp;#34;199&amp;#34;uid:2f4536b5-7302-4dc1-9620-052a567c917cspec:finalizers:- kubernetesstatus:phase:Active 比如这个 NS 的例子, 其中大" /><meta name="keywords" content="Kubernetes, Tech, Internete" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.80.0 with theme even" />
+
+
+<link rel="canonical" href="http://yanhang.me/post/2021-ssa/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.c7bc1becf36bcf6a9ebd25d2947e43a2eb745ddb0c9a32b43126fd7fa460c351.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Kubernetes 的 Server-Side Apply" />
+<meta property="og:description" content="从 Kubernetes 1.18 开始,可以看到一个明显的变化就是资源的 YAML 在 metadata 部分多了很多信息: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 apiVersion:v1kind:Namespacemetadata:creationTimestamp:&#34;2021-02-18T03:03:40Z&#34;managedFields:- apiVersion:v1fieldsType:FieldsV1fieldsV1:f:status:f:phase:{}manager:kube-apiserveroperation:Updatetime:&#34;2021-02-18T03:03:40Z&#34;name:defaultresourceVersion:&#34;199&#34;uid:2f4536b5-7302-4dc1-9620-052a567c917cspec:finalizers:- kubernetesstatus:phase:Active 比如这个 NS 的例子, 其中大" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://yanhang.me/post/2021-ssa/" />
+<meta property="article:published_time" content="2021-02-18T15:25:47+08:00" />
+<meta property="article:modified_time" content="2021-02-18T15:25:47+08:00" />
+<meta itemprop="name" content="Kubernetes 的 Server-Side Apply">
+<meta itemprop="description" content="从 Kubernetes 1.18 开始,可以看到一个明显的变化就是资源的 YAML 在 metadata 部分多了很多信息: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 apiVersion:v1kind:Namespacemetadata:creationTimestamp:&#34;2021-02-18T03:03:40Z&#34;managedFields:- apiVersion:v1fieldsType:FieldsV1fieldsV1:f:status:f:phase:{}manager:kube-apiserveroperation:Updatetime:&#34;2021-02-18T03:03:40Z&#34;name:defaultresourceVersion:&#34;199&#34;uid:2f4536b5-7302-4dc1-9620-052a567c917cspec:finalizers:- kubernetesstatus:phase:Active 比如这个 NS 的例子, 其中大">
+<meta itemprop="datePublished" content="2021-02-18T15:25:47+08:00" />
+<meta itemprop="dateModified" content="2021-02-18T15:25:47+08:00" />
+<meta itemprop="wordCount" content="2063">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Kubernetes 的 Server-Side Apply"/>
+<meta name="twitter:description" content="从 Kubernetes 1.18 开始,可以看到一个明显的变化就是资源的 YAML 在 metadata 部分多了很多信息: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 apiVersion:v1kind:Namespacemetadata:creationTimestamp:&#34;2021-02-18T03:03:40Z&#34;managedFields:- apiVersion:v1fieldsType:FieldsV1fieldsV1:f:status:f:phase:{}manager:kube-apiserveroperation:Updatetime:&#34;2021-02-18T03:03:40Z&#34;name:defaultresourceVersion:&#34;199&#34;uid:2f4536b5-7302-4dc1-9620-052a567c917cspec:finalizers:- kubernetesstatus:phase:Active 比如这个 NS 的例子, 其中大"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">CyberLife</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">CyberLife</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Kubernetes 的 Server-Side Apply</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2021-02-18 </span>
+        <div class="post-category">
+            <a href="/categories/kubernetes/"> Kubernetes </a>
+            </div>
+          <span class="more-meta"> 约 2063 字 </span>
+          <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#kubectl-apply">kubectl apply</a></li>
+        <li><a href="#何为-service-side-apply">何为 Service-Side Apply</a></li>
+        <li><a href="#managedfields-详解">managedFields 详解</a></li>
+        <li><a href="#controller-的使用">Controller 的使用</a></li>
+        <li><a href="#现状">现状</a></li>
+        <li><a href="#links">Links</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>从 Kubernetes 1.18 开始,可以看到一个明显的变化就是资源的 YAML 在 metadata 部分多了很多信息:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Namespace</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">creationTimestamp</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-02-18T03:03:40Z&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">managedFields</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w">    </span><span class="nt">fieldsType</span><span class="p">:</span><span class="w"> </span><span class="l">FieldsV1</span><span class="w">
+</span><span class="w">    </span><span class="nt">fieldsV1</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">f:status</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">f:phase</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">    </span><span class="nt">manager</span><span class="p">:</span><span class="w"> </span><span class="l">kube-apiserver</span><span class="w">
+</span><span class="w">    </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="l">Update</span><span class="w">
+</span><span class="w">    </span><span class="nt">time</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-02-18T03:03:40Z&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
+</span><span class="w">  </span><span class="nt">resourceVersion</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;199&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">uid</span><span class="p">:</span><span class="w"> </span><span class="l">2f4536b5-7302-4dc1-9620-052a567c917c</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">finalizers</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="l">kubernetes</span><span class="w">
+</span><span class="w"></span><span class="nt">status</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">phase</span><span class="p">:</span><span class="w"> </span><span class="l">Active</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>比如这个 NS 的例子, 其中大部分都是 <code>mangedFields</code>部分.简单来讲,<code>managedFields</code> 字段是用来声明一个资源的各个字段的具体的管理者是谁.我们可以参考一个有点类似的案例, Node 的 conditions 字段:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">  </span><span class="nt">conditions</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">lastHeartbeatTime</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-02-18T03:05:25Z&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">lastTransitionTime</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-02-18T03:05:25Z&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">message</span><span class="p">:</span><span class="w"> </span><span class="l">Flannel is running on this node</span><span class="w">
+</span><span class="w">    </span><span class="nt">reason</span><span class="p">:</span><span class="w"> </span><span class="l">FlannelIsUp</span><span class="w">
+</span><span class="w">    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;False&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">NetworkUnavailable</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">lastHeartbeatTime</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-02-18T07:34:05Z&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">lastTransitionTime</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-02-18T03:03:36Z&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">message</span><span class="p">:</span><span class="w"> </span><span class="l">kubelet has sufficient memory available</span><span class="w">
+</span><span class="w">    </span><span class="nt">reason</span><span class="p">:</span><span class="w"> </span><span class="l">KubeletHasSufficientMemory</span><span class="w">
+</span><span class="w">    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;False&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">MemoryPressure</span><span class="w">
+</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Contaions 是一个列表,不同的 Component 负责上报自己所观察到的信息,最终汇总到 Node 的 Status 下面.然后再合并汇总出一个整体的 <code>Ready</code> 状态. <code>mangedFieds</code> 也是有点类似的思路, 一个资源的不同部分是由不同组件/人负责维护的,显式的声明这种维护关系有助于各方协同地维护一个资源完整的状态.更直观的,我们可以看一个 Deployment 的例子. 首先,我们使用如下的 deployment 文件来创建</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Deployment</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">nginx-deployment</span><span class="w">
+</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">nginx</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">nginx</span><span class="w">
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">nginx</span><span class="w">
+</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">nginx</span><span class="w">
+</span><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">nginx:1.14.2</span><span class="w">
+</span><span class="w">
+</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>创建命令是:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># -n 后面是希望使用的 namespace, 非关键信息</span>
+kubectl apply -f d.yaml -n ssa
+</code></pre></td></tr></table>
+</div>
+</div><p>最终生成的 deployment 如下所示(部分信息):</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span><span class="lnt">89
+</span><span class="lnt">90
+</span><span class="lnt">91
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Deployment</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">deployment.kubernetes.io/revision</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;1&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">kubectl.kubernetes.io/last-applied-configuration</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span><span class="sd">      </span><span class="w">      </span>{<span class="s2">&#34;apiVersion&#34;</span><span class="p">:</span><span class="s2">&#34;apps/v1&#34;</span><span class="p">,</span><span class="s2">&#34;kind&#34;</span><span class="p">:</span><span class="s2">&#34;Deployment&#34;</span><span class="p">,</span><span class="s2">&#34;metadata&#34;</span><span class="p">:</span>{<span class="s2">&#34;annotations&#34;</span><span class="p">:</span>{}<span class="p">,</span><span class="s2">&#34;labels&#34;</span><span class="p">:</span>{<span class="s2">&#34;app&#34;</span><span class="p">:</span><span class="s2">&#34;nginx&#34;</span>}<span class="p">,</span><span class="s2">&#34;name&#34;</span><span class="p">:</span><span class="s2">&#34;nginx-deployment&#34;</span><span class="p">,</span><span class="s2">&#34;namespace&#34;</span><span class="p">:</span><span class="s2">&#34;ssa&#34;</span>}<span class="p">,</span><span class="s2">&#34;spec&#34;</span><span class="p">:</span>{<span class="s2">&#34;replicas&#34;</span><span class="p">:</span><span class="m">3</span><span class="p">,</span><span class="s2">&#34;selector&#34;</span><span class="p">:</span>{<span class="s2">&#34;matchLabels&#34;</span><span class="p">:</span>{<span class="s2">&#34;app&#34;</span><span class="p">:</span><span class="s2">&#34;nginx&#34;</span>}}<span class="p">,</span><span class="s2">&#34;template&#34;</span><span class="p">:</span>{<span class="s2">&#34;metadata&#34;</span><span class="p">:</span>{<span class="s2">&#34;labels&#34;</span><span class="p">:</span>{<span class="s2">&#34;app&#34;</span><span class="p">:</span><span class="s2">&#34;nginx&#34;</span>}}<span class="p">,</span><span class="s2">&#34;spec&#34;</span><span class="p">:</span>{<span class="s2">&#34;containers&#34;</span><span class="p">:[</span>{<span class="s2">&#34;image&#34;</span><span class="p">:</span><span class="s2">&#34;nginx:1.14.2&#34;</span><span class="p">,</span><span class="s2">&#34;name&#34;</span><span class="p">:</span><span class="s2">&#34;nginx&#34;</span>}<span class="p">]</span>}}}}<span class="w">                                   
+</span><span class="w">  </span><span class="nt">creationTimestamp</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-02-18T07:41:40Z&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">generation</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">nginx</span><span class="w">
+</span><span class="w">  </span><span class="nt">managedFields</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span><span class="w">    </span><span class="nt">fieldsType</span><span class="p">:</span><span class="w"> </span><span class="l">FieldsV1</span><span class="w">
+</span><span class="w">    </span><span class="nt">fieldsV1</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">f:metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">f:annotations</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">          </span><span class="nt">f:kubectl.kubernetes.io/last-applied-configuration</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:labels</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">          </span><span class="nt">f:app</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">      </span><span class="nt">f:spec</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">f:progressDeadlineSeconds</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:replicas</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:revisionHistoryLimit</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:selector</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:strategy</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">f:rollingUpdate</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:maxSurge</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:maxUnavailable</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">          </span><span class="nt">f:type</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:template</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">f:metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span><span class="nt">f:labels</span><span class="p">:</span><span class="w">
+</span><span class="w">              </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">              </span><span class="nt">f:app</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">          </span><span class="nt">f:spec</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span><span class="nt">f:containers</span><span class="p">:</span><span class="w">
+</span><span class="w">              </span><span class="l">k:{&#34;name&#34;:&#34;nginx&#34;}:</span><span class="w">
+</span><span class="w">                </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">                </span><span class="nt">f:image</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">                </span><span class="nt">f:imagePullPolicy</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">                </span><span class="nt">f:name</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">                </span><span class="nt">f:resources</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">                </span><span class="nt">f:terminationMessagePath</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">                </span><span class="nt">f:terminationMessagePolicy</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:dnsPolicy</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:restartPolicy</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:schedulerName</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:securityContext</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:terminationGracePeriodSeconds</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">    </span><span class="nt">manager</span><span class="p">:</span><span class="w"> </span><span class="l">kubectl-client-side-apply</span><span class="w">
+</span><span class="w">    </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="l">Update</span><span class="w">
+</span><span class="w">    </span><span class="nt">time</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-02-18T07:41:40Z&#34;</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span><span class="w">    </span><span class="nt">fieldsType</span><span class="p">:</span><span class="w"> </span><span class="l">FieldsV1</span><span class="w">
+</span><span class="w">    </span><span class="nt">fieldsV1</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">f:metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">f:annotations</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">f:deployment.kubernetes.io/revision</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">      </span><span class="nt">f:status</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">f:availableReplicas</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:conditions</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">          </span><span class="l">k:{&#34;type&#34;:&#34;Available&#34;}:</span><span class="w">
+</span><span class="w">            </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:lastTransitionTime</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:lastUpdateTime</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:message</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:reason</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:status</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:type</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">          </span><span class="l">k:{&#34;type&#34;:&#34;Progressing&#34;}:</span><span class="w">
+</span><span class="w">            </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:lastTransitionTime</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:lastUpdateTime</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:message</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:reason</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:status</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:type</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:observedGeneration</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:readyReplicas</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:replicas</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:updatedReplicas</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">    </span><span class="nt">manager</span><span class="p">:</span><span class="w"> </span><span class="l">kube-controller-manager</span><span class="w">
+</span><span class="w">    </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="l">Update</span><span class="w">
+</span><span class="w">    </span><span class="nt">time</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-02-18T07:41:42Z&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">nginx-deployment</span><span class="w">
+</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>其中 <code>f</code> 后面跟的是 field 的名字,其他部分都比较直观.可以看到 <code>managedFieds</code> 包含两个 item:</p>
+<ul>
+<li>第一个manager 是 <code>kubectl-client-side-apply</code>.因为这个 deploy 是我直接用 <code>kubectl apply</code> 创建的. 默认 kubectl apply 使用的是 Client-Side Apply 而不是 Server-Side Apply.</li>
+<li>第二个manager 是 <code>kube-controller-manager</code>, 比较直观.对比两个 manager 所管理的字段列表来看, <code>kube-controller-manager</code>管理的都是我们通常看到的由 <code>系统</code> 自动填充的信息, 比如 <code>conditions</code>, <code>.status.repliacs</code>等.而<code>kubectl-client-side-apply</code> 则是管理那些用户自己输入的信息.</li>
+</ul>
+<p>如上所展示的 manager 机制即是 Server-Side Apply的核心, 下面将详述细节.</p>
+<h2 id="kubectl-apply">kubectl apply</h2>
+<p>首先我们需要大概了解 <code>kubectl apply</code>做了什么,分为如下几步:</p>
+<ol>
+<li>GET 查询目标 Object</li>
+<li>如果 Object 不存在,则提交到API创建,并且将用户提供的 input 信息放到 新创建的 Object 的 annotations里(key 为 <code>kubectl.kubernetes.io/last-applied-configuration</code>)</li>
+<li>如果 Object 已存在, 先读取到旧的 Object 的 <code>kubectl.kubernetes.io/last-applied-configuration</code> 的值, 然后与当前的做对比, 生成一个 diff (strategic merge patch), 用 PATCH 发给 API Server. 其中 diff 里面也会附带上最新的 <code>kubectl.kubernetes.io/last-applied-configuration</code>.</li>
+</ol>
+<p>其中, <code>strategic merge patch</code> 需要单独提一下,它的主要特点就是对于 list 的 update 提供了 <code>patchStrategy</code> 以便对不同的字段做不同的处理.比如我们常见的 Pod 的  containers 列表:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">type</span> <span class="nx">PodSpec</span> <span class="kd">struct</span> <span class="p">{</span>
+  <span class="o">...</span>
+  <span class="nx">Containers</span> <span class="p">[]</span><span class="nx">Container</span> <span class="s">`json:&#34;containers&#34; patchStrategy:&#34;merge&#34; patchMergeKey:&#34;name&#34; ...`</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>举个例子.最初始的 Pod Template 如下:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Deployment</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">patch-demo</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">nginx</span><span class="w">
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">nginx</span><span class="w">
+</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">patch-demo-ctr</span><span class="w">
+</span><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">nginx</span><span class="w">
+</span><span class="w">      </span><span class="nt">tolerations</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">effect</span><span class="p">:</span><span class="w"> </span><span class="l">NoSchedule</span><span class="w">
+</span><span class="w">        </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">dedicated</span><span class="w">
+</span><span class="w">        </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l">test-team</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>假设想用如下的 yaml PATCH 这个 deploy</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">patch-demo-ctr-2</span><span class="w">
+</span><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">redis</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">kubectl patch deployment patch-demo --patch <span class="s2">&#34;</span><span class="k">$(</span>cat patch-file.yaml<span class="k">)</span><span class="s2">&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>依赖于上面的 containers patch 策略的声明,我们能得到如下的最终结果:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w"></span>- <span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">redis</span><span class="w">
+</span><span class="w">  </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">Always</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">patch-demo-ctr-2</span><span class="w">
+</span><span class="w">  </span><span class="l">...</span><span class="w">
+</span><span class="w"></span>- <span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">nginx</span><span class="w">
+</span><span class="w">  </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l">Always</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">patch-demo-ctr</span><span class="w">
+</span><span class="w">  </span><span class="l">...</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>这样更符合用户的期望.而其他的一些字段,如果没有声明 <code>patchStrategy</code>, 那么默认操作是 replace.</p>
+<h2 id="何为-service-side-apply">何为 Service-Side Apply</h2>
+<p><code>Server-Side Apply</code> 可以字面地理解为将 <code>kubectl apply</code>的工作迁移到 Server 端来进行, 准确地可以定义为一种新的Merge算法.它的好处如下:</p>
+<ul>
+<li><code>--dry-run</code>如果是在 client 端进行,那么因为 Server 端存在各种 webhook以及 injector,很难模拟真实的情况.如果 &ndash;dry-run 放在服务端, 如果出错了,可以通过新加的 <code>mangedFields</code> 机制给用户更明确的提示</li>
+<li>如果不用 kubectl 而是 API 开发则很难利用到 kubectl 提供的功能</li>
+<li>比 <code>kubectl apply</code> 使用的 <code>kubectl.kubernetes.io/last-applied-configuration</code> 更加声明式一些</li>
+<li>防止用户误修改一些字段</li>
+<li>其他一些在 Server 端实现起来更简单的地方</li>
+</ul>
+<p>Server-Side Apply 利用 <code>managedFields</code> 字段,追踪了各个字段的归属,并且能在更新的时候提供冲突检测(manager不匹配),并提供更为准确的提示.</p>
+<h2 id="managedfields-详解">managedFields 详解</h2>
+<p>现在我们可以详细看下 managedFields的内容:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">  </span>- <span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span><span class="w">    </span><span class="nt">fieldsType</span><span class="p">:</span><span class="w"> </span><span class="l">FieldsV1</span><span class="w">
+</span><span class="w">    </span><span class="nt">fieldsV1</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">f:metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">f:annotations</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">          </span><span class="nt">f:deployment.kubernetes.io/revision</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">      </span><span class="nt">f:status</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">f:availableReplicas</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:conditions</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">          </span><span class="l">k:{&#34;type&#34;:&#34;Available&#34;}:</span><span class="w">
+</span><span class="w">            </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:lastTransitionTime</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:lastUpdateTime</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:message</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:reason</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:status</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:type</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">          </span><span class="l">k:{&#34;type&#34;:&#34;Progressing&#34;}:</span><span class="w">
+</span><span class="w">            </span><span class="nt">.</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:lastTransitionTime</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:lastUpdateTime</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:message</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:reason</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:status</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">            </span><span class="nt">f:type</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:observedGeneration</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:readyReplicas</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:replicas</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">        </span><span class="nt">f:updatedReplicas</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span><span class="w">    </span><span class="nt">manager</span><span class="p">:</span><span class="w"> </span><span class="l">kube-controller-manager</span><span class="w">
+</span><span class="w">    </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="l">Update</span><span class="w">
+</span><span class="w">    </span><span class="nt">time</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-02-18T04:58:50Z&#34;</span><span class="w">
+</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>其中:</p>
+<ul>
+<li><code>f</code>: 代表字段名</li>
+<li><code>v</code>: 代表 value, 字段的值</li>
+<li><code>k</code>: 代表 key, map object, 包含 f/v</li>
+<li><code>i</code>: index, 数组的索引</li>
+</ul>
+<p><code>k</code> 不太好理解, 对应的资源字段示例如下:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">status</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">availableReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">conditions</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">lastTransitionTime</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-02-18T04:58:50Z&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">lastUpdateTime</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-02-18T04:58:50Z&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">message</span><span class="p">:</span><span class="w"> </span><span class="l">Deployment has minimum availability.</span><span class="w">
+</span><span class="w">    </span><span class="nt">reason</span><span class="p">:</span><span class="w"> </span><span class="l">MinimumReplicasAvailable</span><span class="w">
+</span><span class="w">    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;True&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">Available</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">lastTransitionTime</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-02-18T04:56:00Z&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">lastUpdateTime</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2021-02-18T04:58:50Z&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">message</span><span class="p">:</span><span class="w"> </span><span class="l">ReplicaSet &#34;nginx-deployment-877f48f6d&#34; has successfully progressed.</span><span class="w">
+</span><span class="w">    </span><span class="nt">reason</span><span class="p">:</span><span class="w"> </span><span class="l">NewReplicaSetAvailable</span><span class="w">
+</span><span class="w">    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;True&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">Progressing</span><span class="w">
+</span><span class="w">  </span><span class="nt">observedGeneration</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="w">  </span><span class="nt">readyReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">  </span><span class="nt">updatedReplicas</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>另外:</p>
+<ul>
+<li><code>manager</code>: 操作主体</li>
+<li><code>operator</code>: 动作</li>
+<li><code>time</code>: 操作时间</li>
+</ul>
+<p>如下所示,我们将上面用到的 deployment 修改一下,然后用不同的 manager 去 apply 一下试试:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">➜  server-side-apply git:<span class="o">(</span>master<span class="o">)</span> ✗ kubectl apply -f d.yaml --server-side --field-manager<span class="o">=</span><span class="s1">&#39;test1&#39;</span>              
+error: Apply failed with <span class="m">1</span> conflict: conflict with <span class="s2">&#34;kubectl-client-side-apply&#34;</span> using apps/v1: .spec.replicas
+Please review the fields above--they currently have other managers. Here
+are the ways you can resolve this warning:
+* If you intend to manage all of these fields, please re-run the apply
+  <span class="nb">command</span> with the <span class="sb">`</span>--force-conflicts<span class="sb">`</span> flag.
+* If you <span class="k">do</span> not intend to manage all of the fields, please edit your
+  manifest to remove references to the fields that should keep their
+  current managers.
+* You may co-own fields by updating your manifest to match the existing
+  value<span class="p">;</span> in this <span class="k">case</span>, you<span class="err">&#39;</span>ll become the manager <span class="k">if</span> the other manager<span class="o">(</span>s<span class="o">)</span>
+  stop managing the field <span class="o">(</span>remove it from their configuration<span class="o">)</span>.
+See http://k8s.io/docs/reference/using-api/api-concepts/#conflicts
+</code></pre></td></tr></table>
+</div>
+</div><p>上面的错误提示也展示了在冲突时可能的几种解决办法:</p>
+<ul>
+<li>覆盖: 如果确定是要修改,可以使用foce参数,强制覆盖,并且将其manager变更为自己</li>
+<li>忽略: 如果本身并不关心这个字段的值,可以将其从自己的 manifest 中移除然后重试</li>
+<li>共享: 将冲突字段改为原来的值,这种情况下更新后将与原来的manager共享管理.</li>
+</ul>
+<p>同时需要注意的时,通常的两种更新操作对 manager 的处理也不同:</p>
+<ol>
+<li>PATCH: content type 为 <code>application/apply-patch+yaml</code>, 冲突逻辑如上所示</li>
+<li>UPDATE: 其他更新方式,完全忽略冲突</li>
+</ol>
+<h2 id="controller-的使用">Controller 的使用</h2>
+<p>目前常用的对 resource 的操作基本上都遵循一个 READ-UPDATE 的步骤,因为 resourceVersion 的冲突问题. Service-Side Apply 有望能去掉 READ 这步,直接进行 UPDATE 操作.</p>
+<p>一般也推荐 controller 在遇到冲突的时候执行 force 操作.</p>
+<h2 id="现状">现状</h2>
+<p>功能仍有缺陷, 接口复杂,未到 stable 状态,尽量不用使用.</p>
+<h2 id="links">Links</h2>
+<ol>
+<li><a href="https://kubernetes.io/blog/2020/04/01/kubernetes-1.18-feature-server-side-apply-beta-2/">Kubernetes 1.18 Feature Server-side Apply Beta 2</a></li>
+<li><a href="https://www.alibabacloud.com/blog/understanding-openkruise-kubernetes-resource-update-mechanisms_596718">Understanding OpenKruise Kubernetes Resource Update Mechanisms </a></li>
+<li><a href="https://github.com/kubernetes/community/blob/master/contributors/devel/sig-api-machinery/strategic-merge-patch.md">Strategic Merge Patch</a></li>
+<li><a href="https://kubernetes.io/docs/tasks/manage-kubernetes-objects/update-api-object-kubectl-patch/">Update API Objects in Place Using kubectl patch</a></li>
+<li><a href="https://medium.com/swlh/break-down-kubernetes-server-side-apply-5d59f6a14e26">Break Down Kubernetes Server-Side Apply</a></li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">涯余</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2021-02-18
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/2021-sgqyv7/">
+            <span class="next-text nav-default">重温三国群英传7</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hang.yan@hotmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://github.com/hangyan" class="iconfont icon-github" title="github"></a>
+      <a href="https://www.douban.com/people/yanhangyhy/" class="iconfont icon-douban" title="douban"></a>
+  <a href="http://yanhang.me/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2013 - 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>涯余</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
