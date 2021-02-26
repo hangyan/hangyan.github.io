@@ -49,7 +49,7 @@
 <meta itemprop="description" content="从 Kubernetes 1.18 开始,可以看到一个明显的变化就是资源的 YAML 在 metadata 部分多了很多信息: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 apiVersion:v1kind:Namespacemetadata:creationTimestamp:&#34;2021-02-18T03:03:40Z&#34;managedFields:- apiVersion:v1fieldsType:FieldsV1fieldsV1:f:status:f:phase:{}manager:kube-apiserveroperation:Updatetime:&#34;2021-02-18T03:03:40Z&#34;name:defaultresourceVersion:&#34;199&#34;uid:2f4536b5-7302-4dc1-9620-052a567c917cspec:finalizers:- kubernetesstatus:phase:Active 比如这个 NS 的例子, 其中大">
 <meta itemprop="datePublished" content="2021-02-18T15:25:47+08:00" />
 <meta itemprop="dateModified" content="2021-02-18T15:25:47+08:00" />
-<meta itemprop="wordCount" content="2063">
+<meta itemprop="wordCount" content="2115">
 
 
 
@@ -126,7 +126,7 @@
         <div class="post-category">
             <a href="/categories/kubernetes/"> Kubernetes </a>
             </div>
-          <span class="more-meta"> 约 2063 字 </span>
+          <span class="more-meta"> 约 2115 字 </span>
           <span class="more-meta"> 预计阅读 5 分钟 </span>
         
       </div>
@@ -618,8 +618,9 @@ kubectl apply -f d.yaml -n ssa
 <ul>
 <li><code>--dry-run</code>如果是在 client 端进行,那么因为 Server 端存在各种 webhook以及 injector,很难模拟真实的情况.如果 &ndash;dry-run 放在服务端, 如果出错了,可以通过新加的 <code>mangedFields</code> 机制给用户更明确的提示</li>
 <li>如果不用 kubectl 而是 API 开发则很难利用到 kubectl 提供的功能</li>
-<li>比 <code>kubectl apply</code> 使用的 <code>kubectl.kubernetes.io/last-applied-configuration</code> 更加声明式一些</li>
+<li>比 <code>kubectl apply</code> 使用的 <code>kubectl.kubernetes.io/last-applied-configuration</code> 更加声明式一些.用户发送一个资源的manifest,其中包含了自己关心的字段的期待状态.</li>
 <li>防止用户误修改一些字段</li>
+<li>多个组件/用户对资源的协作管理</li>
 <li>其他一些在 Server 端实现起来更简单的地方</li>
 </ul>
 <p>Server-Side Apply 利用 <code>managedFields</code> 字段,追踪了各个字段的归属,并且能在更新的时候提供冲突检测(manager不匹配),并提供更为准确的提示.</p>
@@ -839,7 +840,11 @@ See http://k8s.io/docs/reference/using-api/api-concepts/#conflicts
 <footer class="post-footer">
       
       <nav class="post-nav">
-        
+        <a class="prev" href="/post/2021-wzry/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">关于《王者荣耀》</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
         <a class="next" href="/post/2021-sgqyv7/">
             <span class="next-text nav-default">重温三国群英传7</span>
             <span class="next-text nav-mobile">下一篇</span>

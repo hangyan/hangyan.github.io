@@ -45,7 +45,7 @@
 <meta property="og:description" content="CyberLife." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="http://yanhang.me/" />
-<meta property="og:updated_time" content="2021-02-18T15:25:47+08:00" />
+<meta property="og:updated_time" content="2021-02-26T15:04:45+08:00" />
 <meta itemprop="name" content="工业革命">
 <meta itemprop="description" content="CyberLife.">
 <meta name="twitter:card" content="summary"/>
@@ -111,6 +111,51 @@
       <div class="content-wrapper">
         <div id="content" class="content">
           <section id="posts" class="posts">
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/2015-03-30-docker-source-code-part5-images/">docker 源码分析(5) -- 镜像拉取及存储</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2015-03-30 </span>
+      
+        <span class="more-meta"> 约 7598 字 </span>
+        <span class="more-meta"> 预计阅读 16 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <p>本篇的内容主要是关于<code>docker</code>镜像的。在我们安装好<code>docker</code>之后，要想使用它，第
+一步就是要下载一些镜像。本文将依据此流程分析<code>docker</code>中镜像的拉取、存储等相关内容。</p>
+    </div>
+    <div class="read-more">
+      <a href="/post/2015-03-30-docker-source-code-part5-images/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/2015-02-16-docker-source-code-part4-network-settings/">docker 源码分析(4) -- 网络设置</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2015-02-16 </span>
+      
+        <span class="more-meta"> 约 2297 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <p>本篇的主要内容是关于<code>docker daemon</code>启动时网络设置的相关部分，在上一篇中已经简要
+提到(<a href="http://hangyan.github.io/docker/docker-source-code-part3-daemon-start/">Docker daemon 启动流程</a>)
+。主要内容集中在<code>InitDriver</code>函数的解析上。</p>
+    </div>
+    <div class="read-more">
+      <a href="/post/2015-02-16-docker-source-code-part4-network-settings/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
     <article class="post">
   <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/2015-02-05-docker-source-code-part3-daemon-start/">docker 源码分析(3) -- daemon 启动流程</a></h1>
@@ -182,56 +227,6 @@
     </div>
     <div class="read-more">
       <a href="/post/2015-01-30-docker-source-code-part2-start-and-args/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2015-01-30-modern-dev-tools/">现代化的开发人员实用工具</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2015-01-30 </span>
-      <div class="post-category">
-          <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          </div>
-        <span class="more-meta"> 约 1343 字 </span>
-        <span class="more-meta"> 预计阅读 3 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <p>常年混迹于 linux，对命令行程序情有独钟，平时也喜欢搜集各种实用的小工具。<code>github</code>流行以来，越来越多的新的实用的开
-发工具开源出来，有的可以用来替代一些老的工具，有的则是全新的。本文整理一些实用的
-工具，希望大家能在实际开发中用到。</p>
-    </div>
-    <div class="read-more">
-      <a href="/post/2015-01-30-modern-dev-tools/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2015-01-29-docker-source-code-part1-dev-setup/">docker 源码分析(1) -- 开发环境准备</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2015-01-29 </span>
-      <div class="post-category">
-          <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          </div>
-        <span class="more-meta"> 约 1778 字 </span>
-        <span class="more-meta"> 预计阅读 4 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <p>之前看过一遍<code>docker</code>的代码，但比较粗略。第二遍准备详细过一遍并且用博客的方式将其
-整理一下。目前为止<code>docker</code>的稳定版本为<code>1.4.1</code>,所以就以此版本的代码为基础进行阅读，分
-析。</p>
-    </div>
-    <div class="read-more">
-      <a href="/post/2015-01-29-docker-source-code-part1-dev-setup/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>

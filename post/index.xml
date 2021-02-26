@@ -6,7 +6,25 @@
     <description>Recent content in Posts on 工业革命</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 18 Feb 2021 15:25:47 +0800</lastBuildDate><atom:link href="http://yanhang.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 26 Feb 2021 15:04:45 +0800</lastBuildDate><atom:link href="http://yanhang.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>三国群英传的历史参考</title>
+      <link>http://yanhang.me/post/2021-sj-map/</link>
+      <pubDate>Fri, 26 Feb 2021 15:04:45 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2021-sj-map/</guid>
+      <description>最近换了君主和时期重新玩了几遍三国群英传,抛开游戏不贴近历史的设定来看,还是有很多值得玩味的点. 战略重地 电脑一方的设定比较贴合历史,假设你卡</description>
+    </item>
+    
+    <item>
+      <title>关于《王者荣耀》</title>
+      <link>http://yanhang.me/post/2021-wzry/</link>
+      <pubDate>Mon, 22 Feb 2021 13:29:28 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2021-wzry/</guid>
+      <description>最近几天玩了《王者荣耀》，今天开始弃坑。算是可以客观评判了。 首先，能理解玩家的众多以及沉迷。上至古稀，下至幼童，真是全民游戏。周末去咖啡馆，</description>
+    </item>
+    
     <item>
       <title>Kubernetes 的 Server-Side Apply</title>
       <link>http://yanhang.me/post/2021-ssa/</link>
