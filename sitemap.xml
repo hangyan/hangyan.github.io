@@ -3,21 +3,49 @@
   
   <url>
     <loc>http://yanhang.me/categories/</loc>
-    <lastmod>2021-02-26T15:04:45+08:00</lastmod>
+    <lastmod>2021-02-26T19:19:11+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>http://yanhang.me/post/</loc>
-    <lastmod>2021-02-26T15:04:45+08:00</lastmod>
+    <lastmod>2021-02-26T19:19:11+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>http://yanhang.me/tags/</loc>
-    <lastmod>2021-02-26T15:04:45+08:00</lastmod>
+    <lastmod>2021-02-26T19:19:11+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/post/2021-friends-pb/</loc>
+    <lastmod>2021-02-26T19:19:11+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/</loc>
+    <lastmod>2021-02-26T19:19:11+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/categories/%E5%BD%B1%E8%A7%86/</loc>
+    <lastmod>2021-02-26T19:19:11+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/tags/%E7%BE%8E%E5%89%A7/</loc>
+    <lastmod>2021-02-26T19:19:11+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -31,13 +59,6 @@
   
   <url>
     <loc>http://yanhang.me/post/2021-sj-map/</loc>
-    <lastmod>2021-02-26T15:04:45+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://yanhang.me/</loc>
     <lastmod>2021-02-26T15:04:45+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -59,20 +80,6 @@
   
   <url>
     <loc>http://yanhang.me/draft/2021-friends-ca/</loc>
-    <lastmod>2021-02-25T13:42:00+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://yanhang.me/categories/%E5%BD%B1%E8%A7%86/</loc>
-    <lastmod>2021-02-25T13:42:00+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://yanhang.me/tags/%E7%BE%8E%E5%89%A7/</loc>
     <lastmod>2021-02-25T13:42:00+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>

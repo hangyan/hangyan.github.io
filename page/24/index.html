@@ -113,115 +113,36 @@
           <section id="posts" class="posts">
     <article class="post">
   <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2021-friends-pb/">《老友记》中的菲比</a></h1>
+    <h1 class="post-title"><a class="post-link" href="/post/2015-01-22-coreos-install/">CoreOS 安装及配置</a></h1>
     <div class="post-meta">
-      <span class="post-time"> 2021-02-26 </span>
+      <span class="post-time"> 2015-01-22 </span>
       <div class="post-category">
-          <a href="/categories/%E5%BD%B1%E8%A7%86/"> 影视 </a>
+          <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
           </div>
-        <span class="more-meta"> 约 2886 字 </span>
-        <span class="more-meta"> 预计阅读 6 分钟 </span>
+        <span class="more-meta"> 约 1636 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
     </div>
   </header>
   
   <div class="post-content">
     <div class="post-summary">
-      本来是想写一篇文章,结果在知乎上看到一个相关的问题,提问者觉得《老友记》中的菲比这个角色令人厌烦.我也是同样的感觉, 因为答案不短,所以也放在
+      <p>本文所遵照的步骤是官网的 Installing to disk 方法,即刻录 ISO 镜像 -&gt; 启动 Coreos Live CD -&gt; 安装到硬盘的步骤，与一般的桌面 Linux 安装非常类似。但 coreos 安装时也有一些需要注意的地方:</p>
+<ol>
+<li>
+<p>cloud-config.yml</p>
+<p>这是 coreos 用来统一配置系统的地方，系统在每次启动时都会加载这个文件的配置，比
+如系统服务、网络设定、文件修改、用户设定等。这样做的好处是在部署集群的时候可
+以方便地使用相同的配置。在安装 coreos 时，需要指定好这个配置文件。实际操作时，
+可以提前将这个文件写好放在别的机器上，然后用 scp / wget (利用下面的 web server) 下载到 coreos 的 Live CD 即可，或者直接存在 Live CD 里更方便。</p>
+</li>
+<li>
+<p>GFW</p>
+<p>coreos 安装时需要从官网下载镜像，但网站被墙，所以实际安装的时候可能需要用代理来解决，缺点是速度慢。更方便的方法是提前下载好需要的文件并放在局域网内并搭建一个 web server，然后修改安装脚本的 server 即可。具体方法在后面详述。</p>
+</li>
+</ol>
     </div>
     <div class="read-more">
-      <a href="/post/2021-friends-pb/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2021-sj-map/">三国群英传的历史参考</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2021-02-26 </span>
-      <div class="post-category">
-          <a href="/categories/%E6%B8%B8%E6%88%8F/"> 游戏 </a>
-          </div>
-        <span class="more-meta"> 约 1250 字 </span>
-        <span class="more-meta"> 预计阅读 3 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      最近换了君主和时期重新玩了几遍三国群英传,抛开游戏不贴近历史的设定来看,还是有很多值得玩味的点. 战略重地 电脑一方的设定比较贴合历史,假设你卡
-    </div>
-    <div class="read-more">
-      <a href="/post/2021-sj-map/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2021-wzry/">关于《王者荣耀》</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2021-02-22 </span>
-      <div class="post-category">
-          <a href="/categories/%E6%B8%B8%E6%88%8F/"> 游戏 </a>
-          </div>
-        <span class="more-meta"> 约 1187 字 </span>
-        <span class="more-meta"> 预计阅读 3 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      最近几天玩了《王者荣耀》，今天开始弃坑。算是可以客观评判了。 首先，能理解玩家的众多以及沉迷。上至古稀，下至幼童，真是全民游戏。周末去咖啡馆，
-    </div>
-    <div class="read-more">
-      <a href="/post/2021-wzry/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2021-ssa/">Kubernetes 的 Server-Side Apply</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2021-02-18 </span>
-      <div class="post-category">
-          <a href="/categories/kubernetes/"> Kubernetes </a>
-          </div>
-        <span class="more-meta"> 约 2115 字 </span>
-        <span class="more-meta"> 预计阅读 5 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      从 Kubernetes 1.18 开始,可以看到一个明显的变化就是资源的 YAML 在 metadata 部分多了很多信息: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 apiVersion:v1kind:Namespacemetadata:creationTimestamp:&#34;2021-02-18T03:03:40Z&#34;managedFields:- apiVersion:v1fieldsType:FieldsV1fieldsV1:f:status:f:phase:{}manager:kube-apiserveroperation:Updatetime:&#34;2021-02-18T03:03:40Z&#34;name:defaultresourceVersion:&#34;199&#34;uid:2f4536b5-7302-4dc1-9620-052a567c917cspec:finalizers:- kubernetesstatus:phase:Active 比如这个 NS 的例子, 其中大
-    </div>
-    <div class="read-more">
-      <a href="/post/2021-ssa/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2021-sgqyv7/">重温三国群英传7</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2021-02-01 </span>
-      <div class="post-category">
-          <a href="/categories/%E6%B8%B8%E6%88%8F/"> 游戏 </a>
-          </div>
-        <span class="more-meta"> 约 1014 字 </span>
-        <span class="more-meta"> 预计阅读 3 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      三国群英传8上了之后，看评价不好一直没买，趁机补齐了1-7,然后玩了一遍。曾经也是年轻时候的回忆，大学的时候放假时在一个朋友家玩，每天一两个
-    </div>
-    <div class="read-more">
-      <a href="/post/2021-sgqyv7/" class="read-more-link">阅读更多</a>
+      <a href="/post/2015-01-22-coreos-install/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>
@@ -229,11 +150,11 @@
     </section>
   
   <nav class="pagination">
-    
-    <a class="next" href="/page/2/">
-        <span class="next-text">下一页</span>
-        <i class="iconfont icon-right"></i>
+    <a class="prev" href="/page/23/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text">上一页</span>
       </a>
+    
   </nav>
         </div>
         
