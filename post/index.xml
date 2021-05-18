@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on 九黎</title>
+    <title>Posts on 论衡</title>
     <link>http://yanhang.me/post/</link>
-    <description>Recent content in Posts on 九黎</description>
+    <description>Recent content in Posts on 论衡</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 26 Feb 2021 19:19:11 +0800</lastBuildDate><atom:link href="http://yanhang.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 18 May 2021 15:05:59 +0800</lastBuildDate><atom:link href="http://yanhang.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>为什么他们只能看到一只鸡</title>
+      <link>http://yanhang.me/post/2021-a-chicken/</link>
+      <pubDate>Tue, 18 May 2021 15:05:59 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2021-a-chicken/</guid>
+      <description>媒介即信息 - 麦克卢汉 最开始的起因是杨宁老师的一节课：Bilibili视频. 大概截图如下： 我对这个老师也不了解，最初是在豆瓣了看到有用户的截图</description>
+    </item>
+    
     <item>
       <title>《老友记》中的菲比</title>
       <link>http://yanhang.me/post/2021-friends-pb/</link>

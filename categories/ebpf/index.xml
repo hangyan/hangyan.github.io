@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>eBPF on 九黎</title>
+    <title>eBPF on 论衡</title>
     <link>http://yanhang.me/categories/ebpf/</link>
-    <description>Recent content in eBPF on 九黎</description>
+    <description>Recent content in eBPF on 论衡</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Tue, 17 Nov 2020 23:16:48 +0800</lastBuildDate><atom:link href="http://yanhang.me/categories/ebpf/index.xml" rel="self" type="application/rss+xml" />

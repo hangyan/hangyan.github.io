@@ -3,34 +3,55 @@
   
   <url>
     <loc>http://yanhang.me/categories/</loc>
-    <lastmod>2021-02-26T19:19:11+08:00</lastmod>
+    <lastmod>2021-05-18T15:05:59+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>http://yanhang.me/post/</loc>
-    <lastmod>2021-02-26T19:19:11+08:00</lastmod>
+    <lastmod>2021-05-18T15:05:59+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>http://yanhang.me/tags/</loc>
-    <lastmod>2021-02-26T19:19:11+08:00</lastmod>
+    <lastmod>2021-05-18T15:05:59+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>http://yanhang.me/post/2021-friends-pb/</loc>
-    <lastmod>2021-02-26T19:19:11+08:00</lastmod>
+    <loc>http://yanhang.me/post/2021-a-chicken/</loc>
+    <lastmod>2021-05-18T15:05:59+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/categories/%E4%BC%A0%E6%92%AD%E5%AD%A6/</loc>
+    <lastmod>2021-05-18T15:05:59+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/tags/%E6%96%87%E5%AD%A6%E8%AF%84%E8%AE%BA/</loc>
+    <lastmod>2021-05-18T15:05:59+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>http://yanhang.me/</loc>
+    <lastmod>2021-05-18T15:05:59+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/post/2021-friends-pb/</loc>
     <lastmod>2021-02-26T19:19:11+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
