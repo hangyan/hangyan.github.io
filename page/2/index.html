@@ -45,7 +45,7 @@
 <meta property="og:description" content="CyberLife." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="http://yanhang.me/" />
-<meta property="og:updated_time" content="2021-05-18T15:05:59+08:00" />
+<meta property="og:updated_time" content="2021-05-18T15:22:38+08:00" />
 <meta itemprop="name" content="论衡">
 <meta itemprop="description" content="CyberLife.">
 <meta name="twitter:card" content="summary"/>
@@ -111,6 +111,29 @@
       <div class="content-wrapper">
         <div id="content" class="content">
           <section id="posts" class="posts">
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/2021-ssa/">Kubernetes 的 Server-Side Apply</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2021-02-18 </span>
+      <div class="post-category">
+          <a href="/categories/kubernetes/"> Kubernetes </a>
+          </div>
+        <span class="more-meta"> 约 2115 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      从 Kubernetes 1.18 开始,可以看到一个明显的变化就是资源的 YAML 在 metadata 部分多了很多信息: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 apiVersion:v1kind:Namespacemetadata:creationTimestamp:&#34;2021-02-18T03:03:40Z&#34;managedFields:- apiVersion:v1fieldsType:FieldsV1fieldsV1:f:status:f:phase:{}manager:kube-apiserveroperation:Updatetime:&#34;2021-02-18T03:03:40Z&#34;name:defaultresourceVersion:&#34;199&#34;uid:2f4536b5-7302-4dc1-9620-052a567c917cspec:finalizers:- kubernetesstatus:phase:Active 比如这个 NS 的例子, 其中大
+    </div>
+    <div class="read-more">
+      <a href="/post/2021-ssa/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
     <article class="post">
   <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/2021-sgqyv7/">重温三国群英传7</a></h1>
@@ -199,29 +222,6 @@
     </div>
     <div class="read-more">
       <a href="/post/2020-12-12-history-note-1/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2020-12-03-alg-linked-list/">算法笔记(1): 链表及其应用</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2020-12-03 </span>
-      <div class="post-category">
-          <a href="/categories/%E7%AE%97%E6%B3%95/"> 算法 </a>
-          </div>
-        <span class="more-meta"> 约 1987 字 </span>
-        <span class="more-meta"> 预计阅读 4 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      最近准备系统的过一遍算法。一是因为看的很多项目最终多多少少都会涉及到算法，如果提前了解好会理解的更深入。二是之前也没有系统的看过，最近想定一
-    </div>
-    <div class="read-more">
-      <a href="/post/2020-12-03-alg-linked-list/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>

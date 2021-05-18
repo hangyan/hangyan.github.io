@@ -45,7 +45,7 @@
 <meta property="og:description" content="CyberLife." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="http://yanhang.me/" />
-<meta property="og:updated_time" content="2021-05-18T15:05:59+08:00" />
+<meta property="og:updated_time" content="2021-05-18T15:22:38+08:00" />
 <meta itemprop="name" content="论衡">
 <meta itemprop="description" content="CyberLife.">
 <meta name="twitter:card" content="summary"/>
@@ -111,6 +111,28 @@
       <div class="content-wrapper">
         <div id="content" class="content">
           <section id="posts" class="posts">
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/2015-05-08-container-process-monitor/">docker 容器内多进程的管理方案</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2015-05-08 </span>
+      
+        <span class="more-meta"> 约 1728 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      <p>容器生来适合的是以单进程为主的独立的微服务架构，而很多传统的组件则是体积庞大，多个进程（组件）之间难以拆分到不同的容器中，所以在单个容器内部署多个组件便成了一种
+暂时的折衷方案。这便引入了一个问题：如何在容器内管理多个进程？</p>
+    </div>
+    <div class="read-more">
+      <a href="/post/2015-05-08-container-process-monitor/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
     <article class="post">
   <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/2015-04-16-some-concepts-of-docker-containers/">docker 容器的一些概念辨析</a></h1>
@@ -201,32 +223,6 @@
     </div>
     <div class="read-more">
       <a href="/post/2015-02-16-docker-source-code-part4-network-settings/" class="read-more-link">阅读更多</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/2015-02-05-docker-source-code-part3-daemon-start/">docker 源码分析(3) -- daemon 启动流程</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2015-02-05 </span>
-      <div class="post-category">
-          <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
-          </div>
-        <span class="more-meta"> 约 7253 字 </span>
-        <span class="more-meta"> 预计阅读 15 分钟 </span>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      <p>本篇的主要内容是关于<code>docker daemon</code>的启动流程。其主要内容均包含在
-<code>github.com/docker/docker/docker/daemon.go</code>文件中的<code>mainDaemon</code>函数中，本文即按
-其执行流程分析源码。因为所涉源码较多，所以所涉部分多是点到为止，详细分析会在后续
-分专篇讲述。</p>
-    </div>
-    <div class="read-more">
-      <a href="/post/2015-02-05-docker-source-code-part3-daemon-start/" class="read-more-link">阅读更多</a>
     </div>
   </div>
 </article>

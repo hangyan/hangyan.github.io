@@ -3,21 +3,49 @@
   
   <url>
     <loc>http://yanhang.me/categories/</loc>
-    <lastmod>2021-05-18T15:05:59+08:00</lastmod>
+    <lastmod>2021-05-18T15:22:38+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>http://yanhang.me/post/</loc>
-    <lastmod>2021-05-18T15:05:59+08:00</lastmod>
+    <lastmod>2021-05-18T15:22:38+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>http://yanhang.me/tags/</loc>
-    <lastmod>2021-05-18T15:05:59+08:00</lastmod>
+    <lastmod>2021-05-18T15:22:38+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/tags/%E4%BC%A0%E6%92%AD/</loc>
+    <lastmod>2021-05-18T15:22:38+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/post/2021-nickname/</loc>
+    <lastmod>2021-05-18T15:22:38+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/categories/%E7%A4%BE%E4%BC%9A/</loc>
+    <lastmod>2021-05-18T15:22:38+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://yanhang.me/</loc>
+    <lastmod>2021-05-18T15:22:38+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -38,13 +66,6 @@
   
   <url>
     <loc>http://yanhang.me/tags/%E6%96%87%E5%AD%A6%E8%AF%84%E8%AE%BA/</loc>
-    <lastmod>2021-05-18T15:05:59+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://yanhang.me/</loc>
     <lastmod>2021-05-18T15:05:59+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -178,13 +199,6 @@
   
   <url>
     <loc>http://yanhang.me/post/2020-12-15-country-in-cyberpunk/</loc>
-    <lastmod>2020-12-25T13:17:12+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://yanhang.me/categories/%E7%A4%BE%E4%BC%9A/</loc>
     <lastmod>2020-12-25T13:17:12+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
