@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.80.0 with theme even" />
+<meta name="generator" content="Hugo 0.83.1 with theme even" />
 
 
 <link rel="canonical" href="http://yanhang.me/post/2021-ssa/" />
@@ -35,26 +35,22 @@
 
 
 
-<link href="/sass/main.min.c7bc1becf36bcf6a9ebd25d2947e43a2eb745ddb0c9a32b43126fd7fa460c351.css" rel="stylesheet">
+<link href="/sass/main.min.154ed883776547b0e136be39b3037f61350da06f888d0868d1756a9463cd9520.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
 <meta property="og:title" content="Kubernetes 的 Server-Side Apply" />
 <meta property="og:description" content="从 Kubernetes 1.18 开始,可以看到一个明显的变化就是资源的 YAML 在 metadata 部分多了很多信息: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 apiVersion:v1kind:Namespacemetadata:creationTimestamp:&#34;2021-02-18T03:03:40Z&#34;managedFields:- apiVersion:v1fieldsType:FieldsV1fieldsV1:f:status:f:phase:{}manager:kube-apiserveroperation:Updatetime:&#34;2021-02-18T03:03:40Z&#34;name:defaultresourceVersion:&#34;199&#34;uid:2f4536b5-7302-4dc1-9620-052a567c917cspec:finalizers:- kubernetesstatus:phase:Active 比如这个 NS 的例子, 其中大" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://yanhang.me/post/2021-ssa/" />
-<meta property="article:published_time" content="2021-02-18T15:25:47+08:00" />
-<meta property="article:modified_time" content="2021-02-18T15:25:47+08:00" />
+<meta property="og:url" content="http://yanhang.me/post/2021-ssa/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-02-18T15:25:47&#43;08:00" />
+<meta property="article:modified_time" content="2021-02-18T15:25:47&#43;08:00" />
+
 <meta itemprop="name" content="Kubernetes 的 Server-Side Apply">
-<meta itemprop="description" content="从 Kubernetes 1.18 开始,可以看到一个明显的变化就是资源的 YAML 在 metadata 部分多了很多信息: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 apiVersion:v1kind:Namespacemetadata:creationTimestamp:&#34;2021-02-18T03:03:40Z&#34;managedFields:- apiVersion:v1fieldsType:FieldsV1fieldsV1:f:status:f:phase:{}manager:kube-apiserveroperation:Updatetime:&#34;2021-02-18T03:03:40Z&#34;name:defaultresourceVersion:&#34;199&#34;uid:2f4536b5-7302-4dc1-9620-052a567c917cspec:finalizers:- kubernetesstatus:phase:Active 比如这个 NS 的例子, 其中大">
-<meta itemprop="datePublished" content="2021-02-18T15:25:47+08:00" />
-<meta itemprop="dateModified" content="2021-02-18T15:25:47+08:00" />
+<meta itemprop="description" content="从 Kubernetes 1.18 开始,可以看到一个明显的变化就是资源的 YAML 在 metadata 部分多了很多信息: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 apiVersion:v1kind:Namespacemetadata:creationTimestamp:&#34;2021-02-18T03:03:40Z&#34;managedFields:- apiVersion:v1fieldsType:FieldsV1fieldsV1:f:status:f:phase:{}manager:kube-apiserveroperation:Updatetime:&#34;2021-02-18T03:03:40Z&#34;name:defaultresourceVersion:&#34;199&#34;uid:2f4536b5-7302-4dc1-9620-052a567c917cspec:finalizers:- kubernetesstatus:phase:Active 比如这个 NS 的例子, 其中大"><meta itemprop="datePublished" content="2021-02-18T15:25:47&#43;08:00" />
+<meta itemprop="dateModified" content="2021-02-18T15:25:47&#43;08:00" />
 <meta itemprop="wordCount" content="2115">
-
-
-
-<meta itemprop="keywords" content="" />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Kubernetes 的 Server-Side Apply"/>
 <meta name="twitter:description" content="从 Kubernetes 1.18 开始,可以看到一个明显的变化就是资源的 YAML 在 metadata 部分多了很多信息: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 apiVersion:v1kind:Namespacemetadata:creationTimestamp:&#34;2021-02-18T03:03:40Z&#34;managedFields:- apiVersion:v1fieldsType:FieldsV1fieldsV1:f:status:f:phase:{}manager:kube-apiserveroperation:Updatetime:&#34;2021-02-18T03:03:40Z&#34;name:defaultresourceVersion:&#34;199&#34;uid:2f4536b5-7302-4dc1-9620-052a567c917cspec:finalizers:- kubernetesstatus:phase:Active 比如这个 NS 的例子, 其中大"/>
 
@@ -903,7 +899,7 @@ See http://k8s.io/docs/reference/using-api/api-concepts/#conflicts
 
 
 
-<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+<script type="text/javascript" src="/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js"></script>
 
 
 

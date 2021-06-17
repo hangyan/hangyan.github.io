@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>网络社区 on 论衡</title>
+    <link>http://yanhang.me/tags/%E7%BD%91%E7%BB%9C%E7%A4%BE%E5%8C%BA/</link>
+    <description>Recent content in 网络社区 on 论衡</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 17 Jun 2021 23:21:34 +0800</lastBuildDate><atom:link href="http://yanhang.me/tags/%E7%BD%91%E7%BB%9C%E7%A4%BE%E5%8C%BA/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>社区人格</title>
+      <link>http://yanhang.me/post/2021-community-personality/</link>
+      <pubDate>Thu, 17 Jun 2021 23:21:34 +0800</pubDate>
+      
+      <guid>http://yanhang.me/post/2021-community-personality/</guid>
+      <description>知乎/微博/豆瓣都频繁地逛过，氛围迥然不同。伴随着我对传播学的兴趣越来越浓，也总是在不断地思考“网络社区”这种媒体的影响。希望能总结出点什么</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.80.0 with theme even" />
+<meta name="generator" content="Hugo 0.83.1 with theme even" />
 
 
 <link rel="canonical" href="http://yanhang.me/post/2019-05-08-install-gitlab/" />
@@ -35,26 +35,22 @@
 
 
 
-<link href="/sass/main.min.c7bc1becf36bcf6a9ebd25d2947e43a2eb745ddb0c9a32b43126fd7fa460c351.css" rel="stylesheet">
+<link href="/sass/main.min.154ed883776547b0e136be39b3037f61350da06f888d0868d1756a9463cd9520.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
 <meta property="og:title" content="在 Kubernetes 中安装 Gitlab" />
 <meta property="og:description" content="现在很少写这种安装类的博客了。之前在公司部署了一个 Gitlab 作为日常使用，因为步骤比较繁琐。在此把零零散散的资料汇聚一下，记录一个比较完整的安装过程" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://yanhang.me/post/2019-05-08-install-gitlab/" />
-<meta property="article:published_time" content="2019-05-08T13:36:33+00:00" />
-<meta property="article:modified_time" content="2019-05-08T13:36:33+00:00" />
+<meta property="og:url" content="http://yanhang.me/post/2019-05-08-install-gitlab/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2019-05-08T13:36:33&#43;00:00" />
+<meta property="article:modified_time" content="2019-05-08T13:36:33&#43;00:00" />
+
 <meta itemprop="name" content="在 Kubernetes 中安装 Gitlab">
-<meta itemprop="description" content="现在很少写这种安装类的博客了。之前在公司部署了一个 Gitlab 作为日常使用，因为步骤比较繁琐。在此把零零散散的资料汇聚一下，记录一个比较完整的安装过程">
-<meta itemprop="datePublished" content="2019-05-08T13:36:33+00:00" />
-<meta itemprop="dateModified" content="2019-05-08T13:36:33+00:00" />
-<meta itemprop="wordCount" content="3073">
-
-
-
-<meta itemprop="keywords" content="Gitlab,Kubernetes," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="description" content="现在很少写这种安装类的博客了。之前在公司部署了一个 Gitlab 作为日常使用，因为步骤比较繁琐。在此把零零散散的资料汇聚一下，记录一个比较完整的安装过程"><meta itemprop="datePublished" content="2019-05-08T13:36:33&#43;00:00" />
+<meta itemprop="dateModified" content="2019-05-08T13:36:33&#43;00:00" />
+<meta itemprop="wordCount" content="3068">
+<meta itemprop="keywords" content="Gitlab,Kubernetes," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="在 Kubernetes 中安装 Gitlab"/>
 <meta name="twitter:description" content="现在很少写这种安装类的博客了。之前在公司部署了一个 Gitlab 作为日常使用，因为步骤比较繁琐。在此把零零散散的资料汇聚一下，记录一个比较完整的安装过程"/>
 
@@ -126,7 +122,7 @@
         <div class="post-category">
             <a href="/categories/%E6%8A%80%E6%9C%AF/"> 技术 </a>
             </div>
-          <span class="more-meta"> 约 3073 字 </span>
+          <span class="more-meta"> 约 3068 字 </span>
           <span class="more-meta"> 预计阅读 7 分钟 </span>
         
       </div>
@@ -1165,8 +1161,8 @@ helm install --name<span class="o">=</span>cert-manager --namespace<span class="
 <pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">sonar</span> <span class="k">WITH</span> <span class="k">OWNER</span> <span class="n">gitlab</span><span class="p">;</span>
-</code></pre></td></tr></table>
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">CREATE</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">sonar</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">OWNER</span><span class="w"> </span><span class="n">gitlab</span><span class="p">;</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>数据库的名字需要与上面 SonarQube 的 Deployment YAML 中的 JDBC 地址一致。</p>
 <h4 id="安装插件">安装插件</h4>
@@ -1493,7 +1489,7 @@ sonar.issue.ignore.multicriteria.e1.ruleKey=go:S1192
 
 
 
-<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+<script type="text/javascript" src="/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js"></script>
 
 
 
