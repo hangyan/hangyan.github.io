@@ -6,7 +6,21 @@ categories: [eBPF]
 tags: [cilium, eBPF]
 ---
 
-Cilium CNI 之前一直看文档，功能大概了解，eBPF也大略看过。但一直没有深入从代码角度去研究。它的 bpf 相关代码做的比较全，而且比较老，跟现在网上的 BCC, CO-RW 还不太一样，而且代码量又大，所以读起来并不容易。这次借着 Host Firewall 功能的探究，深入看下。不可能面面俱到，但尽量多涉及一些。
+Cilium CNI 之前一直看文档，功能大概了解，eBPF也大略看过。但一直没有深入从代码角度去研究。它的 bpf 相关代码做的比较全，而且比较老，跟现在网上的 BCC, CO-RW 还不太一样，而且代码量又大，所以读起来并不容易。这次借着 Host Firewall 功能的探究，深入看下。不可能面面俱到，但尽量多涉及一些。这篇文章在后面可能会继续更新，如果有新的发现的话。
+
+
+## 一些基本概念
+
+* `Endpoint`: 可以理解为跟 device 挂钩的概念(host, pod 等等)，还有特殊的 health endpoint等等。Endpoint有ID,也有对应的 Identity 和自己的 Policy. Endpoint 是 Node Scope 的概念。
+* `Identity`: 跟 label 挂钩。同一个deploy的两个Pod, 有不同的endpoint,但有同样的 identity. K8s Node共用同样的 Identity. Cilium 的 NetworkPolicy 即是针对于 Identity的。这个很好理解，二者主要都是使用 label 来做 filter. 跟 Endpoint 不同， Identity 是 Cluster Scope 的概念(label当然跟node无关)。
+* `KV Store`: 用来存储一些映射关系。Labels, Identity, Address, Node等这些元素之间的各种映射关系。Cilium 要实现 NetworkPolicy, 那么就需要这些映射关系。比如 Address -> Identity 等等。
+
+不同的 CNI 在架构方面的差别还是挺大的。比如 KV Store 的需求，有的 CNI 就完全不需要。对 Cilium 来说，当有新的 NetworkPolicy时, agent 来计算 NetworkPolicy,如果发现自己所在的 Node 上有 Endpoint 受影响，那么就需要对此 Endpoint 做一些 Update (Regenerate BPF Programs等等)，其他的 Node 则不需要。不同的 agent 则依赖于 KV Store 来互相交换一些数据。
+引用一篇架构图所示:
+
+![](https://arthurchiao.art/assets/img/cilium-code-cni/client-scaleup-cnp.png)
+(图片来自于: https://arthurchiao.art)
+
 
 
 ## Host Firewall 是什么
@@ -103,6 +117,36 @@ filter protocol all pref 1 bpf chain 0 handle 0x1 bpf_netdev_eth0.o:[from-netdev
 
 
 ## Golang 相关代码
+注： 参考的代码版本为 v1.11
+
+Golang 部分的代码会比 BPF 相关的代码多很多，此处尽量挑最相关的说。真正在阅读此类代码时，结合着 DEBUG LOG 是比较好的策略。我们的场景是：Add NetworkPolicy, 这部分最开始的处理跟其他的 Operator 方式一样，Controller Watch CRD + Handler.
+
+
+### policyAdd
+File: `daemon/cmd/policy.go`
+
+Cilium 中大量地用到了 EventQueue. Add NetworkPolicy 的事件，最终在 `RepositoryChangeQueue` 里增加了一个 Event, 并且交由 `policyAdd` 处理。其工作如下:
+* 处理 CIDR 相关的 Rule. 本例中没有用到
+* 根据 Rules 选出需要 Update 的 Endpoint.代码中一般叫 Regeneration (其中涉及到重新生成 eBPF 程序).
+
+选出相应的 Endpoints 之后，生成另一个 Event 中，并 Push 到 RuleReactionQueue 中。
+
+
+### reactToRuleUpdates
+File: `daemon/cmd/policy.go`
+
+此函数便是 RuleReactionQueue 的最终 Handler.  主要任务就是 Regenerat 相关的 Endpoint. 方法仍然是通过 EventQueue.
+
+
+### EndpointRegenerationEvent.Handle
+
+File: `pkg/endpoint/events.go`
+
+regenerate endpoint. 涉及到一些本地文件操作(`/var/run/cilium`),生成新的 BPF Program 并 attch 上去。这部分涵盖的内容很多，最好结合DEBUG日志看下，此处不再细说。
+
+
+
+
 
 
 
@@ -273,4 +317,5 @@ tail_handle_ipv4(struct __ctx_buff *ctx, __u32 ipcache_srcid, const bool from_ho
 5. [Endpoint Lifecycle](https://docs.cilium.io/en/stable/policy/lifecycle/)
 6. [Cilium Code Walk Through: Cilium Operator](https://arthurchiao.art/blog/cilium-code-cilium-operator/)
 7. [Cilium Code Walk Through: Restore Endpoints and Identities](https://arthurchiao.art/blog/cilium-code-restore-endpoints/)
-8. [Cilium Code Walk Through: Restore Endpoints and Identities](https://arthurchiao.art/blog/cilium-code-restore-endpoints/)
+8. [Cilium Code Walk Through: CNI Create Network](https://arthurchiao.art/blog/cilium-code-cni-create-network/#4-create-endpoint)
+
