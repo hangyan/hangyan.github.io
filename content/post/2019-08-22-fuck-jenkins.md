@@ -1,7 +1,7 @@
 ---
 title: 失败博物馆 - Jenkins
 toc: true
-categories: [技术]
+categories: [产品]
 date: 2019-08-22 17:02:37
 excerpt: ...
 tags: [Jenkins,CI/CD,架构]

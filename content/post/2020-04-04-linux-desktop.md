@@ -1,7 +1,7 @@
 ---
 title: "Linux 桌面的失败"
 excerpt: ...
-categories: [技术]
+categories: [Linux]
 date: 2020-04-04 21:29:54
 tags: [社会]
 ---

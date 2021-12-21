@@ -1,7 +1,7 @@
 ---
 title: "Sinfonia: a new paradigm for building scalable distributed systems"
 toc: true
-categories: [技术]
+categories: [分布式]
 date: 2019-07-24 17:22:10
 excerpt: 论文笔记
 tags: [论文,分布式, 笔记]

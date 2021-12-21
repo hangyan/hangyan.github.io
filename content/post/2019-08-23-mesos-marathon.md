@@ -1,7 +1,7 @@
 ---
 title: 失败博物馆 - Mesos/Marathon
 toc: true
-categories: [技术]
+categories: [产品]
 date: 2019-08-23 10:28:40
 excerpt: ...
 tags: [架构]

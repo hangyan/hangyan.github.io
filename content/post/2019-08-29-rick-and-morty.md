@@ -1,7 +1,7 @@
 ---
 title: Rick and Morty
 toc: true
-categories: [技术]
+categories: [影视]
 date: 2019-08-29 11:06:59
 excerpt: Wubba lubba dub dub
 tags: [动画片]

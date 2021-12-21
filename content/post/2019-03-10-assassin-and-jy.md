@@ -7,7 +7,7 @@ tags:
     - 金庸
 comments: true
 excerpt: 飞雪连天射白鹿，千军万马避白袍
-categories: [技术]
+categories: [游戏]
 ---
 
 两个段子

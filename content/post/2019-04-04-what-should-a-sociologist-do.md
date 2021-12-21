@@ -1,5 +1,5 @@
 ---
-categories: [技术]
+categories: [文化]
 title: 社会学家应该做什么
 date: 2019-04-04 11:27:57 +0800
 tags: [社会学]

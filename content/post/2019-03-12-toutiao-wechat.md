@@ -1,5 +1,5 @@
 ---
-categories: [技术]
+categories: [产品]
 title: 头条的微信该怎么做
 date: 2019-03-12 21:37:39 +0800
 tags: [互联网]

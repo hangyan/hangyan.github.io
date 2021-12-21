@@ -1,5 +1,5 @@
 ---
-categories: [技术]
+categories: [Tools]
 title: bash 各配置文件浅析
 tags: [技术]
 date: 2015-01-23 21:37:39 +0800

@@ -2,7 +2,7 @@
 title: "Golang系列: 并发模型"
 date: 2020-11-30T14:32:54+08:00
 draft: true
-categories: [Golang]
+categories: [language]
 tags: [cmp]
 ---
 

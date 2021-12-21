@@ -1,7 +1,7 @@
 ---
 title: 现代化的开发人员实用工具
 tags: [工具]
-categories: [技术]
+categories: [Tools]
 imagefeature:
 comments: true
 share: true

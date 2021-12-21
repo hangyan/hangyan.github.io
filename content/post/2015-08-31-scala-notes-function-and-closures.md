@@ -1,5 +1,5 @@
 ---
-categories: [技术]
+categories: [language]
 title: "Scala 笔记: 函数和闭包"
 modified: 2015-08-31
 tags: [language]

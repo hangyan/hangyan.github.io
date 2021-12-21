@@ -1,5 +1,5 @@
 ---
-categories: [技术]
+categories: [产品]
 title: Emacs is drugs
 date: 2019-03-28 21:06:19 +0800
 tags: [技术随笔]

@@ -1,7 +1,7 @@
 ---
 title: 作为公共组件的 apiserver
 toc: true
-categories: [技术]
+categories: [Kubernetes]
 date: 2019-05-24 15:54:47
 excerpt: ...
 tags:

@@ -1,7 +1,7 @@
 ---
 title: 给 Kubernetes Lens AppImage 添加 Desktop Entry
 excerpt: ...
-categories: [技术]
+categories: [Linux]
 toc: true
 date: 2020-04-29 22:13:02
 tags: [Linux]
