@@ -2,7 +2,7 @@
 title: "关于<罪与罚>"
 date: 2020-10-16T17:44:06+08:00
 draft: false
-categories: [阅读]
+categories: [文化]
 tags: [笔记,文学]
 toc: false
 ---
