@@ -1,7 +1,7 @@
 ---
 date: 2015-04-03 21:37:39 +0800
 title: docker 源码分析(6) -- 镜像删除
-categories: [技术]
+categories: [docker]
 tags: [docker]
 imagefeature:
 comments: true

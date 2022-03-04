@@ -7,7 +7,7 @@ tags:
   - Gitlab
 date: 2019-05-07 23:23:52
 excerpt: 通过 Danger 扩充 Gitlab 的 CI/CD 功能
-categories: [技术]
+categories: [Tools]
 ---
 
 Gitlab 社区版的 CI 功能非常好用，能够很方便的地做到代码的 lint/build/test/等等。不过社区版在多人协作上(比如 Merge Request)上阉割了不少功能，

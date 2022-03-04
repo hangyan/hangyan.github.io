@@ -22,6 +22,8 @@ Cilium CNI 之前一直看文档，功能大概了解，eBPF也大略看过。�
 (图片来自于: https://arthurchiao.art)
 
 
+Cilium 选择使用 Identity 跟它的架构有关。因为使用 agent 来计算 NetworkPolicy. 如果没有 Identity, 那么每次新增加一个 Pod, 所有的 Pod 都需要计算一下 Policy. Identity 是基于 Labels, 相同的 Labels 的 Pod(比如一个 Workload 下的)共享一个 Identity, 那么在很多新增 Pod 的场景下 Policy 没有变更，减少了 agent 的工作量。那么如果从 Identity 获取 Pod 的 address 呢？就要用到上面所说的 KVStore.。所以上面图中的每个 Node 都需要 watch kvstore 中的数据。
+
 
 ## Host Firewall 是什么
 
@@ -303,8 +305,7 @@ tail_handle_ipv4(struct __ctx_buff *ctx, __u32 ipcache_srcid, const bool from_ho
 	}
 #endif /* ENABLE_HOST_FIREWALL */
 ```
-
-### ipv4_host_policy_ingress
+后面就是实际计算 Policy 的地方了。
 
 
 

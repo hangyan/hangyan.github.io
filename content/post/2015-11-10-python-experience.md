@@ -1,5 +1,5 @@
 ---
-categories: [技术]
+categories: [language]
 title: 一点 python 的经验
 date: 2015-11-10 21:37:39 +0800
 tags:

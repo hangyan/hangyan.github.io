@@ -1,7 +1,7 @@
 ---
 title: Golang 1.9 Release Note
 toc: true
-categories: [技术]
+categories: [language]
 date: 2019-05-27 22:28:38
 excerpt: ...
 tags:

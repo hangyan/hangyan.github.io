@@ -1,7 +1,7 @@
 ---
 title: What is Helm Doing Wrong and How a Helm3 Controller Can Fix It
 toc: true
-categories: [技术]
+categories: [产品]
 date: 2019-08-03 11:26:30
 excerpt: welcome to the controller!
 tags: [Kubernetes,docker,helm]

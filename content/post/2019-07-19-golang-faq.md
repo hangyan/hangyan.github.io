@@ -1,7 +1,7 @@
 ---
 title: Golang FAQ
 toc: true
-categories: [技术]
+categories: [language]
 date: 2019-07-19T00:11:33.000Z
 excerpt: Golang FAQ 笔记
 tags:

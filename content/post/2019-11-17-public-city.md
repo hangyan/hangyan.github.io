@@ -2,7 +2,7 @@
 title: 小城市的公共空间
 toc: false
 excerpt: 城邦城邦
-categories: [技术]
+categories: [文化]
 date: 2019-11-17 17:41:58
 tags: [社会]
 ---

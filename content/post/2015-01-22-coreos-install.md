@@ -7,7 +7,7 @@ imagefeature:
 date: 2015-01-22 21:37:39 +0800
 tags: [技术]
 excerpt: ""
-categories: [技术]
+categories: [Tools]
 thumb: /images/thumbs/coreos.png
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: Common Index
 toc: true
-categories: [技术]
+categories: [互联网]
 date: 2019-07-16 16:20:10
 excerpt: 未来的搜索引擎
 tags: [互联网, 商业]

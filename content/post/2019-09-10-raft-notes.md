@@ -2,7 +2,7 @@
 title: Raft 协议笔记
 toc: true
 excerpt:  学习学习
-categories: [技术]
+categories: [分布式]
 date: 2019-09-10 14:51:05
 tags:  [论文,分布式]
 ---

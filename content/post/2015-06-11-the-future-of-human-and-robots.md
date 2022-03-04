@@ -1,7 +1,7 @@
 ---
 date: 2015-06-11 21:37:39 +0800
 title: 人类和机器人的未来
-categories: [技术]
+categories: [社会]
 tags: [社会学]
 imagefeature:
 comments: true

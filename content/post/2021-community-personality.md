@@ -3,7 +3,7 @@ title: "社区人格"
 date: 2021-06-17T23:21:34+08:00
 draft: false
 toc: false
-categories: [传播学]
+categories: [文化]
 tags: [网络社区]
 ---
 

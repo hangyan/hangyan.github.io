@@ -7,7 +7,7 @@ tags:
     - 金庸
 excerpt: 刺客信条：奥德赛 Assassin's Creed Odyssey
 comments: true
-categories: [技术]
+categories: [游戏]
 ---
 
 > 版权归作者所有，任何形式转载请联系作者。

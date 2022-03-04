@@ -2,7 +2,7 @@
 title: Docker 私有 Registry 的镜像 GC 问题
 toc: true
 excerpt: ...
-categories: [技术]
+categories: [Docker]
 date: 2020-09-07 18:13:47
 tags: [Docker,Kubernetes]
 ---

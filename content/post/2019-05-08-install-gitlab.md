@@ -1,7 +1,7 @@
 ---
 title: 在 Kubernetes 中安装 Gitlab
 toc: true
-categories: [技术]
+categories: [Tools]
 date: 2019-05-08 13:36:33
 excerpt: 一个详细的安装使用文档
 tags:

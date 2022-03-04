@@ -2,7 +2,7 @@
 title: "为什么他们只能看到一只鸡"
 date: 2021-05-18T15:05:59+08:00
 draft: false
-categories: [传播学]
+categories: [文化]
 tags: [文学评论]
 toc: false
 ---

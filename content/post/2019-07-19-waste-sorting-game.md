@@ -1,7 +1,7 @@
 ---
 title: 垃圾分类模拟游戏设定
 toc: true
-categories: [技术]
+categories: [游戏]
 date: 2019-07-19 16:50:06
 excerpt: 万物皆可模拟
 tags:
