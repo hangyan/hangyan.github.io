@@ -30,6 +30,14 @@ preserveTaxonomyNames = true    # keep Chinese tag/category names in URLs
   name = "分类"
   url = "/categories/"
   weight = 4
+[[menu.main]]
+  name = "关于"
+  url = "/about/"
+  weight = 5
+[[menu.main]]
+  name = "RSS"
+  url = "/index.xml"
+  weight = 6
 
 [params]
   env = "production"
@@ -47,6 +55,9 @@ preserveTaxonomyNames = true    # keep Chinese tag/category names in URLs
   ShowShareButtons = false
   ShowComments = false
   defaultTheme = "auto"
+
+  [params.footer]
+    text = "[GitHub](https://github.com/hangyan) · [Email](mailto:hang.yan@hotmail.com) · [RSS](/index.xml)"
 
   [params.author]
     name = "涯余"
