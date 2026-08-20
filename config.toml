@@ -1,40 +1,74 @@
 baseURL = "https://hangyan.github.io/"
 title = "涯余的博客"
-locale = "zh-cn"
-theme = "hugo-xmin"
+theme = "PaperMod"
+defaultContentLanguage = "zh"
 enableRobotsTXT = true
 enableEmoji = true
 preserveTaxonomyNames = true    # keep Chinese tag/category names in URLs
 
+[languages.zh]
+  label = "中文"
+  weight = 1
+  title = "涯余的博客"
+
+[pagination]
+  pagerSize = 50
+
+[[menu.main]]
+  name = "首页"
+  url = "/"
+  weight = 1
+[[menu.main]]
+  name = "归档"
+  url = "/post/"
+  weight = 2
+[[menu.main]]
+  name = "标签"
+  url = "/tags/"
+  weight = 3
+[[menu.main]]
+  name = "分类"
+  url = "/categories/"
+  weight = 4
+
 [params]
+  env = "production"
+  title = "涯余的博客"
   description = "CyberLife."
-  footer = "&copy; [涯余](https://hangyan.github.io/) 2013 -- {Year} | [GitHub](https://github.com/hangyan) | [Email](mailto:hang.yan@hotmail.com)"
+  keywords = ["Kubernetes", "Tech", "Internet"]
+  DateFormat = "2006-01-02"
+  ShowToc = true
+  TocOpen = true
+  ShowCodeCopyButtons = true
+  ShowReadingTime = true
+  ShowWordCount = true
+  ShowBreadCrumbs = true
+  ShowPostNavLinks = true
+  ShowShareButtons = false
+  ShowComments = false
+  defaultTheme = "auto"
 
   [params.author]
     name = "涯余"
     email = "hang.yan@hotmail.com"
 
-[[menu.main]]
-  name = "Home"
-  url = ""
-  weight = 1
-[[menu.main]]
-  name = "Archives"
-  url = "post/"
-  weight = 2
-[[menu.main]]
-  name = "Tags"
-  url = "tags/"
-  weight = 3
-[[menu.main]]
-  name = "Categories"
-  url = "categories/"
-  weight = 4
-[[menu.main]]
-  name = "Subscribe"
-  url = "index.xml"
-  weight = 5
+  [params.assets]
+    disableHLJS = true
+
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/hangyan"
+  [[params.socialIcons]]
+    name = "email"
+    url = "mailto:hang.yan@hotmail.com"
+  [[params.socialIcons]]
+    name = "rss"
+    url = "/index.xml"
 
 [markup]
   [markup.goldmark.renderer]
     unsafe = true
+  [markup.highlight]
+    codeFences = true
+    guessSyntax = true
+    noClasses = false
