@@ -32,7 +32,7 @@ tags: [TC, eBPF, Linux]
 
 多个 qdisc 在 egress 上是很常见的。加了 clasact 之后就更常见了。那么 clsact 和他们什么关系？ 
 
-![](https://oss-emcsprod-public.modb.pro/wechatSpider/modb_20211020_493eb7be-31a1-11ec-920d-fa163eb4f6be.png)
+![](/images/2021-tc-ebpf/clsact-qdisc.png)
 
 这是我从另一个 Topic 摘过来的图。可以看出来， clsact 是在普通的 qdisc 之前的。
 
@@ -48,7 +48,7 @@ tags: [TC, eBPF, Linux]
 
 egress 的 rate-limiting 方案可以优化的地方很多，涉及到 lock, cpu scheudler, 不同的 qdisc 算法等等。字节有一篇文章详细列举了几种常见的方案:
 
-![Linux 内核 | 网络流量限速方案大 PK](https://www.modb.pro/db/142271)
+[Linux 内核 | 网络流量限速方案大 PK](https://www.modb.pro/db/142271)
 
 其中最有的意思就是最后的 EDT 方案。这个也是目前 Cilium 在用的 bandwidth 方案。CNI的参考实现里用了 IFB 方案（支持ingress)。
 
@@ -59,7 +59,7 @@ egress 的 rate-limiting 方案可以优化的地方很多，涉及到 lock, cpu
 ## TC Flower
 针对 openvswitch hardware offload 的方案. TC 的可扩展性很强，可以接入不同的 classifier ( 上面的 bpf 也算一例). Openflow 规则也可以映射成 TC 规则。
 
-![OpenVSwitch 硬件加速浅谈](https://zhuanlan.zhihu.com/p/57870521)
+[OpenVSwitch 硬件加速浅谈](https://zhuanlan.zhihu.com/p/57870521)
 
 
 ## Links
