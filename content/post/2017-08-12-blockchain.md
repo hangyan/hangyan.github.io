@@ -1,7 +1,6 @@
 ---
 categories: [技术]
 title: Blockchain
-date: '2017-08-12 16:52'
 tags:
   - blockchain
 excerpt: '比特币,区块链'
