@@ -46,6 +46,7 @@ preserveTaxonomyNames = true    # keep Chinese tag/category names in URLs
   ShowPostNavLinks = true
   ShowShareButtons = false
   ShowComments = false
+  comments = true
   defaultTheme = "auto"
 
   [params.footer]

@@ -60,7 +60,7 @@
   </footer>
 
   {{- if (.Param "comments") }}
-  {{- partial "comments.html" . }}
+  <p class="post-comments-link"><a href="{{ .RelPermalink }}">在原文页阅读与评论 →</a></p>
   {{- end }}
 </article>
 {{- end }}
