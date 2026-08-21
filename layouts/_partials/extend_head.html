@@ -24,4 +24,99 @@
         font-size: 0.875em;
         line-height: 1.55;
     }
+
+    /* Refined Inset TOC Card */
+    details.toc {
+        margin: 1.5rem 0 2rem 0;
+        padding: 0.75rem 1.25rem;
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    [data-theme="dark"] details.toc {
+        background: var(--entry);
+        border-color: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    details.toc:hover {
+        border-color: var(--secondary);
+    }
+    details.toc summary {
+        cursor: pointer;
+        padding: 0.2rem 0;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        user-select: none;
+        list-style: none;
+    }
+    details.toc summary::-webkit-details-marker {
+        display: none;
+    }
+    details.toc summary .title {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-inline-start: 0;
+        letter-spacing: 0.02em;
+    }
+    details.toc summary .title::before {
+        content: "";
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-right: 2px solid var(--secondary);
+        border-bottom: 2px solid var(--secondary);
+        transform: rotate(-45deg);
+        transition: transform 0.2s ease;
+        margin-right: 0.35rem;
+    }
+    details.toc[open] summary .title::before {
+        transform: rotate(45deg);
+    }
+    details.toc .inner {
+        margin: 0.6rem 0 0.2rem 0.2rem;
+        padding: 0.5rem 0 0 0;
+        border-top: 1px dashed var(--border);
+    }
+    details.toc ul {
+        list-style: none;
+        padding-inline-start: 0;
+        margin: 0;
+    }
+    details.toc li {
+        margin: 0.25rem 0;
+        font-size: 0.88rem;
+        line-height: 1.5;
+    }
+    details.toc li ul {
+        margin-inline-start: 0.9rem;
+        padding-inline-start: 0.85rem;
+        border-inline-start: 1.5px solid rgba(125, 125, 125, 0.22);
+        margin-top: 0.2rem;
+        margin-bottom: 0.2rem;
+    }
+    [data-theme="dark"] details.toc li ul {
+        border-inline-start-color: rgba(255, 255, 255, 0.12);
+    }
+    details.toc a {
+        color: var(--secondary);
+        text-decoration: none !important;
+        display: inline-block;
+        padding: 0.12rem 0.45rem;
+        border-radius: 5px;
+        transition: color 0.15s ease, background-color 0.15s ease;
+    }
+    details.toc a:hover {
+        color: var(--primary);
+        background-color: rgba(125, 125, 125, 0.1);
+        text-decoration: none !important;
+    }
+    [data-theme="dark"] details.toc a:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+    }
 </style>
