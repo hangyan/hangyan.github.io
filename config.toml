@@ -30,14 +30,6 @@ preserveTaxonomyNames = true    # keep Chinese tag/category names in URLs
   name = "分类"
   url = "/categories/"
   weight = 4
-[[menu.main]]
-  name = "关于"
-  url = "/about/"
-  weight = 5
-[[menu.main]]
-  name = "RSS"
-  url = "/index.xml"
-  weight = 6
 
 [params]
   env = "production"
